@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GradQuest | 회원가입</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="auth-page">
+    <header class="auth-institution-bar">
+      <div><strong>SKKU Student Service</strong><span>GradQuest 졸업요건 내비게이터</span></div>
+      <small>성균관대학교 학생 대상 학사정보 보조 서비스</small>
+    </header>
+    <main class="auth-shell">
+      <section class="auth-story" aria-labelledby="signupTitle">
+        <a class="brand campus-brand" href="index.html">
+          <span class="gq-logo-frame gq-logo-horizontal gq-logo-hero"><img src="assets/gradquest-logo-horizontal.png" alt="GradQuest" /></span>
+          <span class="brand-copy brand-school-copy">SKKU<small>GRADUATION GUIDE</small></span>
+        </a>
+        <div class="auth-story-main">
+          <p class="eyebrow" style="color: #9ed1c1">Start your quest</p>
+          <h1 id="signupTitle">내 졸업 지도를<br />지금 만들어보세요.</h1>
+          <p>기본 계정을 만든 다음 전공과 이수 현황을 설정하면 개인 맞춤 진단이 시작됩니다.</p>
+        </div>
+        <div class="campus-caption"><span>Natural Sciences Campus</span><small>삼성학술정보관 · 수원</small></div>
+      </section>
+
+      <section class="auth-form-side">
+        <div class="auth-card">
+          <p class="eyebrow">Create account</p>
+          <h2>회원가입</h2>
+          <p class="muted">학번은 로그인 식별자로 사용됩니다.</p>
+          <div class="alert alert-danger hidden" id="signupError" role="alert"></div>
+          <form id="signupForm">
+            <div class="field">
+              <label for="name">이름</label>
+              <input id="name" name="name" autocomplete="name" placeholder="이름" required />
+            </div>
+            <div class="field">
+              <label for="studentNumber">학번</label>
+              <input id="studentNumber" name="studentNumber" inputmode="numeric" pattern="[0-9]{8,10}" placeholder="숫자 8~10자리" required />
+            </div>
+            <div class="field">
+              <label for="password">비밀번호</label>
+              <input id="password" name="password" type="password" minlength="4" autocomplete="new-password" placeholder="4자 이상" required />
+            </div>
+            <div class="field">
+              <label for="passwordConfirm">비밀번호 확인</label>
+              <input id="passwordConfirm" name="passwordConfirm" type="password" minlength="4" autocomplete="new-password" required />
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" required />
+              <span class="field-hint">GradQuest가 참고용 서비스이며 실제 졸업 판정은 학교 공식 시스템을 확인해야 함을 이해했습니다.</span>
+            </label>
+            <button class="btn btn-block" type="submit">계정 만들기</button>
+          </form>
+          <p class="auth-card-footer">이미 계정이 있나요? <a class="text-link" href="index.html">로그인</a></p>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="js/signup.js"></script>
+  </body>
+</html>
