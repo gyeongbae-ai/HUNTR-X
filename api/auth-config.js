@@ -5,6 +5,6 @@ export default function handler(request, response) {
     supabaseAnonKey:
       process.env.SUPABASE_ANON_KEY ||
       process.env.SUPABASE_PUBLISHABLE_KEY ||
-      "sb_publishable_Seu0CXUiuRqcrn7EAq8ubw_cy63obRU",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmdnBmdGRmYXl3eG1idWdzc2J0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTE1MjAsImV4cCI6MjA5OTcyNzUyMH0.PI6Hxc8NbsgUl4HU1CMPgL1nWjOxjEWomqT8Y4nsYhE",
   });
 }
