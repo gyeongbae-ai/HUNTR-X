@@ -73,6 +73,10 @@ export const OFFICIAL_SOURCES = [
     url: "https://professor.skku.edu/swuniv/axConvergenceEdu_swConvergence.do",
   },
   {
+    label: "비전공자 DS 교육 학번별 기준",
+    url: "https://skb.skku.edu/swuniv/SW-AI-DS.do",
+  },
+  {
     label: "성균관대학교 전공 로드맵",
     url: "https://ibook.skku.edu/Viewer/OCFDOM5VH4A2",
   },
@@ -113,12 +117,13 @@ export const PERSONAS = {
     coreGeneral: { completed: 14, required: 16 },
     balancedGeneral: { completed: 6, required: 6 },
     dsEducation: { completed: 3, required: 6 },
-    primaryMajor: { completed: 28, required: 40, detail: "전공코어 36학점 + 실험·실습 4학점" },
+    primaryMajor: { completed: 28, required: 40, detail: "전공코어 24학점 + 전공심화 12학점 + 실험실습 4학점" },
     secondaryMajor: { completed: 12, required: 21, detail: "지정과목 21학점 · 원전공과 최대 6학점 인정 · 산학프로젝트 또는 인턴십 권장" },
     creditBreakdown: {
       primaryMajor: [
-        { label: "전공코어", completed: 24, required: 36 },
-        { label: "실험·실습", completed: 4, required: 4 },
+        { label: "전공코어", completed: 18, required: 24 },
+        { label: "전공심화", completed: 6, required: 12 },
+        { label: "실험실습", completed: 4, required: 4 },
       ],
       secondaryMajor: [
         { label: "반도체 공통·기초", completed: 9, required: 12 },
@@ -143,13 +148,15 @@ export const PERSONAS = {
       { code: "ECH2005", name: "화공열역학1", area: "전공코어", credits: 3, completed: true },
       { code: "ECH2007", name: "화공유체역학", area: "전공코어", credits: 3, completed: true },
       { code: "ECH2031", name: "화공계산", area: "전공코어", credits: 3, completed: true },
+      { code: "ECH3024", name: "화학공학실험1", area: "실험실습", credits: 2, completed: true },
+      { code: "ECH3025", name: "화학공학실험2", area: "실험실습", credits: 2, completed: true },
       { code: "SCM3001", name: "반도체종합설비기술", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: true, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "SSE2018", name: "반도체소자", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: true, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "SSE3036", name: "반도체공정", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: true, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECH3061", name: "반도체화학공정", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: true, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECH3016", name: "분리공정", area: "전공코어", credits: 3, completed: false },
       { code: "ECH3053", name: "반응공학", area: "전공코어", credits: 3, completed: false },
-      { code: "ECH3073", name: "화공종합설계", area: "종합설계", credits: 3, completed: false },
+      { code: "ECH3073", name: "화공종합설계", area: "전공심화", credits: 3, completed: false },
       { code: "EAM2057", name: "신소재공학 개론1", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "EAM4019", name: "전자 패키지공학", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECH2032", name: "화공열및물질전달", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
@@ -185,8 +192,8 @@ export const PERSONAS = {
     secondaryMajor: { completed: 24, required: 39, detail: "전공코어 36학점 + 전공선택 3학점" },
     creditBreakdown: {
       primaryMajor: [
-        { label: "문헌정보 전공코어", completed: 24, required: 30 },
-        { label: "문헌정보 전공심화", completed: 6, required: 12 },
+        { label: "전공코어", completed: 24, required: 30 },
+        { label: "전공심화", completed: 6, required: 12 },
       ],
       secondaryMajor: [
         { label: "경제학 전공코어", completed: 24, required: 36 },
@@ -250,7 +257,7 @@ export const PERSONAS = {
     creditBreakdown: {
       primaryMajor: [
         { label: "전공코어", completed: 30, required: 39 },
-        { label: "전공선택", completed: 6, required: 15 },
+        { label: "전공심화", completed: 6, required: 15 },
       ],
     },
     internationalTotal: { completed: 15, required: 18 },
@@ -308,7 +315,7 @@ export const PERSONAS = {
       primaryMajor: [
         { label: "전공코어", completed: 36, required: 36 },
         { label: "전공심화", completed: 18, required: 24 },
-        { label: "캡스톤·실습", completed: 6, required: 6 },
+        { label: "실험실습", completed: 6, required: 6 },
       ],
     },
     internationalTotal: { completed: 18, required: 18 },
@@ -373,7 +380,7 @@ function inferCourseRequirements(course) {
   if (/중점교양/.test(area)) ids.push("coreGeneral");
   if (/균형교양/.test(area)) ids.push("balancedGeneral");
   if (/제2전공/.test(area)) ids.push("secondaryMajor");
-  if (/전공|I-Core|캡스톤|종합설계/.test(area) && !/제2전공/.test(area)) ids.push("primaryMajor");
+  if (/전공|I-Core|캡스톤|종합설계|실험실습|실험·실습/.test(area) && !/제2전공/.test(area)) ids.push("primaryMajor");
   if (/국제어|I-Core/.test(area)) ids.push("internationalTotal");
   if (/전공국제어|I-Core/.test(area)) ids.push("internationalMajor");
   return [...new Set(ids)];
@@ -434,6 +441,106 @@ const requirementAreaLabels = {
   internationalTotal: "국제어수업",
   internationalMajor: "전공 국제어수업",
 };
+
+const majorCoreCourseCodes = new Set([
+  "ECH2005",
+  "ECH2006",
+  "ECH2007",
+  "ECH2031",
+  "ECH2032",
+  "ECH3016",
+  "ECH3053",
+  "GBA1001",
+  "GBA2005",
+  "GBA3001",
+  "GBA3011",
+  "GBA3021",
+  "GBA3031",
+]);
+
+function getPrimaryMajorArea(course) {
+  const code = normalizeCourseCode(course?.code);
+  const area = String(course?.area || "");
+  const name = String(course?.name || "");
+  if (/실험|실습|프로젝트|캡스톤/.test(`${area} ${name}`)) return "실험실습";
+  if (/전공코어|전공기초|전공핵심|I-Core/.test(area) || majorCoreCourseCodes.has(code)) return "전공코어";
+  return "전공심화";
+}
+
+function normalizePrimaryMajorArea(course) {
+  if (!(course?.requirementIds || []).includes("primaryMajor")) return course;
+  return {
+    ...course,
+    area: getPrimaryMajorArea(course),
+  };
+}
+
+const requiredGeneralCourseCodes = new Set([
+  "GEDC010",
+  "GEDM001",
+  "GEDW001",
+  "GEDT017",
+  "GEDT020",
+  "GEDG001",
+  "GEDW003",
+  "GEDR014",
+]);
+
+const dsCourseRules = {
+  2020: {
+    rangeLabel: "2020학번",
+    commonRequired: new Set([]),
+    engineeringRequired: new Set(["DASF003", "DASF004"]),
+  },
+  "2021-2024": {
+    rangeLabel: "2021~2024학번",
+    commonRequired: new Set(["GEDT020", "GEDT014", "GEDT015"]),
+    engineeringRequired: new Set(["GEDT018", "GEDT019", "DASF003", "DASF004"]),
+  },
+  2025: {
+    rangeLabel: "2025학번",
+    commonRequired: new Set(["DASF008"]),
+    engineeringRequired: new Set(["DASF003", "DASF004"]),
+  },
+};
+
+function getDsRuleForAdmissionYear(admissionYear) {
+  const year = Number(admissionYear || 0);
+  if (year >= 2025) return dsCourseRules[2025];
+  if (year >= 2021 && year <= 2024) return dsCourseRules["2021-2024"];
+  if (year <= 2020) return dsCourseRules[2020];
+  return null;
+}
+
+function isEngineeringDsTrack(profile) {
+  return /공학|소프트웨어|반도체|소재부품|에너지|양자정보|바이오메디컬/.test(`${profile?.college || ""} ${profile?.department || ""}`);
+}
+
+function getCourseBadges(course, profile) {
+  const badges = new Set(course.badges || []);
+  const code = normalizeCourseCode(course.code);
+  const requirementIds = course.requirementIds || [];
+  if (requirementIds.includes("coreGeneral") && requiredGeneralCourseCodes.has(code)) {
+    badges.add("필수교양");
+  }
+
+  const dsRule = getDsRuleForAdmissionYear(profile?.admissionYear);
+  if (dsRule?.commonRequired.has(code)) {
+    badges.add(`${dsRule.rangeLabel} DS 공통필수`);
+  }
+  if (dsRule && isEngineeringDsTrack(profile) && dsRule.engineeringRequired.has(code)) {
+    badges.add(`${dsRule.rangeLabel} DS기반 필수`);
+  }
+
+  return [...badges];
+}
+
+function annotateCourseMetadata(course, profile) {
+  return {
+    ...course,
+    badges: getCourseBadges(course, profile),
+  };
+}
 
 const officialCourseCatalog = {
   GEDC010: { name: "성균논어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
@@ -547,7 +654,7 @@ const officialCourseCatalog = {
   ECH3065: { name: "나노바이오융합공학", credits: 3, source: "성균관대 화학공학부 교과과정" },
   ECH3066: { name: "전지공학입문", credits: 3, source: "성균관대 화학공학부 교과과정" },
   ECH3067: { name: "공정제어및설계", credits: 3, source: "성균관대 화학공학부 교과과정" },
-  ECH3068: { name: "물리화학기초실험", credits: 3, source: "성균관대 화학공학부 교과과정" },
+  ECH3068: { name: "물리화학기초실험", credits: 2, source: "성균관대 화학공학부 교과과정" },
   ECH3069: { name: "화공인공지능", credits: 3, source: "성균관대 화학공학부 교과과정" },
   ECH3071: { name: "바이오헬스케어공학", credits: 3, source: "성균관대 화학공학부 교과과정" },
   ECH3072: { name: "전지용고분자소재", credits: 3, source: "성균관대 화학공학부 교과과정" },
@@ -864,7 +971,7 @@ function normalizeOfficialCourse(course) {
 function buildOfficialSupplementalCourse(profile, requirementId, code, index) {
   const official = officialCourseCatalog[code];
   if (!official) return null;
-  return normalizeOfficialCourse({
+  return normalizePrimaryMajorArea(normalizeOfficialCourse({
     id: `OFFICIAL-${profile.studentNumber}-${requirementId}-${code}`,
     code,
     name: official.name,
@@ -875,7 +982,7 @@ function buildOfficialSupplementalCourse(profile, requirementId, code, index) {
     grade: ["A+", "A0", "B+", "B0"][index % 4],
     source: official.source,
     requirementIds: requirementId === "totalCredits" ? ["totalCredits"] : ["totalCredits", requirementId],
-  });
+  }));
 }
 
 function getOfficialSupplementalCodes(profile, requirementId) {
@@ -1022,15 +1129,16 @@ export function ensureEvidenceData(profile) {
   const grades = ["A+", "A0", "B+", "A+", "B0", "A0", "B+", "A0"];
   profile.courses = (profile.courses || [])
     .filter((course) => !isSyntheticCourse(course))
-    .map((course, index) => normalizeOfficialCourse({
-      ...course,
-      id: course.id || `GLS-${profile.studentNumber}-${course.code || index}`,
-      term: isTermInDisplayRange(profile, course.term) ? course.term : getSampleCourseTerm(profile, index),
-      grade: course.grade || (course.completed ? grades[index % grades.length] : "예정"),
-      source: course.source || "GLS 등록 과목",
-      requirementIds: course.requirementIds || inferCourseRequirements(course),
-    }));
+    .map((course, index) => normalizePrimaryMajorArea(normalizeOfficialCourse({
+        ...course,
+        id: course.id || `GLS-${profile.studentNumber}-${course.code || index}`,
+        term: isTermInDisplayRange(profile, course.term) ? course.term : getSampleCourseTerm(profile, index),
+        grade: course.grade || (course.completed ? grades[index % grades.length] : "예정"),
+        source: course.source || "GLS 등록 과목",
+        requirementIds: course.requirementIds || inferCourseRequirements(course),
+      })));
   supplementCourseEvidence(profile);
+  profile.courses = profile.courses.map((course) => annotateCourseMetadata(course, profile));
   profile.nonCurricular = Array.isArray(profile.nonCurricular) ? profile.nonCurricular : buildPoomEvidence(profile);
   profile.evidenceImports = Array.isArray(profile.evidenceImports)
     ? profile.evidenceImports
@@ -1435,23 +1543,53 @@ export function getAssistantMetadataContext(question, profile) {
   };
 }
 
+function getPrimaryMajorBreakdownText(profile) {
+  const items = profile.creditBreakdown?.primaryMajor || [];
+  if (!items.length) return "";
+  return items
+    .map((item) => {
+      const remaining = Math.max(0, Number(item.required || 0) - Number(item.completed || 0));
+      const suffix = remaining > 0 ? `, ${formatNumber(remaining)}학점 부족` : ", 충족";
+      return `- ${item.label}: ${formatNumber(item.completed)}/${formatNumber(item.required)}학점${suffix}`;
+    })
+    .join("\n");
+}
+
+function getDsPolicyText(profile) {
+  const dsRule = getDsRuleForAdmissionYear(profile.admissionYear);
+  if (!dsRule) return "DS 교육과정은 입학연도별 기준이 달라 최신 학번별 표를 함께 확인해야 합니다.";
+  if (profile.admissionYear >= 2025) {
+    return "2025학번은 DS기반 필수 과목 체계가 개편되어 데이터분석과AI기초가 공통 필수이고, 계열·학과에 따라 공학컴퓨터프로그래밍/프로그래밍기초와실습 인정 방식이 달라집니다.";
+  }
+  if (profile.admissionYear <= 2020) {
+    return "2020학번 이전 기준은 학과별 지정 DS 과목을 우선 확인해야 하며, 소프트웨어·공학 계열 샘플은 공학컴퓨터프로그래밍/프로그래밍기초와실습을 DS기반 과목으로 연결합니다.";
+  }
+  return "2021~2024학번은 AI기초와활용 및 데이터분석기초 계열 과목이 공통 필수이고, 공학·소프트웨어 계열은 공학컴퓨터프로그래밍/프로그래밍기초와실습을 학과 지정 DS기반 과목으로 확인해야 합니다.";
+}
+
 export function getLocalAnswer(question, profile) {
   const normalized = question.replace(/\s/g, "").toLowerCase();
   const actions = getActionItems(profile);
   const studyPlan = getPersonalizedStudyPlan(profile);
+  const primaryMajorBreakdown = getPrimaryMajorBreakdownText(profile);
+  const isDsQuestion = normalized.includes("ds") || normalized.includes("디에스") || normalized.includes("공학컴퓨터") || normalized.includes("프로그래밍기초");
 
-  if (normalized.includes("수업") || normalized.includes("과목") || normalized.includes("로드맵") || normalized.includes("수강")) {
+  if (!isDsQuestion && (normalized.includes("수업") || normalized.includes("과목") || normalized.includes("로드맵") || normalized.includes("수강"))) {
     const courses = studyPlan.courses.length
-      ? studyPlan.courses.map((course, index) => `${index + 1}. ${course.code} ${course.name} (${course.credits}학점) - ${course.reason}`).join("\n")
+      ? studyPlan.courses.map((course, index) => `${index + 1}. ${course.code} ${course.name} (${course.target}, ${course.credits}학점) - ${course.reason}`).join("\n")
       : "현재 저장된 프로필에서는 우선 추천할 미이수 과목이 없습니다.";
-    return `${profile.department} ${profile.admissionYear}학번의 부족 영역과 전공 로드맵을 연결한 수강 후보입니다.\n\n${courses}\n\n실제 전공 인정, 개설 학기, 선수과목은 수강신청 전 GLS 수강편람과 학과 교육과정에서 최종 확인해 주세요.`;
+    const breakdown = primaryMajorBreakdown ? `\n\n제1전공 세부 현황\n${primaryMajorBreakdown}` : "";
+    return `${profile.department} ${profile.admissionYear}학번의 부족 영역과 전공 로드맵을 연결한 수강 후보입니다.${breakdown}\n\n${courses}\n\n전공 과목은 전공코어, 전공심화, 실험실습 중 어디에 해당하는지 함께 확인해서 추천합니다. 실제 전공 인정, 개설 학기, 선수과목은 수강신청 전 GLS 수강편람과 학과 교육과정에서 최종 확인해 주세요.`;
   }
 
   if (normalized.includes("부족") || normalized.includes("뭐해야") || normalized.includes("무엇을")) {
     const summary = actions.length
       ? actions.map((item, index) => `${index + 1}. ${item.title} - ${item.detail}`).join("\n")
       : "현재 입력된 항목은 모두 충족으로 표시됩니다.";
-    return `${profile.name}님의 현재 입력값 기준 우선 확인할 항목입니다.\n\n${summary}\n\n최종 졸업 판정은 학과사무실과 GLS에서 다시 확인해 주세요.`;
+    const breakdown = actions.some((item) => item.id === "primaryMajor") && primaryMajorBreakdown
+      ? `\n\n제1전공 세부 구분\n${primaryMajorBreakdown}`
+      : "";
+    return `${profile.name}님의 현재 입력값 기준 우선 확인할 항목입니다.\n\n${summary}${breakdown}\n\n최종 졸업 판정은 학과사무실과 GLS에서 다시 확인해 주세요.`;
   }
 
   if (normalized.includes("조기졸업")) {
@@ -1468,11 +1606,16 @@ export function getLocalAnswer(question, profile) {
     return `현재 3품 인정 영역 중 ${completed.length}개가 완료로 입력되어 있습니다.\n\n완료: ${completed.join(", ") || "없음"}\n미완료: ${pending.join(", ") || "없음"}\n\n${activities || "현재 입력 기준으로 추가 활동 추천이 필요하지 않습니다."}\n\n졸업을 위해 총 3개 인증이 필요하며, 실제 인정 상태는 챌린지스퀘어에서 확인해야 합니다.`;
   }
 
-  if (normalized.includes("ds") || normalized.includes("디에스") || normalized.includes("공학컴퓨터") || normalized.includes("프로그래밍기초")) {
+  if (isDsQuestion) {
+    const dsPolicy = getDsPolicyText(profile);
+    const dsCourses = profile.courses
+      .filter((course) => (course.requirementIds || []).includes("dsEducation") || (course.badges || []).some((badge) => badge.includes("DS")))
+      .map((course) => `- ${course.code} ${course.name} (${course.credits}학점): ${(course.badges || []).join(", ") || course.area}`)
+      .join("\n");
     if (profile.dsEducation.exception) {
-      return `${profile.department} ${profile.admissionYear}학번에는 학과 지정 DS 과목 예외가 적용됩니다.\n\n- DASF003 공학컴퓨터프로그래밍: 3학점\n- DASF004 프로그래밍기초와실습: 3학점\n- 현재 인정 상태: ${profile.dsEducation.completed}/${profile.dsEducation.required}학점\n\n일반 DS 기본과목명이 아니라 위 지정과목 이수 여부로 판정합니다. 최종 인정은 GLS와 학과 교육과정표에서 확인해 주세요.`;
+      return `${profile.department} ${profile.admissionYear}학번에는 학과 지정 DS 과목 예외가 적용됩니다.\n\n${dsPolicy}\n\n현재 DS 연결 과목\n${dsCourses || "- 아직 연결된 DS 과목이 없습니다."}\n\n현재 인정 상태: ${profile.dsEducation.completed}/${profile.dsEducation.required}학점입니다. 일반 DS 기본과목명이 아니라 학번·계열·학과 지정 과목 이수 여부로 판정합니다. 최종 인정은 GLS와 학과 교육과정표에서 확인해 주세요.`;
     }
-    return `현재 DS 교육과정은 ${profile.dsEducation.completed}/${profile.dsEducation.required}학점으로 입력되어 있습니다. 입학연도와 학과에 따라 지정 과목이 달라질 수 있으므로 최신 교육과정표를 함께 확인해 주세요.`;
+    return `현재 DS 교육과정은 ${profile.dsEducation.completed}/${profile.dsEducation.required}학점으로 입력되어 있습니다.\n\n${dsPolicy}\n\n현재 DS 연결 과목\n${dsCourses || "- 아직 연결된 DS 과목이 없습니다."}\n\n입학연도와 학과에 따라 지정 과목이 달라질 수 있으므로 최신 교육과정표를 함께 확인해 주세요.`;
   }
 
   if (normalized.includes("전공") || normalized.includes("학점")) {
@@ -1480,7 +1623,8 @@ export function getLocalAnswer(question, profile) {
       ? `\n- ${profile.degreeType === "linked_major" ? "연계전공" : profile.degreeType === "convergence_track" ? "융합트랙" : "제2전공"}: ${profile.secondaryMajor.completed}/${profile.secondaryMajor.required}학점`
       : "";
     const candidates = studyPlan.courses.slice(0, 3).map((course) => `${course.code} ${course.name}`).join(", ");
-    return `전공 이수 현황입니다.\n\n- 제1전공: ${profile.primaryMajor.completed}/${profile.primaryMajor.required}학점${secondary}\n- 총 졸업학점: ${profile.totalCredits.completed}/${profile.totalCredits.required}학점\n- 우선 수강 후보: ${candidates || "현재 추천 후보 없음"}\n\n복수전공·연계전공 학생은 각 전공의 졸업평가도 함께 확인해야 합니다.`;
+    const breakdown = primaryMajorBreakdown ? `\n\n제1전공 세부 구분\n${primaryMajorBreakdown}` : "";
+    return `전공 이수 현황입니다.\n\n- 제1전공: ${profile.primaryMajor.completed}/${profile.primaryMajor.required}학점${secondary}\n- 총 졸업학점: ${profile.totalCredits.completed}/${profile.totalCredits.required}학점${breakdown}\n\n- 우선 수강 후보: ${candidates || "현재 추천 후보 없음"}\n\n복수전공·연계전공 학생은 각 전공의 졸업평가도 함께 확인해야 합니다.`;
   }
 
   if (normalized.includes("졸업평가") || normalized.includes("논문") || normalized.includes("시험")) {

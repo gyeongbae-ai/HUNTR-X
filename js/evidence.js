@@ -20,6 +20,12 @@ function courseSourceLabel(course) {
   return course.verified ? `${course.source} · 공식 대조` : course.source;
 }
 
+function renderCourseBadges(course) {
+  return (course.badges || [])
+    .map((badge) => `<span>${escapeHtml(badge)}</span>`)
+    .join("");
+}
+
 function renderRequirementEvidence(item) {
   const evidence = getEvidenceForRequirement(profile, item.id);
   const preview = [
@@ -44,7 +50,7 @@ function renderCourseRows() {
         <tr>
           <td>${escapeHtml(course.term)}</td>
           <td><strong>${escapeHtml(course.code)}</strong></td>
-          <td>${escapeHtml(course.name)}</td>
+          <td>${escapeHtml(course.name)}${course.badges?.length ? `<div class="course-badge-row">${renderCourseBadges(course)}</div>` : ""}</td>
           <td>${course.credits}</td>
           <td><span class="grade-chip">${escapeHtml(course.grade)}</span></td>
           <td><div class="requirement-chip-row">${course.requirementIds.map((id) => `<span>${escapeHtml(requirementLabel[id] || id)}</span>`).join("")}</div></td>

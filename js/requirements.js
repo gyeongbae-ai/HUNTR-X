@@ -48,6 +48,12 @@ function courseSourceLabel(course) {
   return course.verified ? `${course.source} · 공식 대조` : course.source;
 }
 
+function renderCourseBadges(course) {
+  return (course.badges || [])
+    .map((badge) => `<span>${escapeHtml(badge)}</span>`)
+    .join("");
+}
+
 function renderCourseEvidenceGapNotice() {
   const gaps = profile.courseEvidenceGaps || [];
   if (!gaps.length) return "";
@@ -103,7 +109,7 @@ function renderRequirementEvidence(item) {
               <tr>
                 <td>${escapeHtml(course.term)}</td>
                 <td>${escapeHtml(course.code)}</td>
-                <td><strong>${escapeHtml(course.name)}</strong></td>
+                <td><strong>${escapeHtml(course.name)}</strong>${course.badges?.length ? `<div class="course-badge-row">${renderCourseBadges(course)}</div>` : ""}</td>
                 <td>${formatNumber(course.credits)}</td>
                 <td><span class="grade-chip">${escapeHtml(course.grade)}</span></td>
                 <td><span class="source-label">${escapeHtml(courseSourceLabel(course))}</span></td>
@@ -235,7 +241,7 @@ document.querySelector("#pageContent").innerHTML = `
       <div class="evidence-table-wrap">
         <table class="course-table evidence-table">
           <thead><tr><th>상태</th><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>인정요건</th><th>출처</th></tr></thead>
-          <tbody>${profile.courses.map((course, index) => `<tr><td><input type="checkbox" data-course="${index}" ${course.completed ? "checked" : ""} aria-label="${escapeHtml(course.name)} 이수" /></td><td>${escapeHtml(course.term)}</td><td>${escapeHtml(course.code)}</td><td><strong>${escapeHtml(course.name)}</strong><span class="course-area-label">${escapeHtml(course.area)}</span></td><td>${formatNumber(course.credits)}</td><td><span class="grade-chip">${escapeHtml(course.grade)}</span></td><td><div class="requirement-chip-row">${(course.requirementIds || []).filter((id) => id !== "totalCredits").map((id) => `<span>${escapeHtml(requirementLabel(id))}</span>`).join("")}</div></td><td><span class="source-label">${escapeHtml(courseSourceLabel(course))}</span></td></tr>`).join("")}</tbody>
+          <tbody>${profile.courses.map((course, index) => `<tr><td><input type="checkbox" data-course="${index}" ${course.completed ? "checked" : ""} aria-label="${escapeHtml(course.name)} 이수" /></td><td>${escapeHtml(course.term)}</td><td>${escapeHtml(course.code)}</td><td><strong>${escapeHtml(course.name)}</strong><span class="course-area-label">${escapeHtml(course.area)}</span>${course.badges?.length ? `<div class="course-badge-row">${renderCourseBadges(course)}</div>` : ""}</td><td>${formatNumber(course.credits)}</td><td><span class="grade-chip">${escapeHtml(course.grade)}</span></td><td><div class="requirement-chip-row">${(course.requirementIds || []).filter((id) => id !== "totalCredits").map((id) => `<span>${escapeHtml(requirementLabel(id))}</span>`).join("")}</div></td><td><span class="source-label">${escapeHtml(courseSourceLabel(course))}</span></td></tr>`).join("")}</tbody>
         </table>
       </div>
     </section>

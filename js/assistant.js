@@ -58,10 +58,27 @@ const form = document.querySelector("#chatForm");
 const questionInput = document.querySelector("#question");
 const modeBadge = document.querySelector("#aiMode");
 
+function formatAssistantText(text) {
+  return escapeHtml(String(text || ""))
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br />");
+}
+
+function setMessageContent(message, text, role) {
+  const body = document.createElement("div");
+  body.className = "message-body";
+  if (role === "assistant") {
+    body.innerHTML = formatAssistantText(text);
+  } else {
+    body.textContent = text;
+  }
+  message.replaceChildren(body);
+}
+
 function addMessage(text, role, meta = "") {
   const message = document.createElement("div");
   message.className = `message message-${role}`;
-  message.textContent = text;
+  setMessageContent(message, text, role);
   if (meta) {
     const metaNode = document.createElement("span");
     metaNode.className = "message-meta";
@@ -87,7 +104,7 @@ async function ask(question) {
     });
     if (!response.ok) throw new Error("AI API unavailable");
     const data = await response.json();
-    loading.textContent = data.answer;
+    setMessageContent(loading, data.answer, "assistant");
     const meta = document.createElement("span");
     meta.className = "message-meta";
     meta.textContent = "Upstage Solar · 프로필 및 규칙 기반";
@@ -95,7 +112,7 @@ async function ask(question) {
     modeBadge.textContent = "Solar 연결됨";
     modeBadge.className = "badge badge-success";
   } catch {
-    loading.textContent = getLocalAnswer(question, profile);
+    setMessageContent(loading, getLocalAnswer(question, profile), "assistant");
     const meta = document.createElement("span");
     meta.className = "message-meta";
     meta.textContent = "GradQuest 로컬 지식모드";

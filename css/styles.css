@@ -1128,7 +1128,7 @@ textarea::placeholder {
   min-width: 0;
   align-items: center;
   gap: 5px;
-  padding: 5px 7px;
+  padding: 6px 9px 6px 6px;
   color: #7d7485;
   background: #f2eef6;
   border: 1px solid #e1d8e9;
@@ -1146,15 +1146,15 @@ textarea::placeholder {
 
 .poom-chip-icon {
   display: grid;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
   place-items: center;
   color: #948a9e;
   background: #fff;
   border: 1px solid #ded5e7;
   border-radius: 50%;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1;
 }
 
@@ -1566,6 +1566,16 @@ textarea::placeholder {
   padding: 13px 15px;
   border-radius: 0;
   white-space: pre-wrap;
+}
+
+.message-body {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.message-body strong {
+  color: #3d2e47;
+  font-weight: 850;
 }
 
 .message-assistant {
@@ -2559,7 +2569,7 @@ body[data-page="dashboard"] .page-header::after {
 
 .poom-service-card {
   min-width: 0;
-  padding: 15px;
+  padding: 16px 14px;
   border: 1px solid #e5dce9;
   border-top: 3px solid #cdbbd9;
   border-radius: 7px;
@@ -2574,26 +2584,31 @@ body[data-page="dashboard"] .page-header::after {
 }
 
 .poom-service-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
   gap: 8px;
 }
 
 .poom-service-icon {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
   place-items: center;
   color: #fff;
   background: linear-gradient(145deg, #8960b3, #d778b4);
   border-radius: 50%;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(137, 96, 179, 0.16);
 }
 
 .compact-check {
   display: inline-flex;
   align-items: center;
+  justify-self: end;
   gap: 6px;
   color: #6f6277;
   font-size: 11px;
@@ -2610,7 +2625,7 @@ body[data-page="dashboard"] .page-header::after {
   accent-color: #7951a2;
 }
 
-.poom-service-card h3 { margin: 13px 0 3px; }
+.poom-service-card h3 { margin: 16px 0 3px; line-height: 1.25; }
 .poom-service-state { min-height: 36px; margin: 0 0 12px; color: var(--muted); font-size: 11px; }
 .linked-activity-list, .poom-recommendation { min-height: 70px; margin-bottom: 10px; padding: 10px; background: #faf6fc; border: 1px solid #eee5f2; }
 .linked-activity-list div + div { margin-top: 8px; padding-top: 8px; border-top: 1px solid #e9deee; }
@@ -3187,6 +3202,26 @@ body[data-page="dashboard"] .page-header::after {
 .requirement-chip-row span {
   color: #4c5f8f;
   background: #e9eefc;
+}
+
+.course-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.course-badge-row span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 21px;
+  padding: 2px 7px;
+  color: #80506f;
+  background: #fff2f8;
+  border: 1px solid #efd3e4;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 750;
 }
 
 .course-area-label {
