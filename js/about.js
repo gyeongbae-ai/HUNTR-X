@@ -24,12 +24,26 @@ document.querySelector("#pageContent").innerHTML = `
       </div>
     </section>
 
-    <section class="panel">
+    <section class="panel team-panel">
       <div class="panel-header"><div><h2>Team 헌트릭스💖</h2><p>각자 주축을 맡되 데이터 검증과 데모 완성은 함께 책임집니다.</p></div></div>
       <div class="team-grid">
-        <article class="team-member team-member-pink"><span class="avatar">유</span><span class="team-role">Frontend & AI</span><h3>유경배</h3><p>Frontend · Upstage API<br />웹사이트 구현과 AI 기능 연결</p></article>
         <article class="team-member team-member-purple"><span class="avatar">구</span><span class="team-role">Data & Schema</span><h3>구은진</h3><p>Graduation Rules · Schema<br />학사자료 구조화와 판정 규칙 검증</p></article>
         <article class="team-member team-member-lilac"><span class="avatar">양</span><span class="team-role">Product & Pitch</span><h3>양성경</h3><p>Product · Storytelling<br />사용자 경험, 발표자료와 데모 스토리</p></article>
+        <article class="team-member team-member-pink team-member-profile">
+          <div class="team-profile-head">
+            <img class="team-photo" src="pic/yoo.jpg" alt="유경배 프로필 사진" />
+            <div>
+              <span class="team-role">Frontend & AI</span>
+              <h3>유경배</h3>
+            </div>
+          </div>
+          <p class="member-meta">
+            성균관대학교 화학공학부 24학번<br />
+            <a href="mailto:gyeongbae@g.skku.edu">Email: gyeongbae@g.skku.edu</a><br />
+            <a href="https://www.instagram.com/yo0o.baelly?igsh=MTg5anhnNnVlZXU4Nw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Insta: "@yo0o.baelly"</a>
+          </p>
+          <p class="member-work">Frontend · Upstage API<br />웹사이트 구현과 AI 기능 연결</p>
+        </article>
       </div>
     </section>
 
