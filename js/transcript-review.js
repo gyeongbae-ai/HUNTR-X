@@ -148,6 +148,10 @@ if (!parsedDocument?.profileDraft) {
         <div><strong>05</strong><span>졸업요건 연결</span></div>
       </div>
 
+      <div class="alert" style="margin-bottom:16px">
+        전체를 다시 입력할 필요는 없습니다. Document Parse가 읽은 구조를 바탕으로 과목명, 학점, 인정요건처럼 애매하거나 중요한 칸만 확인해 주세요.
+      </div>
+
       <div class="document-review-grid evidence-review-grid">
         <section class="panel document-source-panel">
           <div class="panel-header"><div><h2>인식한 원본</h2><p>${escapeHtml(parsedDocument.fileName)} · ${new Date(parsedDocument.parsedAt).toLocaleString("ko-KR")}</p></div></div>
@@ -249,7 +253,11 @@ if (!parsedDocument?.profileDraft) {
       importedAt: new Date().toISOString(),
       itemCount: isGls ? collectCourses().length : collectPrograms().length,
     });
-    await saveProfile(profile);
+    const saved = await saveProfile(profile);
+    if (!saved) {
+      showToast("클라우드 저장에 실패했습니다. 검토 결과를 유지한 채 다시 시도해 주세요.");
+      return;
+    }
     localStorage.removeItem(STORAGE_KEYS.parsedDocument);
     showToast("검토한 이수 내역을 졸업요건에 연결했습니다.");
     window.setTimeout(() => window.location.assign("requirements.html#evidence"), 400);

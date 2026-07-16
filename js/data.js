@@ -929,6 +929,59 @@ export function formatNumber(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
 }
 
+export function getProfileMetadata(profile) {
+  ensureEvidenceData(profile);
+  const evidenceTypes = [...new Set((profile.evidenceImports || []).map((item) => item.type))];
+  const latestEvidenceAt = (profile.evidenceImports || [])
+    .map((item) => item.importedAt)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+
+  return {
+    admissionYear: profile.admissionYear,
+    campus: profile.campus,
+    department: profile.department,
+    degreeType: profile.degreeType,
+    degreeTypeLabel: profile.degreeTypeLabel,
+    secondaryProgram: profile.secondaryProgram,
+    evidenceTypes,
+    latestEvidenceAt,
+    documentRefreshPlan: "학사요건 문서는 학년도 단위로 재등록하고, 유지되는 규칙은 보존하며 변경된 규칙만 갱신합니다.",
+  };
+}
+
+export function getQuestionMetadata(question, profile) {
+  const text = String(question || "");
+  const years = [...new Set(text.match(/20\d{2}/g) || [])].map(Number);
+  const documentTypes = [
+    text.includes("성적") || text.toLowerCase().includes("gls") ? "gls" : null,
+    text.includes("비교과") || text.includes("3품") || text.includes("챌린지") ? "challenge" : null,
+    text.includes("로드맵") || text.includes("교육과정") || text.includes("졸업요건") ? "requirements" : null,
+  ].filter(Boolean);
+
+  return {
+    requestedYears: years.length ? years : [profile.admissionYear],
+    requestedDepartment: text.includes(profile.department) ? profile.department : profile.department,
+    requestedDocumentTypes: documentTypes.length ? documentTypes : ["requirements"],
+  };
+}
+
+export function getAssistantMetadataContext(question, profile) {
+  const profileMetadata = getProfileMetadata(profile);
+  const questionMetadata = getQuestionMetadata(question, profile);
+  const matchedSources = OFFICIAL_SOURCES.slice(0, 5).map((source) => ({
+    label: source.label,
+    url: source.url,
+  }));
+
+  return {
+    profileMetadata,
+    questionMetadata,
+    matchedSources,
+  };
+}
+
 export function getLocalAnswer(question, profile) {
   const normalized = question.replace(/\s/g, "").toLowerCase();
   const actions = getActionItems(profile);

@@ -37,16 +37,22 @@ export function getProfile() {
   }
 }
 
-export function saveProfile(profile) {
+export async function saveProfile(profile) {
   const normalized = ensureEvidenceData(profile);
   localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalized));
   window.dispatchEvent(new CustomEvent("gradquest:profile-updated", { detail: normalized }));
   if (getSession()?.cloud) {
-    return setCloudValue("profile", normalized).catch((error) => {
+    try {
+      await setCloudValue("profile", normalized);
+      window.dispatchEvent(new CustomEvent("gradquest:profile-synced", { detail: normalized }));
+      return true;
+    } catch (error) {
       console.warn("Failed to sync profile to cloud storage.", error);
-    });
+      window.dispatchEvent(new CustomEvent("gradquest:profile-sync-failed", { detail: { error } }));
+      return false;
+    }
   }
-  return Promise.resolve();
+  return true;
 }
 
 export async function registerUser(payload) {

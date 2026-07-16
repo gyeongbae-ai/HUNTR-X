@@ -133,6 +133,6 @@ document.querySelector("#saveEarly").addEventListener("click", async () => {
   profile.gpa = Number(inputs.gpa.value);
   profile.totalCredits.completed = Number(inputs.credits.value);
   profile.earlyGraduation = true;
-  await saveProfile(profile);
-  showToast("조기졸업 진단값을 저장했습니다.");
+  const saved = await saveProfile(profile);
+  showToast(saved ? "조기졸업 진단값을 저장했습니다." : "클라우드 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
 });

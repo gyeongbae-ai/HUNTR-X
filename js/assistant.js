@@ -1,5 +1,5 @@
 import { escapeHtml, initAppShell } from "./common.js";
-import { getLocalAnswer, OFFICIAL_SOURCES } from "./data.js";
+import { getAssistantMetadataContext, getLocalAnswer, OFFICIAL_SOURCES } from "./data.js";
 
 const profile = initAppShell({ page: "assistant", title: "AI 학사 도우미" });
 if (!profile) throw new Error("Profile required");
@@ -14,6 +14,7 @@ const suggestions = [
   "미완료 3품은 어떤 활동으로 채울 수 있어?",
   "졸업평가에서 뭘 해야 해?",
 ];
+const initialMetadata = getAssistantMetadataContext("", profile);
 
 document.querySelector("#pageContent").innerHTML = `
   <div class="page-content">
@@ -30,6 +31,11 @@ document.querySelector("#pageContent").innerHTML = `
       <aside class="assistant-side">
         <h3>추천 질문</h3>
         <p class="field-hint">현재 프로필을 기준으로 답변해요.</p>
+        <div class="metadata-strip">
+          <span>${escapeHtml(initialMetadata.profileMetadata.admissionYear)}학번</span>
+          <span>${escapeHtml(initialMetadata.profileMetadata.department)}</span>
+          <span>${escapeHtml(initialMetadata.profileMetadata.degreeTypeLabel)}</span>
+        </div>
         ${suggestions.map((question) => `<button class="question-chip" type="button" data-question="${escapeHtml(question)}">${escapeHtml(question)}</button>`).join("")}
         <div class="alert alert-warning" style="margin-top:18px">AI 답변은 참고용입니다. 수치와 마감일은 학교 공식 공지를 확인하세요.</div>
       </aside>
@@ -68,6 +74,7 @@ function addMessage(text, role, meta = "") {
 }
 
 async function ask(question) {
+  const metadataContext = getAssistantMetadataContext(question, profile);
   addMessage(question, "user", "나");
   const loading = addMessage("답변을 정리하고 있어요...", "assistant");
   questionInput.value = "";
@@ -76,7 +83,7 @@ async function ask(question) {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, profile }),
+      body: JSON.stringify({ question, profile, metadataContext }),
     });
     if (!response.ok) throw new Error("AI API unavailable");
     const data = await response.json();

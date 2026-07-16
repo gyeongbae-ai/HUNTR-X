@@ -76,6 +76,21 @@ document.querySelector("#pageContent").innerHTML = `
       <a class="btn btn-secondary" href="requirements.html#evidence">요건별 인정내역 보기</a>
     </div>
 
+    <div class="review-principle-strip">
+      <div>
+        <strong>확인은 필요한 항목만</strong>
+        <span>문서는 구조화해서 읽고, 과목명·학점·인정요건처럼 애매하거나 중요한 값만 사용자가 고릅니다.</span>
+      </div>
+      <div>
+        <strong>저장되는 내용</strong>
+        <span>확정한 과목, 비교과, 요건 연결, import 기록은 계정 프로필에 함께 저장됩니다.</span>
+      </div>
+      <div>
+        <strong>최신성 관리</strong>
+        <span>학년도별 문서 기준을 유지하고 변경된 규칙만 갱신하는 방식으로 관리합니다.</span>
+      </div>
+    </div>
+
     <div class="evidence-summary-grid">
       <div><span>이수 교과목</span><strong>${completedCourses.length}개</strong><small>성적까지 저장됨</small></div>
       <div><span>연결된 교과 학점</span><strong>${recordedCredits}학점</strong><small>현재 등록된 내역 기준</small></div>

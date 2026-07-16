@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(503).json({ error: "UPSTAGE_API_KEY is not configured" });
   }
 
-  const { question, profile } = req.body || {};
+  const { question, profile, metadataContext } = req.body || {};
   if (!question || !profile) {
     return res.status(400).json({ error: "question and profile are required" });
   }
@@ -36,6 +36,14 @@ export default async function handler(req, res) {
     graduationEvaluation: profile.graduationEvaluation,
     notes: profile.notes,
   };
+  const retrievalContext = metadataContext || {
+    profileMetadata: {
+      admissionYear: profile.admissionYear,
+      department: profile.department,
+      degreeType: profile.degreeTypeLabel,
+      secondaryProgram: profile.secondaryProgram,
+    },
+  };
 
   const systemPrompt = `당신은 성균관대학교 졸업요건 안내 서비스 GradQuest의 학사 도우미입니다.
 아래 학생 프로필과 구조화된 요건 데이터만 기준으로 답변하세요.
@@ -44,7 +52,12 @@ export default async function handler(req, res) {
 마지막에 '최종 판정은 GLS와 학과사무실에서 확인하세요.'라는 안내를 포함하세요.
 
 학생 데이터:
-${JSON.stringify(profileContext, null, 2)}`;
+${JSON.stringify(profileContext, null, 2)}
+
+질문/문서 메타데이터:
+${JSON.stringify(retrievalContext, null, 2)}
+
+메타데이터의 입학연도, 학과, 이수형태, 문서종류를 먼저 맞춘 뒤 답변하세요. 맞는 근거가 부족하면 추측하지 말고 확인 필요라고 표시하세요.`;
 
   try {
     const response = await fetch(UPSTAGE_CHAT_URL, {

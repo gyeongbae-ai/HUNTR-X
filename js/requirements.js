@@ -329,6 +329,6 @@ document.querySelector("#saveRequirements").addEventListener("click", async () =
     ...course,
     completed: document.querySelector(`[data-course="${index}"]`).checked,
   }));
-  await saveProfile(profile);
-  showToast("졸업요건 입력값을 저장했습니다.");
+  const saved = await saveProfile(profile);
+  showToast(saved ? "졸업요건 입력값을 저장했습니다." : "클라우드 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
 });

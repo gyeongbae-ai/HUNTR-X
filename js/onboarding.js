@@ -162,7 +162,11 @@ toggleSecondary();
 
 document.querySelectorAll("[data-persona]").forEach((button) => {
   button.addEventListener("click", async () => {
-    await saveProfile(clonePersona(button.dataset.persona));
+    const saved = await saveProfile(clonePersona(button.dataset.persona));
+    if (!saved) {
+      showToast("클라우드 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
     showToast("데모 프로필을 불러왔습니다.");
     window.setTimeout(() => window.location.assign("dashboard.html"), 350);
   });
@@ -171,7 +175,11 @@ document.querySelectorAll("[data-persona]").forEach((button) => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const profile = buildProfileFromForm();
-  await saveProfile(profile);
+  const saved = await saveProfile(profile);
+  if (!saved) {
+    showToast("클라우드 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    return;
+  }
   window.location.href = "requirements.html";
 });
 
