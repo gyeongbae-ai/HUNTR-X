@@ -308,7 +308,7 @@ document.querySelectorAll(".editable-row input").forEach((input) => {
   });
 });
 
-document.querySelector("#saveRequirements").addEventListener("click", () => {
+document.querySelector("#saveRequirements").addEventListener("click", async () => {
   document.querySelectorAll(".editable-row").forEach((row) => {
     const id = row.dataset.itemId;
     if (!profile[id]) return;
@@ -329,6 +329,6 @@ document.querySelector("#saveRequirements").addEventListener("click", () => {
     ...course,
     completed: document.querySelector(`[data-course="${index}"]`).checked,
   }));
-  saveProfile(profile);
+  await saveProfile(profile);
   showToast("졸업요건 입력값을 저장했습니다.");
 });

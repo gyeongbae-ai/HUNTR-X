@@ -1,4 +1,11 @@
 import { clonePersona, ensureEvidenceData, STORAGE_KEYS } from "./data.js";
+import {
+  getCloudValue,
+  signInCloudUser,
+  signOutCloudUser,
+  signUpCloudUser,
+  setCloudValue,
+} from "./cloud-store.js";
 
 export function getUsers() {
   try {
@@ -34,9 +41,30 @@ export function saveProfile(profile) {
   const normalized = ensureEvidenceData(profile);
   localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalized));
   window.dispatchEvent(new CustomEvent("gradquest:profile-updated", { detail: normalized }));
+  if (getSession()?.cloud) {
+    return setCloudValue("profile", normalized).catch((error) => {
+      console.warn("Failed to sync profile to cloud storage.", error);
+    });
+  }
+  return Promise.resolve();
 }
 
-export function registerUser(payload) {
+export async function registerUser(payload) {
+  const cloud = await signUpCloudUser(payload);
+  if (cloud) {
+    localStorage.setItem(
+      STORAGE_KEYS.session,
+      JSON.stringify({
+        studentNumber: payload.studentNumber,
+        name: payload.name,
+        email: cloud.email,
+        cloud: true,
+        userId: cloud.user?.id,
+      }),
+    );
+    return payload;
+  }
+
   const users = getUsers();
   if (users.some((user) => user.studentNumber === payload.studentNumber)) {
     throw new Error("이미 가입된 학번입니다.");
@@ -50,7 +78,37 @@ export function registerUser(payload) {
   );
 }
 
-export function loginUser(studentNumber, password) {
+export async function loginUser(studentNumber, password) {
+  const cloud = await signInCloudUser(studentNumber, password);
+  if (cloud) {
+    const account = await getCloudValue("account").catch(() => null);
+    const profile = await getCloudValue("profile").catch(() => null);
+    const normalizedProfile = profile ? ensureEvidenceData(profile) : null;
+    const metadata = cloud.user?.user_metadata || {};
+    const session = {
+      studentNumber:
+        normalizedProfile?.studentNumber ||
+        account?.studentNumber ||
+        metadata.student_number ||
+        String(studentNumber).trim(),
+      name: normalizedProfile?.name || account?.name || metadata.name || "GradQuest",
+      email: cloud.email,
+      cloud: true,
+      userId: cloud.user?.id,
+    };
+
+    localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(session));
+    if (normalizedProfile) {
+      localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalizedProfile));
+    } else {
+      const localProfile = getProfile();
+      if (localProfile?.studentNumber === session.studentNumber) {
+        await setCloudValue("profile", localProfile).catch(() => null);
+      }
+    }
+    return { ...account, ...session };
+  }
+
   const user = getUsers().find(
     (candidate) => candidate.studentNumber === studentNumber && candidate.password === password,
   );
@@ -74,6 +132,7 @@ export function loginDemo(personaKey) {
 }
 
 export function logout() {
+  signOutCloudUser().catch(() => null);
   localStorage.removeItem(STORAGE_KEYS.session);
   localStorage.removeItem(STORAGE_KEYS.profile);
   localStorage.removeItem(STORAGE_KEYS.parsedDocument);

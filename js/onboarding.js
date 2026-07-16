@@ -161,17 +161,17 @@ document.querySelector("#earlyGraduation").value = String(Boolean(existing?.earl
 toggleSecondary();
 
 document.querySelectorAll("[data-persona]").forEach((button) => {
-  button.addEventListener("click", () => {
-    saveProfile(clonePersona(button.dataset.persona));
+  button.addEventListener("click", async () => {
+    await saveProfile(clonePersona(button.dataset.persona));
     showToast("데모 프로필을 불러왔습니다.");
     window.setTimeout(() => window.location.assign("dashboard.html"), 350);
   });
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const profile = buildProfileFromForm();
-  saveProfile(profile);
+  await saveProfile(profile);
   window.location.href = "requirements.html";
 });
 

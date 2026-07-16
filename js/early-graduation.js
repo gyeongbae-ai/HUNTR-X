@@ -128,11 +128,11 @@ function renderResult() {
 Object.values(inputs).forEach((input) => input.addEventListener("input", renderResult));
 renderResult();
 
-document.querySelector("#saveEarly").addEventListener("click", () => {
+document.querySelector("#saveEarly").addEventListener("click", async () => {
   profile.currentSemester = Number(inputs.semester.value);
   profile.gpa = Number(inputs.gpa.value);
   profile.totalCredits.completed = Number(inputs.credits.value);
   profile.earlyGraduation = true;
-  saveProfile(profile);
+  await saveProfile(profile);
   showToast("조기졸업 진단값을 저장했습니다.");
 });

@@ -229,7 +229,7 @@ if (!parsedDocument?.profileDraft) {
     });
   }
 
-  document.querySelector("#saveEvidence").addEventListener("click", () => {
+  document.querySelector("#saveEvidence").addEventListener("click", async () => {
     if (isGls) {
       const courses = collectCourses();
       profile.courses = mergeByKey(profile.courses, courses, "code");
@@ -249,7 +249,7 @@ if (!parsedDocument?.profileDraft) {
       importedAt: new Date().toISOString(),
       itemCount: isGls ? collectCourses().length : collectPrograms().length,
     });
-    saveProfile(profile);
+    await saveProfile(profile);
     localStorage.removeItem(STORAGE_KEYS.parsedDocument);
     showToast("검토한 이수 내역을 졸업요건에 연결했습니다.");
     window.setTimeout(() => window.location.assign("requirements.html#evidence"), 400);
