@@ -16,6 +16,10 @@ const completedCourses = profile.courses.filter((course) => course.completed);
 const recordedCredits = completedCourses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
 const requirementLabel = Object.fromEntries(REQUIREMENT_OPTIONS.map((item) => [item.id, item.label]));
 
+function courseSourceLabel(course) {
+  return course.verified ? `${course.source} · 공식 대조` : course.source;
+}
+
 function renderRequirementEvidence(item) {
   const evidence = getEvidenceForRequirement(profile, item.id);
   const preview = [
@@ -44,7 +48,7 @@ function renderCourseRows() {
           <td>${course.credits}</td>
           <td><span class="grade-chip">${escapeHtml(course.grade)}</span></td>
           <td><div class="requirement-chip-row">${course.requirementIds.map((id) => `<span>${escapeHtml(requirementLabel[id] || id)}</span>`).join("")}</div></td>
-          <td>${escapeHtml(course.source)}</td>
+          <td>${escapeHtml(courseSourceLabel(course))}</td>
         </tr>`,
     )
     .join("");

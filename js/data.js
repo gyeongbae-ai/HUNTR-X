@@ -150,7 +150,8 @@ export const PERSONAS = {
       { code: "EAM4019", name: "전자 패키지공학", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECH2032", name: "화공열및물질전달", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECH4017", name: "플라즈마공정및응용", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
-      { code: "ASE3004", name: "차세대반도체종합설계", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
+      { code: "ASE3002", name: "반도체제품개론", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
+      { code: "ASE3003", name: "진공및플라즈마", area: "반도체소재부품장비패키징 융합트랙", credits: 3, completed: false, source: "반도체특성화대학지원사업단 교과목 구성", requirementIds: ["totalCredits", "secondaryMajor"] },
     ],
     notes: [
       "ABEEK 이수자는 MSC 21학점 기준을 별도로 확인해야 합니다.",
@@ -337,38 +338,15 @@ export const PERSONAS = {
       { code: "GEDB002", name: "과학기술과사회", area: "균형교양", credits: 3, completed: true, requirementIds: ["totalCredits", "balancedGeneral"] },
       { code: "DASF003", name: "공학컴퓨터프로그래밍", area: "DS 학과 지정", credits: 3, completed: true, requirementIds: ["totalCredits", "dsEducation"] },
       { code: "DASF004", name: "프로그래밍기초와실습", area: "DS 학과 지정", credits: 3, completed: true, requirementIds: ["totalCredits", "dsEducation"] },
-      { code: "SWE1001", name: "소프트웨어학개론", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE1002", name: "데이터구조", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE2001", name: "알고리즘", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE2002", name: "컴퓨터구조", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE2003", name: "프로그래밍언어", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE2004", name: "운영체제", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE2005", name: "컴퓨터네트워크", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE2006", name: "소프트웨어공학", area: "전공코어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE3001", name: "시스템프로그래밍", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE3002", name: "컴파일러", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
       { code: "SWE3003", name: "데이터베이스개론", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE3004", name: "인간컴퓨터상호작용", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE3005", name: "소프트웨어테스팅", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE3006", name: "오픈소스소프트웨어실습", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
+      { code: "SWE3032", name: "인공지능프로젝트", area: "전공심화", credits: 2, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
+      { code: "SWE3033", name: "데이터베이스프로젝트", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
       { code: "SWE3011", name: "인공지능개론", area: "전공국제어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor", "internationalTotal", "internationalMajor"] },
       { code: "SWE3050", name: "기계학습원론", area: "전공국제어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor", "internationalTotal", "internationalMajor"] },
       { code: "SWE3051", name: "컴퓨터비전개론", area: "전공국제어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor", "internationalTotal", "internationalMajor"] },
       { code: "SWE3052", name: "심층신경망개론", area: "전공국제어", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor", "internationalTotal", "internationalMajor"] },
-      { code: "SWE4001", name: "소프트웨어종합설계1", area: "캡스톤", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "SWE4002", name: "소프트웨어종합설계2", area: "캡스톤", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
-      { code: "GEDL001", name: "Academic English", area: "국제어교양", credits: 3, completed: true, requirementIds: ["totalCredits", "internationalTotal"] },
-      { code: "GEDL002", name: "Global Communication", area: "국제어교양", credits: 3, completed: true, requirementIds: ["totalCredits", "internationalTotal"] },
-      { code: "FREE001", name: "확률과통계", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE002", name: "선형대수학", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE003", name: "이산수학", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE004", name: "기술창업론", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE005", name: "산업보안입문", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE006", name: "정보보호개론", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE007", name: "UX디자인기초", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "FREE008", name: "웹프로그래밍실습", area: "일반선택", credits: 3, completed: true, requirementIds: ["totalCredits"] },
-      { code: "SWE3032", name: "인공지능프로젝트", area: "일반선택", credits: 2, completed: true, requirementIds: ["totalCredits"] },
-      { code: "SWE4991", name: "인턴십현장실습", area: "졸업평가", credits: 0, completed: false, requirementIds: ["graduationEvaluation"] },
+      { code: "SWE2027", name: "소프트웨어실무프로젝트", area: "전공심화", credits: 3, completed: false, requirementIds: ["totalCredits", "primaryMajor"] },
+      { code: "SWE2029", name: "소프트웨어전공탐색", area: "전공심화", credits: 3, completed: false, requirementIds: ["totalCredits", "primaryMajor"] },
     ],
     notes: [
       "2020학번 소프트웨어학과는 일반 DS 기본과목 대신 DASF003·DASF004를 학과 지정 DS 과목으로 적용합니다.",
@@ -451,6 +429,73 @@ const requirementAreaLabels = {
   internationalMajor: "전공 국제어수업",
 };
 
+const officialCourseCatalog = {
+  SCM3001: { name: "반도체종합설비기술", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  SSE2018: { name: "반도체소자", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  SSE3036: { name: "반도체공정", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EAM2057: { name: "신소재공학 개론1", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EAM2058: { name: "신소재공학 개론2", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EAM3003: { name: "상변태학", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EAM4019: { name: "전자 패키지공학", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ECH2019: { name: "공업유기화학1", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ECH2032: { name: "화공열및물질전달", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ECH3061: { name: "반도체화학공정", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ECH4017: { name: "플라즈마공정및응용", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EME2007: { name: "열역학", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EME2008: { name: "유체역학", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EME2012: { name: "고체역학", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  EME4908: { name: "박막공정및물성", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  SNT4013: { name: "나노물성 측정론", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ENA3030: { name: "나노전달현상개론", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  SEE7001: { name: "반도체공정및장비기술", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ASE3002: { name: "반도체제품개론", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  ASE3003: { name: "진공및플라즈마", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
+  DASF003: { name: "공학컴퓨터프로그래밍", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  DASF004: { name: "프로그래밍기초와실습", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  DASF008: { name: "데이터분석과AI기초", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  ESW4011: { name: "AI를활용한소프트웨어보안", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  ESW4017: { name: "디지털헬스케어보안세미나", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  ESW4024: { name: "추천시스템개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  ESW4025: { name: "인공지능윤리", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  ESW4028: { name: "생성형인공지능특론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE2027: { name: "소프트웨어실무프로젝트", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE2029: { name: "소프트웨어전공탐색", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3003: { name: "데이터베이스개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3032: { name: "인공지능프로젝트", credits: 2, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3033: { name: "데이터베이스프로젝트", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3051: { name: "컴퓨터비전개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  ISW2001: { name: "기계학습수학", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  AAI2009: { name: "인공지능개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  AAI2015: { name: "자료구조및알고리즘개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  AAI3006: { name: "기계학습", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3011: { name: "인공지능개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3050: { name: "기계학습원론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  SWE3052: { name: "심층신경망개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+};
+
+function normalizeCourseCode(code) {
+  return String(code || "").trim().toUpperCase();
+}
+
+function isSyntheticCourse(course) {
+  const code = normalizeCourseCode(course?.code);
+  return /^GLS-/.test(code) || /^FREE\d+/.test(code);
+}
+
+function normalizeOfficialCourse(course) {
+  const code = normalizeCourseCode(course.code);
+  const official = officialCourseCatalog[code];
+  if (!official) return { ...course, code };
+  return {
+    ...course,
+    code,
+    name: official.name,
+    credits: official.credits,
+    source: official.source,
+    verified: true,
+  };
+}
+
 function getRequirementEvidenceCredits(profile, requirementId) {
   return profile.courses
     .filter((course) => course.completed && (course.requirementIds || []).includes(requirementId))
@@ -484,6 +529,7 @@ function makeSupplementalCourses(profile, requirementId, missingCredits) {
 }
 
 function supplementCourseEvidence(profile) {
+  const gaps = [];
   const requirementIds = [
     "coreGeneral",
     "balancedGeneral",
@@ -499,20 +545,26 @@ function supplementCourseEvidence(profile) {
     if (!target) return;
     const current = getRequirementEvidenceCredits(profile, id);
     const missing = Math.max(0, target - current);
-    if (missing > 0) profile.courses.push(...makeSupplementalCourses(profile, id, missing));
+    if (missing > 0) {
+      gaps.push({
+        requirementId: id,
+        label: requirementAreaLabels[id] || id,
+        missingCredits: missing,
+      });
+    }
   });
 
   const totalTarget = Number(profile.totalCredits?.completed || 0);
   const totalCurrent = getRequirementEvidenceCredits(profile, "totalCredits");
   const totalMissing = Math.max(0, totalTarget - totalCurrent);
   if (totalMissing > 0) {
-    profile.courses.push(...makeSupplementalCourses(profile, "totalCredits", totalMissing).map((course) => ({
-      ...course,
-      name: `일반선택 이수과목 ${course.name.split("-").pop() || ""}`.trim(),
-      area: "일반선택",
-      requirementIds: ["totalCredits"],
-    })));
+    gaps.push({
+      requirementId: "totalCredits",
+      label: "총 졸업학점",
+      missingCredits: totalMissing,
+    });
   }
+  profile.courseEvidenceGaps = gaps;
 }
 
 function getSampleCourseTerm(profile, index) {
@@ -569,14 +621,16 @@ export function ensureEvidenceData(profile) {
     profile.courses = JSON.parse(JSON.stringify(PERSONAS.softwareEarly.courses));
   }
   const grades = ["A+", "A0", "B+", "A+", "B0", "A0", "B+", "A0"];
-  profile.courses = (profile.courses || []).map((course, index) => ({
-    ...course,
-    id: course.id || `GLS-${profile.studentNumber}-${course.code || index}`,
-    term: isTermInDisplayRange(profile, course.term) ? course.term : getSampleCourseTerm(profile, index),
-    grade: course.grade || (course.completed ? grades[index % grades.length] : "예정"),
-    source: course.source || "GLS 샘플",
-    requirementIds: course.requirementIds || inferCourseRequirements(course),
-  }));
+  profile.courses = (profile.courses || [])
+    .filter((course) => !isSyntheticCourse(course))
+    .map((course, index) => normalizeOfficialCourse({
+      ...course,
+      id: course.id || `GLS-${profile.studentNumber}-${course.code || index}`,
+      term: isTermInDisplayRange(profile, course.term) ? course.term : getSampleCourseTerm(profile, index),
+      grade: course.grade || (course.completed ? grades[index % grades.length] : "예정"),
+      source: course.source || "GLS 등록 과목",
+      requirementIds: course.requirementIds || inferCourseRequirements(course),
+    }));
   supplementCourseEvidence(profile);
   profile.nonCurricular = Array.isArray(profile.nonCurricular) ? profile.nonCurricular : buildPoomEvidence(profile);
   profile.evidenceImports = Array.isArray(profile.evidenceImports)

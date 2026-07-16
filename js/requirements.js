@@ -44,6 +44,24 @@ function requirementLabel(id) {
   return REQUIREMENT_OPTIONS.find((item) => item.id === id)?.label || id;
 }
 
+function courseSourceLabel(course) {
+  return course.verified ? `${course.source} · 공식 대조` : course.source;
+}
+
+function renderCourseEvidenceGapNotice() {
+  const gaps = profile.courseEvidenceGaps || [];
+  if (!gaps.length) return "";
+  const labels = gaps
+    .slice(0, 4)
+    .map((gap) => `${gap.label} ${formatNumber(gap.missingCredits)}학점`)
+    .join(" · ");
+  return `
+    <div class="alert alert-warning" style="margin-bottom:14px">
+      총 이수학점 요약값과 세부 교과목 합계가 아직 완전히 일치하지 않습니다. 임의 과목을 생성하지 않고, 원본 GLS 성적표에서 확인 가능한 과목만 표시합니다.
+      추가 확인 필요: ${escapeHtml(labels)}${gaps.length > 4 ? " 외" : ""}
+    </div>`;
+}
+
 function renderEditableRows() {
   return getRequirementItems(profile)
     .filter((item) => editableIds.has(item.id))
@@ -88,7 +106,7 @@ function renderRequirementEvidence(item) {
                 <td><strong>${escapeHtml(course.name)}</strong></td>
                 <td>${formatNumber(course.credits)}</td>
                 <td><span class="grade-chip">${escapeHtml(course.grade)}</span></td>
-                <td><span class="source-label">${escapeHtml(course.source)}</span></td>
+                <td><span class="source-label">${escapeHtml(courseSourceLabel(course))}</span></td>
               </tr>`).join("")}</tbody>
           </table>
         </div>` : ""}
@@ -213,10 +231,11 @@ document.querySelector("#pageContent").innerHTML = `
 
     <section class="panel tab-panel hidden" id="tab-courses">
       <div class="panel-header"><div><h2>전체 교과목·성적</h2><p>GLS에서 등록한 교과목과 각 과목이 인정되는 졸업요건을 함께 확인합니다.</p></div><a class="text-link" href="evidence.html">성적표 다시 등록</a></div>
+      ${renderCourseEvidenceGapNotice()}
       <div class="evidence-table-wrap">
         <table class="course-table evidence-table">
           <thead><tr><th>상태</th><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>인정요건</th><th>출처</th></tr></thead>
-          <tbody>${profile.courses.map((course, index) => `<tr><td><input type="checkbox" data-course="${index}" ${course.completed ? "checked" : ""} aria-label="${escapeHtml(course.name)} 이수" /></td><td>${escapeHtml(course.term)}</td><td>${escapeHtml(course.code)}</td><td><strong>${escapeHtml(course.name)}</strong><span class="course-area-label">${escapeHtml(course.area)}</span></td><td>${formatNumber(course.credits)}</td><td><span class="grade-chip">${escapeHtml(course.grade)}</span></td><td><div class="requirement-chip-row">${(course.requirementIds || []).filter((id) => id !== "totalCredits").map((id) => `<span>${escapeHtml(requirementLabel(id))}</span>`).join("")}</div></td><td><span class="source-label">${escapeHtml(course.source)}</span></td></tr>`).join("")}</tbody>
+          <tbody>${profile.courses.map((course, index) => `<tr><td><input type="checkbox" data-course="${index}" ${course.completed ? "checked" : ""} aria-label="${escapeHtml(course.name)} 이수" /></td><td>${escapeHtml(course.term)}</td><td>${escapeHtml(course.code)}</td><td><strong>${escapeHtml(course.name)}</strong><span class="course-area-label">${escapeHtml(course.area)}</span></td><td>${formatNumber(course.credits)}</td><td><span class="grade-chip">${escapeHtml(course.grade)}</span></td><td><div class="requirement-chip-row">${(course.requirementIds || []).filter((id) => id !== "totalCredits").map((id) => `<span>${escapeHtml(requirementLabel(id))}</span>`).join("")}</div></td><td><span class="source-label">${escapeHtml(courseSourceLabel(course))}</span></td></tr>`).join("")}</tbody>
         </table>
       </div>
     </section>
