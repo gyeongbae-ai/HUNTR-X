@@ -38,6 +38,6 @@ In Supabase Auth settings, disable email confirmation if you want students to si
 In Vercel Project Settings > Environment Variables, add:
 
 - `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+- `SUPABASE_ANON_KEY` or `SUPABASE_PUBLISHABLE_KEY`
 
 Redeploy after saving the environment variables.
