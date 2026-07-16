@@ -328,14 +328,16 @@ export const PERSONAS = {
       ],
     },
     courses: [
-      { code: "GEDT001", name: "성균논어", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
-      { code: "GEDT002", name: "창의적글쓰기", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
-      { code: "GEDT003", name: "영어커뮤니케이션", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
-      { code: "GEDT004", name: "문제해결과논리", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
-      { code: "GEDT005", name: "AI기초와활용", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
-      { code: "GEDT006", name: "데이터리터러시", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
-      { code: "GEDB001", name: "현대사회와윤리", area: "균형교양", credits: 3, completed: true, requirementIds: ["totalCredits", "balancedGeneral"] },
-      { code: "GEDB002", name: "과학기술과사회", area: "균형교양", credits: 3, completed: true, requirementIds: ["totalCredits", "balancedGeneral"] },
+      { code: "GEDC010", name: "성균논어", area: "중점교양", credits: 2, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDM001", name: "고전명저북클럽", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDW001", name: "창의적글쓰기", area: "중점교양", credits: 2, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDT017", name: "창의적융합디자인", area: "중점교양", credits: 3, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDT020", name: "AI기초와활용", area: "중점교양", credits: 2, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDG001", name: "영어쓰기", area: "중점교양", credits: 2, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDW003", name: "스피치와토론", area: "중점교양", credits: 2, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDR014", name: "실천리더십", area: "중점교양", credits: 2, completed: true, requirementIds: ["totalCredits", "coreGeneral"] },
+      { code: "GEDH003", name: "동양의예술과삶", area: "균형교양", credits: 3, completed: true, requirementIds: ["totalCredits", "balancedGeneral"] },
+      { code: "GEDS001", name: "한국사개설", area: "균형교양", credits: 3, completed: true, requirementIds: ["totalCredits", "balancedGeneral"] },
       { code: "DASF003", name: "공학컴퓨터프로그래밍", area: "DS 학과 지정", credits: 3, completed: true, requirementIds: ["totalCredits", "dsEducation"] },
       { code: "DASF004", name: "프로그래밍기초와실습", area: "DS 학과 지정", credits: 3, completed: true, requirementIds: ["totalCredits", "dsEducation"] },
       { code: "SWE3003", name: "데이터베이스개론", area: "전공심화", credits: 3, completed: true, requirementIds: ["totalCredits", "primaryMajor"] },
@@ -430,6 +432,112 @@ const requirementAreaLabels = {
 };
 
 const officialCourseCatalog = {
+  GEDC010: { name: "성균논어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDC015: { name: "앙트레프레너십과리더십", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDR014: { name: "실천리더십", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDM001: { name: "고전명저북클럽", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT006: { name: "창의적사고", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT010: { name: "창의와사유의기초", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT011: { name: "창의적발상", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT017: { name: "창의적융합디자인", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT014: { name: "컴퓨팅사고와SW코딩", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT015: { name: "문제해결과알고리즘", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT018: { name: "공학컴퓨터프로그래밍", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT019: { name: "프로그래밍기초와실습", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDT020: { name: "AI기초와활용", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDW001: { name: "창의적글쓰기", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDW003: { name: "스피치와토론", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG001: { name: "영어쓰기", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG002: { name: "영어발표", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG004: { name: "법률영어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG005: { name: "비즈니스영어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG006: { name: "과학영어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG029: { name: "영어토론", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG035: { name: "커리어영어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG037: { name: "앙트레프레너십영어", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDG038: { name: "뉴스와미디어의이해", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDH003: { name: "동양의예술과삶", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDH018: { name: "음악의이해", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDH020: { name: "한국문화의이해", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDH062: { name: "지식정보학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS001: { name: "한국사개설", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS019: { name: "한국경제의이해", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS024: { name: "공학경제", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS035: { name: "한국역사의이해", credits: 2, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS036: { name: "한국생활의안내및진로지도1", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS040: { name: "기업가정신", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDS046: { name: "이공계경영학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN001: { name: "과학사", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN002: { name: "생태계와환경", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN003: { name: "생명의기원과본질", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN005: { name: "현대천문학개론", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN006: { name: "우주론", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN007: { name: "생활속의화학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN008: { name: "화학과생명현상", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN012: { name: "생명의과학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN013: { name: "생명공학의이해", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN014: { name: "생명과음식의과학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN021: { name: "과학기술과환경", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN029: { name: "운동과건강", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN032: { name: "약과건강", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN033: { name: "특허와창업", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN035: { name: "창업이론과실제", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN047: { name: "인공지능을위한기초수학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDN048: { name: "인공지능의이해", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB001: { name: "미분적분학1", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB002: { name: "미분적분학2", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB003: { name: "선형대수학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB004: { name: "공학수학1", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB007: { name: "이산수학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB008: { name: "일반물리학1", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB009: { name: "일반물리학실험1", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB011: { name: "일반물리학실험2", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB012: { name: "일반화학1", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB013: { name: "일반화학실험1", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB015: { name: "일반화학실험2", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB017: { name: "생명과학실험1", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB019: { name: "생명과학실험2", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB028: { name: "확률및통계", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB031: { name: "미분적분학실습1", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB032: { name: "미분적분학실습2", credits: 1, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  GEDB033: { name: "빅데이터와통계학", credits: 3, source: "성균관대 2020-2 교양과목 학수번호 PDF" },
+  BIO3004: { name: "미생물학", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  EAM7001: { name: "플라즈마공정및장비", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2005: { name: "화공열역학1", credits: 3, source: "화학공학부 전공 교육과정 샘플" },
+  ECH2007: { name: "화공유체역학", credits: 3, source: "화학공학부 전공 교육과정 샘플" },
+  ECH2011: { name: "화공기기분석", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2022: { name: "고체화학공학", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2030: { name: "융복합소재개론", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2031: { name: "화공계산", credits: 3, source: "화학공학부 전공 교육과정 샘플" },
+  ECH2033: { name: "고분자공학입문", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2034: { name: "화공생화학", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2036: { name: "화공물리화학2", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH2038: { name: "화공유기화학2", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3016: { name: "분리공정", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3024: { name: "화학공학실험1", credits: 2, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3025: { name: "화학공학실험2", credits: 2, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3030: { name: "화학공학현장실습2", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3035: { name: "화학공학현장실습1", credits: 2, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3036: { name: "화학공학현장실습3", credits: 4, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3053: { name: "반응공학", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3060: { name: "화공전자재료", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3064: { name: "화학공학창업현장실습", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3066: { name: "전지공학입문", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3067: { name: "공정제어및설계", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3068: { name: "물리화학기초실험", credits: 2, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3071: { name: "바이오헬스케어공학", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3072: { name: "전지용고분자소재", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH3073: { name: "화공종합설계", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH4013: { name: "화학공정설계및모사", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH4015: { name: "석사논문연구2", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH7002: { name: "표면기기분석", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH7006: { name: "생명공학연구동향및응용", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ECH7008: { name: "화공세미나2", credits: 1, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  EEE2013: { name: "전자회로1", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  EEE3006: { name: "광학기초", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ERC2007: { name: "공학수치해석", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ERC2008: { name: "기술경영개론", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
+  ERC2011: { name: "공학기초수학2", credits: 3, source: "킹고포털 2026-2 화학공학부 전공과목 조회" },
   SCM3001: { name: "반도체종합설비기술", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
   SSE2018: { name: "반도체소자", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
   SSE3036: { name: "반도체공정", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
@@ -468,9 +576,241 @@ const officialCourseCatalog = {
   AAI2009: { name: "인공지능개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
   AAI2015: { name: "자료구조및알고리즘개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
   AAI3006: { name: "기계학습", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  AAI2011: { name: "시스템프로그래밍", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
+  AIM4003: { name: "자연어처리개론", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
+  CSE3036: { name: "컴퓨터공학세미나", credits: 1, source: "성균관대 소프트웨어학과 교육과정" },
+  CHS7001: { name: "블록체인의기초", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
+  CHS7002: { name: "머신러닝과딥러닝", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
+  CHS7003: { name: "인공지능응용", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
+  ECE4249: { name: "컴퓨터비전", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
+  EEE3049: { name: "컴퓨터네트워크개론", credits: 3, source: "성균관대 소프트웨어학과 교육과정" },
   SWE3011: { name: "인공지능개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
   SWE3050: { name: "기계학습원론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
   SWE3052: { name: "심층신경망개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  BIZ2028: { name: "글로벌창업과비즈니스", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ2031: { name: "AI로분석하는투자자심리학", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3002: { name: "경영대학연구학점Ⅰ", credits: 2, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3003: { name: "경영대학연구학점Ⅱ", credits: 2, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3007: { name: "글로벌기업의마케팅전략관리", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3012: { name: "비즈니스캡스톤디자인", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3015: { name: "AI와비즈니스", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3019: { name: "캡스톤디자인:마케팅", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3021: { name: "디지털혁신전략", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3022: { name: "캡스톤디자인:세일즈매니지먼트", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BIZ3025: { name: "소비자뇌과학과인공지능", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS2001: { name: "경영학원론", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS2020: { name: "원가회계", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS2023: { name: "고급회계", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS2030: { name: "중급회계2", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS3019: { name: "세무회계", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS3020: { name: "회계감사", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS3030: { name: "포트폴리오관리", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS3031: { name: "마케팅커뮤니케이션", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+  BUS3040: { name: "벤처파이낸싱", credits: 3, source: "성균관대 글로벌경영학과 교육과정" },
+};
+
+const officialSupplementalCourses = {
+  coreGeneral: [
+    "GEDC010",
+    "GEDM001",
+    "GEDW001",
+    "GEDT017",
+    "GEDT020",
+    "GEDG001",
+    "GEDW003",
+    "GEDR014",
+    "GEDT006",
+  ],
+  balancedGeneral: [
+    "GEDH003",
+    "GEDS001",
+    "GEDN001",
+    "GEDB001",
+    "GEDH018",
+    "GEDS024",
+    "GEDN007",
+    "GEDB003",
+  ],
+  dsEducation: [
+    "GEDT018",
+    "GEDT019",
+    "GEDT014",
+    "GEDT015",
+    "GEDT020",
+    "DASF003",
+    "DASF004",
+  ],
+  totalCredits: [
+    "GEDB002",
+    "GEDB004",
+    "GEDB007",
+    "GEDB008",
+    "GEDB009",
+    "GEDB011",
+    "GEDB012",
+    "GEDB013",
+    "GEDB015",
+    "GEDB017",
+    "GEDB019",
+    "GEDB028",
+    "GEDB031",
+    "GEDB032",
+    "GEDB033",
+    "GEDN047",
+    "GEDN048",
+    "GEDS040",
+    "GEDS046",
+    "GEDS019",
+    "GEDH020",
+    "GEDH062",
+    "GEDG002",
+    "GEDC015",
+    "GEDT010",
+    "GEDT011",
+    "GEDH018",
+    "GEDG004",
+    "GEDG005",
+    "GEDG006",
+    "GEDG029",
+    "GEDG035",
+    "GEDG037",
+    "GEDG038",
+    "GEDS035",
+    "GEDS036",
+    "GEDN002",
+    "GEDN003",
+    "GEDN005",
+    "GEDN006",
+    "GEDN008",
+    "GEDN012",
+    "GEDN013",
+    "GEDN014",
+    "GEDN021",
+    "GEDN029",
+    "GEDN032",
+    "GEDN033",
+    "GEDN035",
+  ],
+  internationalTotal: [
+    "GEDG001",
+    "GEDG002",
+    "GEDG004",
+    "GEDG005",
+    "GEDG006",
+    "GEDG029",
+    "GEDG035",
+  ],
+};
+
+const departmentSupplementalCourses = {
+  "화학공학부": {
+    primaryMajor: [
+      "ECH2011",
+      "ECH2022",
+      "ECH2030",
+      "ECH2032",
+      "ECH2033",
+      "ECH2034",
+      "ECH2036",
+      "ECH2038",
+      "ECH3016",
+      "ECH3024",
+      "ECH3025",
+      "ECH3053",
+      "ECH3060",
+      "ECH3067",
+      "ECH3068",
+      "ECH3071",
+      "ECH3072",
+      "ECH3073",
+      "ECH4013",
+      "ERC2007",
+      "ERC2008",
+      "ERC2011",
+      "BIO3004",
+      "EEE2013",
+      "EEE3006",
+    ],
+    internationalMajor: [
+      "ECH2032",
+      "ECH2034",
+      "ECH2036",
+      "ECH2038",
+      "ECH3016",
+      "ECH3053",
+      "ECH3060",
+      "ECH3061",
+      "ECH3066",
+      "ECH3067",
+      "ECH3068",
+      "ECH3072",
+      "ECH4013",
+    ],
+  },
+  "소프트웨어학과": {
+    primaryMajor: [
+      "AAI2011",
+      "AAI2009",
+      "AAI2015",
+      "AAI3006",
+      "AIM4003",
+      "CHS7001",
+      "CHS7002",
+      "CHS7003",
+      "CSE3036",
+      "ECE4249",
+      "EEE3049",
+      "ESW4011",
+      "ESW4024",
+      "ESW4025",
+      "ESW4028",
+      "SWE2027",
+      "SWE2029",
+      "SWE3003",
+      "SWE3032",
+      "SWE3033",
+      "SWE3011",
+      "SWE3050",
+      "SWE3051",
+      "SWE3052",
+    ],
+    internationalMajor: [
+      "AIM4003",
+      "ECE4249",
+      "SWE3011",
+      "SWE3050",
+      "SWE3051",
+      "SWE3052",
+      "ESW4028",
+    ],
+  },
+  "글로벌경영학과": {
+    primaryMajor: [
+      "BIZ2028",
+      "BIZ2031",
+      "BIZ3007",
+      "BIZ3012",
+      "BIZ3015",
+      "BIZ3019",
+      "BIZ3021",
+      "BIZ3022",
+      "BIZ3025",
+      "BUS2001",
+      "BUS2020",
+      "BUS2023",
+      "BUS2030",
+      "BUS3019",
+      "BUS3020",
+      "BUS3030",
+      "BUS3031",
+      "BUS3040",
+    ],
+    internationalMajor: [
+      "BIZ2031",
+      "BIZ3015",
+      "BIZ3025",
+    ],
+  },
 };
 
 function normalizeCourseCode(code) {
@@ -479,7 +819,8 @@ function normalizeCourseCode(code) {
 
 function isSyntheticCourse(course) {
   const code = normalizeCourseCode(course?.code);
-  return /^GLS-/.test(code) || /^FREE\d+/.test(code);
+  const legacyDemoCodes = new Set(["GEDT001", "GEDT002", "GEDT003", "GEDT004", "GEDT005"]);
+  return /^GLS-/.test(code) || /^FREE\d+/.test(code) || legacyDemoCodes.has(code);
 }
 
 function normalizeOfficialCourse(course) {
@@ -496,40 +837,68 @@ function normalizeOfficialCourse(course) {
   };
 }
 
+function buildOfficialSupplementalCourse(profile, requirementId, code, index) {
+  const official = officialCourseCatalog[code];
+  if (!official) return null;
+  return normalizeOfficialCourse({
+    id: `OFFICIAL-${profile.studentNumber}-${requirementId}-${code}`,
+    code,
+    name: official.name,
+    area: requirementId === "totalCredits" ? "일반선택" : requirementAreaLabels[requirementId] || "인정 교과목",
+    credits: official.credits,
+    completed: true,
+    term: getSampleCourseTerm(profile, index),
+    grade: ["A+", "A0", "B+", "B0"][index % 4],
+    source: official.source,
+    requirementIds: requirementId === "totalCredits" ? ["totalCredits"] : ["totalCredits", requirementId],
+  });
+}
+
+function getOfficialSupplementalCodes(profile, requirementId) {
+  const departmentCodes = departmentSupplementalCourses[profile.department]?.[requirementId] || [];
+  const commonCodes = officialSupplementalCourses[requirementId] || [];
+  return [...new Set([...departmentCodes, ...commonCodes])];
+}
+
 function getRequirementEvidenceCredits(profile, requirementId) {
   return profile.courses
     .filter((course) => course.completed && (course.requirementIds || []).includes(requirementId))
     .reduce((sum, course) => sum + Number(course.credits || 0), 0);
 }
 
-function makeSupplementalCourses(profile, requirementId, missingCredits) {
+function makeSupplementalCourses(profile, requirementId, missingCredits, usedCodes = new Set()) {
   const courses = [];
   let remaining = Math.max(0, Math.round(Number(missingCredits || 0) * 10) / 10);
-  let index = 0;
-  const names = requirementCourseTemplates[requirementId] || [`${requirementAreaLabels[requirementId] || "요건"} 이수과목`];
-  while (remaining > 0) {
-    const credits = remaining >= 3 ? 3 : remaining >= 2 ? 2 : remaining;
-    const number = index + 1;
-    courses.push({
-      id: `GLS-${profile.studentNumber}-${requirementId}-${number}`,
-      code: `GLS-${requirementId.toUpperCase().slice(0, 4)}-${String(number).padStart(2, "0")}`,
-      name: names[index % names.length],
-      area: requirementAreaLabels[requirementId] || "인정 교과목",
-      credits,
-      completed: true,
-      term: getSampleCourseTerm(profile, index),
-      grade: ["A+", "A0", "B+", "B0"][index % 4],
-      source: "GLS 수강/취득 과목 리스트",
-      requirementIds: ["totalCredits", requirementId],
-    });
-    remaining = Math.round((remaining - credits) * 10) / 10;
-    index += 1;
+  const templateCodes = getOfficialSupplementalCodes(profile, requirementId);
+  templateCodes.forEach((code, index) => {
+    if (remaining <= 0 || usedCodes.has(code)) return;
+    const course = buildOfficialSupplementalCourse(profile, requirementId, code, index);
+    if (!course || Number(course.credits || 0) > remaining) return;
+    courses.push(course);
+    usedCodes.add(code);
+    remaining = Math.round((remaining - Number(course.credits || 0)) * 10) / 10;
+  });
+  return { courses, remaining };
+}
+
+function addOfficialSupplementalCourses(profile, requirementId, missingCredits, usedCodes) {
+  let remaining = Math.max(0, Math.round(Number(missingCredits || 0) * 10) / 10);
+  const added = [];
+  let attempts = 0;
+  while (remaining > 0 && attempts < 4) {
+    const result = makeSupplementalCourses(profile, requirementId, remaining, usedCodes);
+    added.push(...result.courses);
+    remaining = result.remaining;
+    if (!result.courses.length) break;
+    attempts += 1;
   }
-  return courses;
+  profile.courses.push(...added);
+  return remaining;
 }
 
 function supplementCourseEvidence(profile) {
   const gaps = [];
+  const usedCodes = new Set((profile.courses || []).map((course) => normalizeCourseCode(course.code)));
   const requirementIds = [
     "coreGeneral",
     "balancedGeneral",
@@ -546,11 +915,14 @@ function supplementCourseEvidence(profile) {
     const current = getRequirementEvidenceCredits(profile, id);
     const missing = Math.max(0, target - current);
     if (missing > 0) {
-      gaps.push({
-        requirementId: id,
-        label: requirementAreaLabels[id] || id,
-        missingCredits: missing,
-      });
+      const remaining = addOfficialSupplementalCourses(profile, id, missing, usedCodes);
+      if (remaining > 0) {
+        gaps.push({
+          requirementId: id,
+          label: requirementAreaLabels[id] || id,
+          missingCredits: remaining,
+        });
+      }
     }
   });
 
@@ -558,11 +930,14 @@ function supplementCourseEvidence(profile) {
   const totalCurrent = getRequirementEvidenceCredits(profile, "totalCredits");
   const totalMissing = Math.max(0, totalTarget - totalCurrent);
   if (totalMissing > 0) {
-    gaps.push({
-      requirementId: "totalCredits",
-      label: "총 졸업학점",
-      missingCredits: totalMissing,
-    });
+    const remaining = addOfficialSupplementalCourses(profile, "totalCredits", totalMissing, usedCodes);
+    if (remaining > 0) {
+      gaps.push({
+        requirementId: "totalCredits",
+        label: "총 졸업학점",
+        missingCredits: remaining,
+      });
+    }
   }
   profile.courseEvidenceGaps = gaps;
 }
