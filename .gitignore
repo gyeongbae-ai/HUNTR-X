@@ -8,3 +8,5 @@ node_modules
 .chrome-*/
 .edge-*/
 *-preview.png
+dist/
+deploy/

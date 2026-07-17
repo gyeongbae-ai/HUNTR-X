@@ -1896,6 +1896,478 @@ textarea::placeholder {
   font-weight: 800;
 }
 
+.programs-page {
+  display: grid;
+  gap: 18px;
+}
+
+.program-hero {
+  display: block;
+  min-height: 0;
+  padding: 26px;
+  color: #2d2835;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.92) 58%, rgba(244, 252, 251, 0.9)),
+    #fff;
+  border: 1px solid rgba(118, 85, 157, 0.18);
+  border-top: 5px solid #7d6fc0;
+  box-shadow: 0 18px 46px rgba(88, 65, 117, 0.11);
+}
+
+.program-hero-copy {
+  align-self: center;
+  min-width: 0;
+}
+
+.program-hero h1 {
+  max-width: 760px;
+  margin-bottom: 10px;
+  font-size: 32px;
+  font-weight: 760;
+}
+
+.program-hero p {
+  max-width: 780px;
+  margin-bottom: 0;
+  color: #625a69;
+}
+
+.program-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.program-hero-stats span {
+  display: grid;
+  min-width: 112px;
+  gap: 1px;
+  padding: 11px 13px;
+  color: #5a5261;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(133, 101, 171, 0.2);
+}
+
+.program-hero-stats strong {
+  color: #4d356b;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.planner-summary-band {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-top: 2px solid #454545;
+  background: #fff;
+}
+
+.planner-summary-band div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 18px;
+  border-right: 1px solid var(--line);
+}
+
+.planner-summary-band div:last-child {
+  border-right: 0;
+}
+
+.planner-summary-band span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.planner-summary-band strong {
+  color: #356f76;
+  font-size: 20px;
+}
+
+.programs-recommendation-section,
+.program-plan-form,
+.saved-plans-panel,
+.grade-roadmap-section {
+  padding: 22px 24px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.program-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.program-section-head h2 {
+  font-size: 22px;
+}
+
+.program-section-head p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.program-card-enhanced {
+  min-height: 304px;
+  transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.program-card-enhanced[draggable="true"] {
+  cursor: grab;
+}
+
+.program-card-enhanced.dragging {
+  opacity: 0.62;
+  transform: scale(0.985);
+}
+
+.program-card.period-hidden {
+  display: none !important;
+}
+
+.program-card-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.program-planner-layout {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.82fr) minmax(0, 1.18fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.program-period-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -6px 0 18px;
+  padding: 6px;
+  background: #f6f8fb;
+  border: 1px solid rgba(103, 121, 132, 0.16);
+}
+
+.period-tab {
+  min-height: 36px;
+  padding: 7px 13px;
+  color: #59636a;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.period-tab:hover,
+.period-tab.active {
+  color: #fff;
+  background: linear-gradient(90deg, #356f76, #7d6fc0);
+  border-color: transparent;
+  box-shadow: 0 8px 18px rgba(69, 91, 129, 0.14);
+}
+
+.grade-roadmap-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: 20px;
+}
+
+.grade-roadmap-track::before {
+  position: absolute;
+  top: 42px;
+  right: 9%;
+  left: 9%;
+  height: 3px;
+  background: linear-gradient(90deg, #56a1a4, #7d6fc0 52%, #d27fb3);
+  content: "";
+}
+
+.grade-roadmap-card {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 17px;
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 255, 0.92)),
+    #fff;
+  border: 1px solid rgba(103, 121, 132, 0.18);
+  border-top: 0;
+  box-shadow: 0 10px 24px rgba(71, 87, 116, 0.07);
+}
+
+.grade-node {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #356f76, #7d6fc0);
+  border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 10px 22px rgba(68, 83, 126, 0.18);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.grade-roadmap-copy > span {
+  display: inline-flex;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  color: #356f76;
+  background: #edf8f8;
+  border: 1px solid rgba(86, 161, 164, 0.2);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.grade-roadmap-card h3 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.grade-roadmap-card p {
+  min-height: 58px;
+  margin-bottom: 13px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.roadmap-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.roadmap-counts strong {
+  display: inline-flex;
+  padding: 4px 8px;
+  color: #7a4db3;
+  background: #f5f0fb;
+  border: 1px solid rgba(125, 111, 192, 0.16);
+  font-size: 12px;
+}
+
+.roadmap-counts strong.done {
+  color: #2f7373;
+  background: #edf8f8;
+  border-color: rgba(86, 161, 164, 0.2);
+}
+
+.roadmap-plan-list {
+  display: grid;
+  gap: 7px;
+  align-content: start;
+}
+
+.roadmap-plan-pill,
+.roadmap-empty {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 9px 10px;
+  color: #4b4450;
+  background: #fff;
+  border: 1px solid rgba(103, 121, 132, 0.16);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.roadmap-plan-pill em {
+  color: #7a4db3;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.roadmap-plan-pill.done {
+  background: #f1fbfa;
+  border-color: rgba(86, 161, 164, 0.24);
+}
+
+.roadmap-plan-pill.done em {
+  color: #2f7373;
+}
+
+.roadmap-empty {
+  color: var(--muted);
+  background: #f8faf9;
+  border-style: dashed;
+}
+
+.program-plan-form {
+  position: sticky;
+  top: calc(var(--site-header-height) + 68px);
+}
+
+.plan-drop-zone {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 16px;
+  padding: 16px;
+  color: #3e555d;
+  background:
+    linear-gradient(135deg, rgba(237, 248, 248, 0.96), rgba(252, 246, 255, 0.92)),
+    #fff;
+  border: 1px dashed rgba(53, 111, 118, 0.48);
+  text-align: center;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.plan-drop-zone strong {
+  color: #2e6670;
+  font-size: 14px;
+}
+
+.plan-drop-zone span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.plan-drop-zone.drag-over {
+  background: linear-gradient(135deg, #e6fbf7, #f6edff);
+  border-color: #7d6fc0;
+  box-shadow: inset 0 0 0 2px rgba(125, 111, 192, 0.12), 0 12px 28px rgba(73, 92, 129, 0.12);
+}
+
+.workbook-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.program-plan-form textarea {
+  min-height: 108px;
+}
+
+.program-plan-form .field label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #3c333f;
+}
+
+.program-plan-form .field label::before {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  color: #fff;
+  background: #3f7f82;
+  border-radius: 50%;
+  content: "";
+}
+
+.saved-plans-list {
+  display: grid;
+  gap: 12px;
+}
+
+.saved-plan-card {
+  position: relative;
+  padding: 18px;
+  background:
+    linear-gradient(90deg, rgba(248, 253, 253, 0.9), rgba(255, 250, 253, 0.92)),
+    #fff;
+  border: 1px solid rgba(126, 147, 153, 0.24);
+  border-left: 4px solid #3f7f82;
+}
+
+.saved-plan-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.saved-plan-card h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.plan-workbook-fields {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+.plan-workbook-fields div {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px dashed rgba(113, 93, 129, 0.22);
+}
+
+.plan-workbook-fields dt {
+  color: #356f76;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.plan-workbook-fields dd {
+  min-width: 0;
+  margin: 0;
+  color: #423b49;
+  overflow-wrap: anywhere;
+}
+
+.saved-plan-memo {
+  margin: 12px 0 0;
+  padding: 11px 12px;
+  color: #655d69;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(126, 147, 153, 0.18);
+  font-size: 12px;
+}
+
+.saved-plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.saved-plan-actions .btn-ghost {
+  min-height: 34px;
+  padding: 5px 9px;
+}
+
+.empty-plan-state {
+  padding: 28px;
+  color: #5b5361;
+  background: #f8faf9;
+  border: 1px dashed rgba(92, 114, 118, 0.38);
+  text-align: center;
+}
+
+.empty-plan-state strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #302a38;
+  font-size: 16px;
+}
+
+.empty-plan-state p {
+  margin: 0;
+}
+
 @media (max-width: 960px) {
   :root {
     --site-header-height: 64px;
@@ -1996,6 +2468,20 @@ textarea::placeholder {
   .program-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .program-planner-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .grade-roadmap-track {
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .program-plan-form {
+    position: static;
+  }
 }
 
 @media (max-width: 720px) {
@@ -2041,8 +2527,36 @@ textarea::placeholder {
   .team-grid,
   .metric-grid,
   .program-grid,
-  .next-plan-grid {
+  .next-plan-grid,
+  .planner-summary-band,
+  .workbook-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .program-hero {
+    padding: 20px;
+  }
+
+  .program-hero h1 {
+    font-size: 26px;
+  }
+
+  .program-section-head {
+    flex-direction: column;
+  }
+
+  .planner-summary-band div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .planner-summary-band div:last-child {
+    border-bottom: 0;
+  }
+
+  .plan-workbook-fields div {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 
   .plan-card {

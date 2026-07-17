@@ -23,12 +23,36 @@ export function getSession() {
   }
 }
 
+function getProfileStorageKey(studentNumber) {
+  const owner = String(studentNumber || "").trim();
+  return owner ? `${STORAGE_KEYS.profile}:${owner}` : STORAGE_KEYS.profile;
+}
+
+function getStoredProfileFor(studentNumber) {
+  try {
+    return JSON.parse(localStorage.getItem(getProfileStorageKey(studentNumber)));
+  } catch {
+    return null;
+  }
+}
+
 export function getProfile() {
   try {
+    const session = getSession();
     const profile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile));
+    if (session?.studentNumber && profile?.studentNumber !== session.studentNumber) {
+      const accountProfile = getStoredProfileFor(session.studentNumber);
+      if (accountProfile) {
+        const normalized = ensureEvidenceData(accountProfile);
+        localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalized));
+        return normalized;
+      }
+      return null;
+    }
     if (profile?.id === "TEST_P04_PHYS_EARLY") {
       const migrated = clonePersona("softwareEarly");
       localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(migrated));
+      localStorage.setItem(getProfileStorageKey(migrated.studentNumber), JSON.stringify(migrated));
       return migrated;
     }
     return ensureEvidenceData(profile);
@@ -40,6 +64,8 @@ export function getProfile() {
 export async function saveProfile(profile) {
   const normalized = ensureEvidenceData(profile);
   localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalized));
+  const owner = normalized.studentNumber || getSession()?.studentNumber;
+  if (owner) localStorage.setItem(getProfileStorageKey(owner), JSON.stringify(normalized));
   window.dispatchEvent(new CustomEvent("gradquest:profile-updated", { detail: normalized }));
   if (getSession()?.cloud) {
     try {
@@ -106,9 +132,11 @@ export async function loginUser(studentNumber, password) {
     localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(session));
     if (normalizedProfile) {
       localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalizedProfile));
+      localStorage.setItem(getProfileStorageKey(session.studentNumber), JSON.stringify(normalizedProfile));
     } else {
-      const localProfile = getProfile();
+      const localProfile = getStoredProfileFor(session.studentNumber) || getProfile();
       if (localProfile?.studentNumber === session.studentNumber) {
+        localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(ensureEvidenceData(localProfile)));
         await setCloudValue("profile", localProfile).catch(() => null);
       }
     }
@@ -124,6 +152,15 @@ export async function loginUser(studentNumber, password) {
     STORAGE_KEYS.session,
     JSON.stringify({ studentNumber: user.studentNumber, name: user.name }),
   );
+  const accountProfile = getStoredProfileFor(user.studentNumber);
+  if (accountProfile) {
+    localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(ensureEvidenceData(accountProfile)));
+  } else {
+    const activeProfile = getProfile();
+    if (!activeProfile || activeProfile.studentNumber !== user.studentNumber) {
+      localStorage.removeItem(STORAGE_KEYS.profile);
+    }
+  }
   return user;
 }
 
