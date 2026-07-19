@@ -27,6 +27,7 @@ const rootStaticFiles = new Set([
   "evidence.html",
   "index.html",
   "onboarding.html",
+  "personal-roadmap.html",
   "programs.html",
   "requirements.html",
   "signup.html",

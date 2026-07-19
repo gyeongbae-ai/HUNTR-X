@@ -9,7 +9,7 @@ import {
   REQUIREMENT_OPTIONS,
 } from "./data.js";
 
-const profile = initAppShell({ page: "requirements", title: "졸업요건 상세" });
+const profile = initAppShell({ page: "requirements", title: "졸업요건 전체보기" });
 if (!profile) throw new Error("Profile required");
 
 const poomEvidence = getEvidenceForRequirement(profile, "poom").programs;
@@ -173,7 +173,7 @@ document.querySelector("#pageContent").innerHTML = `
     <div class="page-header">
       <div>
         <p class="eyebrow">Requirement details</p>
-        <h1>내 졸업요건 상세</h1>
+        <h1>졸업요건 전체보기</h1>
         <p>GLS 이수내역과 학교 기준을 대조해 현재 값과 실제 인정내역을 함께 확인하세요.</p>
       </div>
       <div class="page-header-actions">

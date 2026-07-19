@@ -2,13 +2,11 @@ import { getProfile } from "./auth.js";
 import { escapeHtml, initAppShell } from "./common.js";
 import {
   ensureEvidenceData,
-  getEvidenceForRequirement,
-  getRequirementItems,
   REQUIREMENT_OPTIONS,
   STORAGE_KEYS,
 } from "./data.js";
 
-const profile = initAppShell({ page: "evidence", title: "이수 내역·문서 등록" });
+const profile = initAppShell({ page: "evidence", title: "이수내역·문서 등록" });
 if (!profile) throw new Error("Profile required");
 ensureEvidenceData(profile);
 
@@ -24,23 +22,6 @@ function renderCourseBadges(course) {
   return (course.badges || [])
     .map((badge) => `<span>${escapeHtml(badge)}</span>`)
     .join("");
-}
-
-function renderRequirementEvidence(item) {
-  const evidence = getEvidenceForRequirement(profile, item.id);
-  const preview = [
-    ...evidence.courses.slice(0, 3).map((course) => course.name),
-    ...evidence.programs.slice(0, 2).map((program) => program.title),
-  ];
-  return `
-    <article class="evidence-requirement-card">
-      <div class="evidence-requirement-head">
-        <div><span>${escapeHtml(item.label)}</span><strong>${item.completed}/${item.required}${item.suffix}</strong></div>
-        <span class="badge">내역 ${evidence.courses.length + evidence.programs.length}건</span>
-      </div>
-      <p>${preview.length ? preview.map(escapeHtml).join(" · ") : "연결된 교과목·비교과 내역이 없습니다."}</p>
-      <div class="evidence-card-footer"><span>연결 교과 ${evidence.credits}학점</span><a class="text-link" href="requirements.html#evidence">상세 확인</a></div>
-    </article>`;
 }
 
 function renderCourseRows() {
@@ -75,29 +56,30 @@ function renderProgramCards() {
     .join("");
 }
 
+function renderImportRecords() {
+  if (!profile.evidenceImports.length) {
+    return `<div class="empty-evidence"><strong>등록된 문서가 없습니다.</strong><span>이미지로 입력하기에서 GLS 또는 챌린지스퀘어 문서를 등록하세요.</span></div>`;
+  }
+  const labels = { gls: "GLS", challenge: "챌린지스퀘어", roadmap: "교과 로드맵" };
+  return `<div class="import-record-list">${profile.evidenceImports.map((item) => `
+    <article>
+      <span class="source-symbol">${escapeHtml(labels[item.type] || "DOC")}</span>
+      <div><strong>${escapeHtml(item.label || "등록 문서")}</strong><span>${new Date(item.importedAt).toLocaleString("ko-KR")}</span></div>
+      <span class="badge badge-success">반영 완료</span>
+    </article>`).join("")}</div>`;
+}
+
 document.querySelector("#pageContent").innerHTML = `
-  <div class="page-content">
+  <div class="page-content evidence-record-page">
     <div class="page-header">
       <div>
-        <p class="eyebrow">Evidence workspace</p>
-        <h1>이수 내역까지 한눈에 파악하기</h1>
-        <p>GLS 성적 이미지와 챌린지스퀘어 이수내역 이미지를 AI가 읽고, 사용자가 확인한 뒤 졸업요건별 인정내역으로 연결합니다.</p>
+        <p class="eyebrow">Academic records</p>
+        <h1>이수내역·문서 등록</h1>
+        <p>저장된 교과목, 비교과 활동, 문서 반영 기록을 확인합니다.</p>
       </div>
-      <a class="btn btn-secondary" href="requirements.html#evidence">요건별 인정내역 보기</a>
-    </div>
-
-    <div class="review-principle-strip">
-      <div>
-        <strong>확인은 필요한 항목만</strong>
-        <span>문서는 구조화해서 읽고, 과목명·학점·인정요건처럼 애매하거나 중요한 값만 사용자가 고릅니다.</span>
-      </div>
-      <div>
-        <strong>저장되는 내용</strong>
-        <span>확정한 과목, 비교과, 요건 연결, import 기록은 계정 프로필에 함께 저장됩니다.</span>
-      </div>
-      <div>
-        <strong>최신성 관리</strong>
-        <span>학년도별 문서 기준을 유지하고 변경된 규칙만 갱신하는 방식으로 관리합니다.</span>
+      <div class="page-header-actions">
+        <a class="btn btn-secondary" href="requirements.html#evidence">요건별 인정내역</a>
+        <button class="btn" id="openEvidenceImport" type="button">이미지로 입력하기</button>
       </div>
     </div>
 
@@ -108,73 +90,102 @@ document.querySelector("#pageContent").innerHTML = `
       <div><span>문서 인식 기록</span><strong>${profile.evidenceImports.length}회</strong><small>GLS·챌린지스퀘어</small></div>
     </div>
 
-    <section class="panel">
-      <div class="panel-header"><div><h2>이미지에서 이수내역 가져오기</h2><p>민감정보가 포함된 실제 이미지는 공개 데모가 아닌 로컬 환경에서만 사용하세요.</p></div></div>
-      <div class="upload-guide-grid">
-        <article>
-          <strong>GLS 수강/취득 과목 PDF</strong>
-          <span>GLS 접속 → 수강/취득 과목 출력 → 인쇄 → PDF로 저장 → 아래 GLS 영역에 업로드</span>
-        </article>
-        <article>
-          <strong>챌린지스퀘어 비교과 캡처</strong>
-          <span>학생성공 가이드 조회 화면을 캡처해 올리면 비교과명, 이수일, 인증영역을 확인할 수 있습니다.</span>
-        </article>
-        <article>
-          <strong>교과 과정 로드맵</strong>
-          <span>학과 교과과정 로드맵을 함께 첨부하면 전공·교양·DS 이수 확인에 도움이 됩니다.</span>
-        </article>
+    <section class="record-workspace">
+      <div class="tabs record-tabs" role="tablist">
+        <button class="tab-button active" type="button" data-record-tab="courses">교과목·성적</button>
+        <button class="tab-button" type="button" data-record-tab="programs">비교과 이수</button>
+        <button class="tab-button" type="button" data-record-tab="imports">문서 등록 기록</button>
       </div>
-      <div class="evidence-source-grid">
-        <article class="evidence-source-card" data-document-type="gls">
-          <div class="source-card-title"><span class="source-symbol">GLS</span><div><h3>학업성적표·이수내역</h3><p>교과목, 학수번호, 학점, 성적, 수강학기를 추출합니다.</p></div></div>
-          <label class="evidence-upload-zone" for="glsFile" data-upload-type="gls"><strong>GLS 캡처·성적표·PDF 선택</strong><span>클릭, 드래그 앤 드롭, Ctrl+V 붙여넣기 가능</span><input id="glsFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
-          <div class="upload-preview hidden" id="glsPreview"></div>
-          <div class="source-actions"><button class="btn" type="button" data-analyze="gls">이미지 분석</button><button class="btn btn-secondary" type="button" data-sample="gls">샘플로 체험</button></div>
-          <div class="alert hidden" id="glsStatus"></div>
-        </article>
-
-        <article class="evidence-source-card" data-document-type="challenge">
-          <div class="source-card-title"><span class="source-symbol source-symbol-pink">CS</span><div><h3>챌린지스퀘어 비교과</h3><p>프로그램명, 이수일, 시간, 인증영역을 추출합니다.</p></div></div>
-          <label class="evidence-upload-zone" for="challengeFile" data-upload-type="challenge"><strong>비교과 이수내역 캡처 선택</strong><span>클릭, 드래그 앤 드롭, Ctrl+V 붙여넣기 가능</span><input id="challengeFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
-          <div class="upload-preview hidden" id="challengePreview"></div>
-          <div class="source-actions"><button class="btn" type="button" data-analyze="challenge">이미지 분석</button><button class="btn btn-secondary" type="button" data-sample="challenge">샘플로 체험</button></div>
-          <div class="alert hidden" id="challengeStatus"></div>
-        </article>
-
-        <article class="evidence-source-card" data-document-type="roadmap">
-          <div class="source-card-title"><span class="source-symbol source-symbol-blue">MAP</span><div><h3>교과 과정 로드맵</h3><p>학과별 이수 흐름과 권장 수강 순서를 참고자료로 첨부합니다.</p></div></div>
-          <label class="evidence-upload-zone" for="roadmapFile" data-upload-type="roadmap"><strong>로드맵 이미지 또는 PDF 선택</strong><span>전공 로드맵, 교육과정표, 학과 안내자료</span><input id="roadmapFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
-          <div class="upload-preview hidden" id="roadmapPreview"></div>
-          <div class="source-actions"><button class="btn btn-secondary" type="button" data-sample="roadmap">참고자료로 등록</button></div>
-          <div class="alert hidden" id="roadmapStatus"></div>
-        </article>
-      </div>
-      <div class="recognition-flow" aria-label="문서 인식 과정">
-        <div><strong>01</strong><span>이미지 등록</span></div><i>→</i>
-        <div><strong>02</strong><span>Document Parse</span></div><i>→</i>
-        <div><strong>03</strong><span>교과·비교과 구조화</span></div><i>→</i>
-        <div><strong>04</strong><span>사용자 검토</span></div><i>→</i>
-        <div><strong>05</strong><span>졸업요건 연결</span></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-header"><div><h2>졸업요건별 인정내역 연결 현황</h2><p>현재 프로필에 저장된 교과목과 비교과가 어떤 요건에 반영되는지 보여줍니다.</p></div></div>
-      <div class="evidence-requirement-grid">
-        ${getRequirementItems(profile).filter((item) => !["registration", "gpa"].includes(item.id)).map(renderRequirementEvidence).join("")}
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-header"><div><h2>GLS 교과목·성적</h2><p>각 과목이 여러 요건에 동시에 인정되는 경우 연결 태그를 함께 표시합니다.</p></div><span class="badge">${completedCourses.length}과목</span></div>
-      <div class="evidence-table-wrap"><table class="course-table evidence-table"><thead><tr><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>인정 요건</th><th>출처</th></tr></thead><tbody>${renderCourseRows()}</tbody></table></div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-header"><div><h2>챌린지스퀘어 비교과 이수</h2><p>최종 이수 상태와 인증영역을 3품 요건에 연결합니다.</p></div><span class="badge">${profile.nonCurricular.length}건</span></div>
-      <div class="program-evidence-grid">${renderProgramCards()}</div>
+      <section class="panel record-tab-panel" id="record-courses">
+        <div class="panel-header"><div><h2>GLS 교과목·성적</h2><p>과목별 학점, 성적, 인정 요건을 확인합니다.</p></div><span class="badge">${completedCourses.length}과목</span></div>
+        <div class="evidence-table-wrap"><table class="course-table evidence-table"><thead><tr><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>인정 요건</th><th>출처</th></tr></thead><tbody>${renderCourseRows()}</tbody></table></div>
+      </section>
+      <section class="panel record-tab-panel hidden" id="record-programs">
+        <div class="panel-header"><div><h2>챌린지스퀘어 비교과 이수</h2><p>최종 이수 상태와 인증영역을 확인합니다.</p></div><span class="badge">${profile.nonCurricular.length}건</span></div>
+        <div class="program-evidence-grid">${renderProgramCards()}</div>
+      </section>
+      <section class="panel record-tab-panel hidden" id="record-imports">
+        <div class="panel-header"><div><h2>문서 등록 기록</h2><p>계정에 반영된 이미지 및 PDF 기록입니다.</p></div><span class="badge">${profile.evidenceImports.length}회</span></div>
+        ${renderImportRecords()}
+      </section>
     </section>
   </div>`;
+
+document.body.insertAdjacentHTML("beforeend", `
+  <div class="evidence-import-modal hidden" id="evidenceImportModal" role="dialog" aria-modal="true" aria-labelledby="evidenceImportTitle">
+    <button class="modal-backdrop" type="button" data-close-evidence-import aria-label="이미지 입력 닫기"></button>
+    <div class="evidence-import-dialog">
+      <header>
+        <div><p class="eyebrow">Import records</p><h2 id="evidenceImportTitle">이미지로 이수내역 입력</h2><p>GLS와 챌린지스퀘어 문서를 선택해 내용을 확인합니다.</p></div>
+        <button class="modal-close" type="button" data-close-evidence-import aria-label="닫기">×</button>
+      </header>
+      <div class="evidence-import-content">
+        <div class="evidence-source-grid">
+          <article class="evidence-source-card" data-document-type="gls">
+            <div class="source-card-title"><span class="source-symbol">GLS</span><div><h3>학업성적표·이수내역</h3><p>교과목, 학수번호, 학점, 성적, 수강학기를 추출합니다.</p></div></div>
+            <label class="evidence-upload-zone" for="glsFile" data-upload-type="gls"><strong>GLS 캡처·성적표·PDF 선택</strong><span>클릭, 드래그 앤 드롭, Ctrl+V 붙여넣기 가능</span><input id="glsFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <div class="upload-preview hidden" id="glsPreview"></div>
+            <div class="source-actions"><button class="btn" type="button" data-analyze="gls">이미지 분석</button><button class="btn btn-secondary" type="button" data-sample="gls">샘플로 체험</button></div>
+            <div class="alert hidden" id="glsStatus"></div>
+          </article>
+          <article class="evidence-source-card" data-document-type="challenge">
+            <div class="source-card-title"><span class="source-symbol source-symbol-pink">CS</span><div><h3>챌린지스퀘어 비교과</h3><p>프로그램명, 이수일, 시간, 인증영역을 추출합니다.</p></div></div>
+            <label class="evidence-upload-zone" for="challengeFile" data-upload-type="challenge"><strong>비교과 이수내역 캡처 선택</strong><span>클릭, 드래그 앤 드롭, Ctrl+V 붙여넣기 가능</span><input id="challengeFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <div class="upload-preview hidden" id="challengePreview"></div>
+            <div class="source-actions"><button class="btn" type="button" data-analyze="challenge">이미지 분석</button><button class="btn btn-secondary" type="button" data-sample="challenge">샘플로 체험</button></div>
+            <div class="alert hidden" id="challengeStatus"></div>
+          </article>
+          <article class="evidence-source-card" data-document-type="roadmap">
+            <div class="source-card-title"><span class="source-symbol source-symbol-blue">MAP</span><div><h3>교과 과정 로드맵</h3><p>학과별 권장 수강 순서를 참고자료로 첨부합니다.</p></div></div>
+            <label class="evidence-upload-zone" for="roadmapFile" data-upload-type="roadmap"><strong>로드맵 이미지 또는 PDF 선택</strong><span>전공 로드맵, 교육과정표, 학과 안내자료</span><input id="roadmapFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <div class="upload-preview hidden" id="roadmapPreview"></div>
+            <div class="source-actions"><button class="btn btn-secondary" type="button" data-sample="roadmap">참고자료로 등록</button></div>
+            <div class="alert hidden" id="roadmapStatus"></div>
+          </article>
+        </div>
+        <div class="recognition-flow" aria-label="문서 인식 과정">
+          <div><strong>01</strong><span>이미지 등록</span></div><i>→</i>
+          <div><strong>02</strong><span>문서 인식</span></div><i>→</i>
+          <div><strong>03</strong><span>사용자 검토</span></div><i>→</i>
+          <div><strong>04</strong><span>요건 연결</span></div>
+        </div>
+        <div class="alert">개인정보가 포함된 문서는 본인 계정에서만 등록하고, 반영 전 인식 결과를 확인하세요.</div>
+      </div>
+    </div>
+  </div>`);
+
+function activateRecordTab(name) {
+  const button = document.querySelector(`[data-record-tab="${name}"]`);
+  const panel = document.querySelector(`#record-${name}`);
+  if (!button || !panel) return;
+  document.querySelectorAll("[data-record-tab]").forEach((item) => {
+    const active = item === button;
+    item.classList.toggle("active", active);
+    item.setAttribute("aria-selected", String(active));
+  });
+  document.querySelectorAll(".record-tab-panel").forEach((item) => item.classList.add("hidden"));
+  panel.classList.remove("hidden");
+}
+
+document.querySelectorAll("[data-record-tab]").forEach((button) => {
+  button.addEventListener("click", () => activateRecordTab(button.dataset.recordTab));
+});
+
+const importModal = document.querySelector("#evidenceImportModal");
+const closeImportModal = () => {
+  importModal.classList.add("hidden");
+  document.body.classList.remove("modal-open");
+  document.querySelector("#openEvidenceImport")?.focus();
+};
+document.querySelector("#openEvidenceImport")?.addEventListener("click", () => {
+  importModal.classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  importModal.querySelector(".modal-close")?.focus();
+});
+document.querySelectorAll("[data-close-evidence-import]").forEach((button) => button.addEventListener("click", closeImportModal));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !importModal.classList.contains("hidden")) closeImportModal();
+});
 
 function getInput(type) {
   if (type === "gls") return document.querySelector("#glsFile");

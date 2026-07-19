@@ -2,16 +2,37 @@ import { ensureProfile, getProfile, getSession, loginDemo, logout, requireAuth }
 import { calculateProgress, getActionItems } from "./data.js";
 import { initMotionEffects } from "./motion.js";
 
-const navItems = [
-  { href: "dashboard.html", label: "진단 대시보드", page: "dashboard" },
-  { href: "requirements.html", label: "졸업요건 상세", page: "requirements" },
-  { href: "evidence.html", label: "이수 내역·문서 등록", page: "evidence" },
-  { href: "early-graduation.html", label: "조기졸업 진단", page: "early" },
-  { href: "assistant.html", label: "AI 학사 도우미", page: "assistant" },
-  { href: "programs.html", label: "맞춤 비교과", page: "programs" },
-  { href: "academic-calendar.html", label: "학사 일정", page: "calendar" },
-  { href: "onboarding.html", label: "내 정보 수정", page: "onboarding" },
-  { href: "about.html", label: "Contact Us", page: "about" },
+const navSections = [
+  {
+    label: "진단 및 계획",
+    items: [
+      { href: "dashboard.html", label: "진단 대시보드", page: "dashboard" },
+      { href: "personal-roadmap.html", label: "개인 로드맵", page: "roadmap" },
+    ],
+  },
+  {
+    label: "졸업요건",
+    items: [
+      { href: "evidence.html", label: "이수내역·문서 등록", page: "evidence" },
+      { href: "requirements.html", label: "졸업요건 전체보기", page: "requirements" },
+    ],
+  },
+  {
+    label: "학사 도구",
+    items: [
+      { href: "early-graduation.html", label: "조기졸업 진단", page: "early" },
+      { href: "assistant.html", label: "AI 학사 도우미", page: "assistant" },
+      { href: "programs.html", label: "맞춤 비교과", page: "programs" },
+      { href: "academic-calendar.html", label: "학사 일정", page: "calendar" },
+    ],
+  },
+  {
+    label: "사용자 메뉴",
+    items: [
+      { href: "onboarding.html", label: "내 정보 수정", page: "onboarding" },
+      { href: "about.html", label: "Contact Us", page: "about" },
+    ],
+  },
 ];
 
 export function initAppShell({ page, title, requireProfile = true } = {}) {
@@ -31,13 +52,15 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
 
   const pendingCount = profile ? getActionItems(profile).length : 0;
   const initials = (profile?.name || session.name || "GQ").slice(0, 1);
-  const nav = navItems.map(
-      (item) => `
+  const nav = navSections.map((section) => `
+    <div class="nav-section">
+      <span class="nav-section-label">${section.label}</span>
+      ${section.items.map((item) => `
         <a class="nav-link ${page === item.page ? "active" : ""}" href="${item.href}">
           <span>${item.label}</span>
           ${item.page === "requirements" && pendingCount ? `<span class="nav-count">${pendingCount}</span>` : ""}
-        </a>`,
-    );
+        </a>`).join("")}
+    </div>`).join("");
   app.innerHTML = `
     <div class="app-shell">
       <button class="edge-trigger edge-trigger-top" id="headerTrigger" type="button" aria-controls="siteHeader" aria-expanded="false">
@@ -78,10 +101,7 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
           <button class="shell-close" id="sidebarClose" type="button" aria-label="사이드 메뉴 닫기">←</button>
         </div>
         <nav class="sidebar-nav" aria-label="주요 메뉴">
-          <span class="nav-section-label">졸업 내비게이터</span>
-          ${nav.slice(0, 7).join("")}
-          <span class="nav-section-label">사용자 메뉴</span>
-          ${nav.slice(7).join("")}
+          ${nav}
         </nav>
         <div class="sidebar-footer">
           <div class="user-mini">
