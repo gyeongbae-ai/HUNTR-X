@@ -2834,6 +2834,12 @@ textarea::placeholder {
   gap: 14px;
 }
 
+#eventFormMode {
+  min-width: 48px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
 .official-schedule-list {
   display: grid;
   gap: 8px;

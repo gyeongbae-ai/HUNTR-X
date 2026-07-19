@@ -211,7 +211,7 @@ function resetForm() {
   document.querySelector("#eventStart").value = today;
   document.querySelector("#eventEnd").value = today;
   document.querySelector("#eventCategory").value = "personal";
-  document.querySelector("#eventFormMode").textContent = "새 일정";
+  document.querySelector("#eventFormMode").textContent = "NEW";
   document.querySelector("#deleteEventButton").classList.add("hidden");
 }
 
@@ -224,7 +224,7 @@ function fillForm(eventId) {
   document.querySelector("#eventEnd").value = event.end || event.start || "";
   document.querySelector("#eventCategory").value = event.category || "personal";
   document.querySelector("#eventMemo").value = event.note || "";
-  document.querySelector("#eventFormMode").textContent = "일정 수정";
+  document.querySelector("#eventFormMode").textContent = "EDIT";
   document.querySelector("#deleteEventButton").classList.remove("hidden");
   document.querySelector("#academicEventForm").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -350,7 +350,7 @@ function renderPage() {
                 <h2>개인 일정 등록</h2>
                 <p>공지사항, 상담, 서류 제출 등 기억해야 할 일정을 계정별로 저장할 수 있습니다.</p>
               </div>
-              <span class="badge badge-info" id="eventFormMode">새 일정</span>
+              <span class="badge badge-info" id="eventFormMode">NEW</span>
             </div>
             <div class="field">
               <label for="eventTitle">일정명</label>
