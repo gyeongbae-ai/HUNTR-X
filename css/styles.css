@@ -1561,6 +1561,36 @@ textarea::placeholder {
   overflow-y: auto;
 }
 
+.chat-scroll-bottom {
+  position: sticky;
+  bottom: 10px;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  align-self: flex-end;
+  margin-top: -4px;
+  padding: 0;
+  place-items: center;
+  color: #fff;
+  background: #715197;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  box-shadow: 0 8px 22px rgba(81, 54, 108, 0.26);
+  cursor: pointer;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.chat-scroll-bottom:hover {
+  background: #5f4084;
+  transform: translateY(-2px);
+}
+
+.chat-scroll-bottom.hidden {
+  display: none;
+}
+
 .message {
   max-width: min(720px, 88%);
   padding: 13px 15px;
@@ -3643,8 +3673,8 @@ body[data-page="dashboard"] .page-header::after {
   font-weight: 900;
 }
 
-.ai-roadmap-bar strong,
-.ai-roadmap-bar span {
+.ai-roadmap-bar div > strong,
+.ai-roadmap-bar div > span {
   display: block;
 }
 
@@ -3742,7 +3772,7 @@ body[data-page="dashboard"] .page-header::after {
 
 .course-candidate-list {
   display: grid;
-  gap: 12px;
+  gap: 20px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -3887,7 +3917,28 @@ body[data-page="dashboard"] .page-header::after {
   gap: 14px;
   padding: 14px 0;
   border-bottom: 1px solid var(--line);
-  grid-template-columns: 54px minmax(0, 1fr) auto;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+}
+
+.import-source-symbol {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  padding: 6px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+}
+
+.import-source-symbol.long-label {
+  font-size: 10px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .import-record-list strong,
@@ -4347,17 +4398,82 @@ body.modal-open {
 }
 
 .gq-logo-symbol {
-  width: 42px;
-  height: 42px;
+  width: 52px;
+  height: 52px;
   border: 1px solid #e5daed;
   border-radius: 7px;
 }
 
 .gq-logo-symbol img {
-  width: 105px;
+  width: 132px;
   max-width: none;
-  height: 105px;
-  transform: translate(-31px, -27px);
+  height: 132px;
+  transform: translate(-40px, -27px);
+}
+
+.upstage-resource-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #ddd3e5;
+  border-radius: 7px;
+}
+
+.upstage-resource-bar > div,
+.upstage-resource-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.upstage-resource-bar strong,
+.upstage-resource-bar span {
+  display: block;
+}
+
+.upstage-resource-bar div > div > span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.upstage-resource-mark {
+  display: grid !important;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #fff;
+  background: #65478b;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.upstage-resource-actions {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 780px) {
+  .upstage-resource-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .upstage-resource-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .upstage-resource-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Requirement services */
@@ -5954,16 +6070,29 @@ body::before {
 .edge-trigger-left {
   top: 50%;
   left: 0;
-  width: 25px;
-  height: 104px;
+  width: 40px;
+  height: 126px;
   flex-direction: column;
-  gap: 7px;
+  gap: 12px;
   background: var(--green-800);
-  border-radius: 0 12px 12px 0;
-  font-size: 9px;
+  border-radius: 0 14px 14px 0;
+  font-size: 10px;
   font-weight: 800;
-  writing-mode: vertical-rl;
+  writing-mode: horizontal-tb;
   transform: translateY(-50%);
+}
+
+.edge-trigger-left > span:last-child {
+  order: 1;
+  line-height: 1;
+  white-space: nowrap;
+  transform: rotate(-90deg);
+}
+
+.edge-trigger-left .edge-trigger-arrow {
+  order: 2;
+  font-size: 17px;
+  transform: none;
 }
 
 .edge-trigger-left:hover {
@@ -6207,7 +6336,8 @@ body[data-page="dashboard"] .page-header .btn-secondary {
   }
 
   .edge-trigger-left {
-    height: 86px;
+    width: 36px;
+    height: 112px;
   }
 
   .topbar {

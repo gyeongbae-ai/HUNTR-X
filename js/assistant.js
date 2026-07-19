@@ -42,6 +42,7 @@ document.querySelector("#pageContent").innerHTML = `
       <section class="assistant-main">
         <div class="chat-log" id="chatLog" aria-live="polite">
           <div class="message message-assistant">안녕하세요, ${escapeHtml(profile.name)}님. 현재 ${escapeHtml(profile.department)} 프로필이 연결되어 있어요. 졸업학점, ${profile.dsEducation.exception ? "DS 지정과목, " : ""}전공, 3품, 졸업평가, 조기졸업 중 궁금한 내용을 물어보세요.<span class="message-meta">GradQuest · 조사자료 기반</span></div>
+          <button class="chat-scroll-bottom hidden" id="chatScrollBottom" type="button" aria-label="대화 맨 아래로 이동">↓</button>
         </div>
         <form class="chat-form" id="chatForm">
           <textarea id="question" rows="1" placeholder="예: 이번 학기에 무엇부터 채워야 해?" required></textarea>
@@ -51,12 +52,29 @@ document.querySelector("#pageContent").innerHTML = `
     </div>
 
     <p class="footer-note">답변 기준: ${OFFICIAL_SOURCES.slice(0, 2).map((source) => `<a class="text-link" href="${source.url}" target="_blank" rel="noreferrer">${escapeHtml(source.label)}</a>`).join(" · ")}</p>
+    <section class="upstage-resource-bar" aria-label="Upstage AI 공식 리소스">
+      <div>
+        <span class="upstage-resource-mark">UP</span>
+        <div><strong>Upstage AI Resources</strong><span>Solar 모델을 직접 체험하거나 개발 연동을 시작하세요.</span></div>
+      </div>
+      <div class="upstage-resource-actions">
+        <a class="btn btn-secondary" href="https://console.upstage.ai/playground/chat" target="_blank" rel="noreferrer">Playground Upstage</a>
+        <a class="btn" href="https://console.upstage.ai/docs/getting-started" target="_blank" rel="noreferrer">Start Using Upstage AI</a>
+      </div>
+    </section>
   </div>`;
 
 const chatLog = document.querySelector("#chatLog");
 const form = document.querySelector("#chatForm");
 const questionInput = document.querySelector("#question");
 const modeBadge = document.querySelector("#aiMode");
+const scrollBottomButton = document.querySelector("#chatScrollBottom");
+
+function updateScrollBottomButton() {
+  const hasOverflow = chatLog.scrollHeight > chatLog.clientHeight + 8;
+  const isNearBottom = chatLog.scrollHeight - chatLog.scrollTop - chatLog.clientHeight < 36;
+  scrollBottomButton.classList.toggle("hidden", !hasOverflow || isNearBottom);
+}
 
 function formatAssistantText(text) {
   return escapeHtml(String(text || ""))
@@ -85,8 +103,9 @@ function addMessage(text, role, meta = "") {
     metaNode.textContent = meta;
     message.append(metaNode);
   }
-  chatLog.append(message);
+  chatLog.insertBefore(message, scrollBottomButton);
   chatLog.scrollTop = chatLog.scrollHeight;
+  requestAnimationFrame(updateScrollBottomButton);
   return message;
 }
 
@@ -109,7 +128,7 @@ async function ask(question) {
     meta.className = "message-meta";
     meta.textContent = "Upstage Solar · 프로필 및 규칙 기반";
     loading.append(meta);
-    modeBadge.textContent = "Solar 연결됨";
+    modeBadge.textContent = "Upstage Solar 연결됨";
     modeBadge.className = "badge badge-success";
   } catch {
     setMessageContent(loading, getLocalAnswer(question, profile), "assistant");
@@ -120,7 +139,7 @@ async function ask(question) {
     modeBadge.textContent = "로컬 지식모드";
     modeBadge.className = "badge badge-warning";
   }
-  chatLog.scrollTop = chatLog.scrollHeight;
+  requestAnimationFrame(updateScrollBottomButton);
 }
 
 form.addEventListener("submit", (event) => {
@@ -139,3 +158,10 @@ questionInput.addEventListener("keydown", (event) => {
     form.requestSubmit();
   }
 });
+
+chatLog.addEventListener("scroll", updateScrollBottomButton, { passive: true });
+scrollBottomButton.addEventListener("click", () => {
+  chatLog.scrollTo({ top: chatLog.scrollHeight, behavior: "smooth" });
+});
+new ResizeObserver(updateScrollBottomButton).observe(chatLog);
+updateScrollBottomButton();

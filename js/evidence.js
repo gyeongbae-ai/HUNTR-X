@@ -63,7 +63,7 @@ function renderImportRecords() {
   const labels = { gls: "GLS", challenge: "챌린지스퀘어", roadmap: "교과 로드맵" };
   return `<div class="import-record-list">${profile.evidenceImports.map((item) => `
     <article>
-      <span class="source-symbol">${escapeHtml(labels[item.type] || "DOC")}</span>
+      <span class="source-symbol import-source-symbol ${item.type === "challenge" ? "long-label" : ""}">${escapeHtml(labels[item.type] || "DOC")}</span>
       <div><strong>${escapeHtml(item.label || "등록 문서")}</strong><span>${new Date(item.importedAt).toLocaleString("ko-KR")}</span></div>
       <span class="badge badge-success">반영 완료</span>
     </article>`).join("")}</div>`;
