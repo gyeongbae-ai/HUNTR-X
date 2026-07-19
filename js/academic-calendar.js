@@ -17,6 +17,7 @@ if (!profile) throw new Error("Profile required");
 
 let viewDate = new Date();
 let editingEventId = null;
+let eventToneMap = new Map();
 
 function getPersonalEvents() {
   return Array.isArray(profile.academicCalendarEvents) ? profile.academicCalendarEvents : [];
@@ -44,6 +45,37 @@ function getMonthDays(date) {
 
 function isEventInRange(event, startDate, endDate) {
   return parseDateOnly(event.start) <= endDate && parseDateOnly(event.end || event.start) >= startDate;
+}
+
+function eventsOverlap(firstEvent, secondEvent) {
+  const firstStart = parseDateOnly(firstEvent.start);
+  const firstEnd = parseDateOnly(firstEvent.end || firstEvent.start);
+  const secondStart = parseDateOnly(secondEvent.start);
+  const secondEnd = parseDateOnly(secondEvent.end || secondEvent.start);
+  return firstStart <= secondEnd && secondStart <= firstEnd;
+}
+
+function buildEventToneMap(events) {
+  const toneCount = 10;
+  const assignments = new Map();
+  const coloredEvents = [];
+  const orderedEvents = [...events].sort(
+    (a, b) =>
+      a.start.localeCompare(b.start) ||
+      (b.end || b.start).localeCompare(a.end || a.start) ||
+      a.title.localeCompare(b.title, "ko"),
+  );
+
+  orderedEvents.forEach((event) => {
+    const usedTones = new Set(
+      coloredEvents.filter((item) => eventsOverlap(event, item.event)).map((item) => item.tone),
+    );
+    const tone = Array.from({ length: toneCount }, (_, index) => index).find((index) => !usedTones.has(index)) ?? 0;
+    assignments.set(event.id, tone);
+    coloredEvents.push({ event, tone });
+  });
+
+  return assignments;
 }
 
 function getEventsForWeek(weekDays) {
@@ -104,10 +136,11 @@ function renderWeekEvent(segment) {
   const category = event.category || "personal";
   const editable = event.personal ? `data-edit-event="${escapeHtml(event.id)}"` : "";
   const continuationClasses = `${continuesBefore ? "continues-before" : ""} ${continuesAfter ? "continues-after" : ""}`;
+  const toneClass = `tone-${eventToneMap.get(event.id) ?? 0}`;
   const label = `${CATEGORY_LABELS[category] || "일정"}: ${event.title}, ${formatEventRange(event)}`;
   return `
     <button
-      class="calendar-event-bar ${CATEGORY_CLASSES[category] || "personal"} ${continuationClasses}"
+      class="calendar-event-bar ${CATEGORY_CLASSES[category] || "personal"} ${toneClass} ${continuationClasses}"
       type="button"
       style="grid-column: ${startColumn + 1} / span ${span}; grid-row: ${lane + 2};"
       aria-label="${escapeHtml(label)}"
@@ -295,6 +328,7 @@ function bindActions() {
 
 function renderPage() {
   const personalCount = getPersonalEvents().length;
+  eventToneMap = buildEventToneMap(getAllCalendarEvents(profile));
   document.querySelector("#pageContent").innerHTML = `
     <div class="page-content academic-calendar-page">
       <section class="page-header academic-calendar-hero">
@@ -332,11 +366,12 @@ function renderPage() {
             </div>
           </div>
           <div class="calendar-legend" aria-label="일정 색상 안내">
-            <span class="course"><i aria-hidden="true"></i>수강신청</span>
-            <span class="track"><i aria-hidden="true"></i>융합트랙</span>
-            <span class="major"><i aria-hidden="true"></i>전공 신청</span>
-            <span class="academic"><i aria-hidden="true"></i>학사 일정</span>
-            <span class="personal"><i aria-hidden="true"></i>내 일정</span>
+            <span class="palette-guide">
+              <i class="tone-0" aria-hidden="true"></i>
+              <i class="tone-1" aria-hidden="true"></i>
+              <i class="tone-2" aria-hidden="true"></i>
+              겹치는 일정은 서로 다른 색으로 표시
+            </span>
             <span class="holiday"><i aria-hidden="true"></i>공휴일</span>
           </div>
           ${renderCalendarGrid()}
