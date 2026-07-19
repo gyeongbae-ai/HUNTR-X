@@ -72,16 +72,6 @@ export const SCHOOL_CALENDAR_EVENTS = [
     reminder: false,
   },
   {
-    id: "summer-break-2026",
-    title: "여름방학",
-    category: "academic",
-    start: "2026-06-20",
-    end: "2026-08-30",
-    source: "성균관대학교 2026년 학사일정",
-    note: "여름방학 기간",
-    reminder: false,
-  },
-  {
     id: "undergrad-grad-linked-2026-2",
     title: "2학기 학부·대학원 연계과정 신청",
     category: "major",

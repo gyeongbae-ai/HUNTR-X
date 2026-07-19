@@ -2388,9 +2388,9 @@ textarea::placeholder {
 
 .deadline-panel {
   padding: 26px 28px;
-  background: #f7faf9;
-  border-color: #b8c9c4;
-  border-top: 5px solid #2f625b;
+  background: #fbf9fe;
+  border-color: #d8cce8;
+  border-top: 5px solid #7c5aab;
 }
 
 .deadline-panel-heading,
@@ -2404,7 +2404,7 @@ textarea::placeholder {
 
 .deadline-panel-heading h2 {
   margin: 1px 0 5px;
-  color: #183c38;
+  color: #463257;
   font-size: 30px;
   line-height: 1.2;
 }
@@ -2421,9 +2421,9 @@ textarea::placeholder {
   gap: 7px;
   min-height: 40px;
   padding: 9px 12px;
-  color: #244f4a;
+  color: #61477e;
   background: #fff;
-  border: 1px solid #9db8b2;
+  border: 1px solid #c4b2da;
   font-size: 12px;
   font-weight: 850;
   text-decoration: none;
@@ -2431,8 +2431,8 @@ textarea::placeholder {
 
 .official-calendar-link:hover {
   color: #fff;
-  background: #2f625b;
-  border-color: #2f625b;
+  background: #7653a4;
+  border-color: #7653a4;
 }
 
 .official-calendar-link span {
@@ -2452,9 +2452,9 @@ textarea::placeholder {
   gap: 12px;
   align-items: start;
   padding: 15px;
-  background: #f8faf9;
-  border: 1px solid rgba(86, 161, 164, 0.16);
-  border-left: 4px solid #56a1a4;
+  background: #f8f5fc;
+  border: 1px solid rgba(124, 90, 171, 0.16);
+  border-left: 4px solid #7c5aab;
 }
 
 .deadline-card > span {
@@ -2463,33 +2463,33 @@ textarea::placeholder {
   min-height: 38px;
   place-items: center;
   color: #fff;
-  background: #356f76;
+  background: #7653a4;
   font-size: 12px;
   font-weight: 900;
 }
 
 .deadline-card.track {
-  border-left-color: #7d6fc0;
+  border-left-color: #9b80c7;
 }
 
 .deadline-card.track > span {
-  background: #7d6fc0;
+  background: #8f72bb;
 }
 
 .deadline-card.major {
-  border-left-color: #c582b0;
+  border-left-color: #c17ea8;
 }
 
 .deadline-card.major > span {
-  background: #a76593;
+  background: #ad628f;
 }
 
 .deadline-card.personal {
-  border-left-color: #d39b47;
+  border-left-color: #b86f9f;
 }
 
 .deadline-card.personal > span {
-  background: #b7792d;
+  background: #9f5d89;
 }
 
 .deadline-card strong,
@@ -2505,9 +2505,9 @@ textarea::placeholder {
 .deadline-empty {
   grid-column: 1 / -1;
   padding: 18px 20px;
-  color: #4d5f5b;
+  color: #655a6e;
   background: #fff;
-  border: 1px dashed #adc1bc;
+  border: 1px dashed #cbbddd;
 }
 
 .deadline-empty strong,
@@ -2518,7 +2518,7 @@ textarea::placeholder {
 .deadline-empty strong {
   display: block;
   margin-bottom: 3px;
-  color: #294b46;
+  color: #4f3d5f;
   font-size: 15px;
 }
 
@@ -2587,8 +2587,51 @@ textarea::placeholder {
 .calendar-arrow-button:hover,
 .calendar-today-button:hover {
   color: #fff;
-  background: #2f625b;
-  border-color: #2f625b;
+  background: #7653a4;
+  border-color: #7653a4;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 14px;
+  margin: -2px 24px 14px;
+  color: #655d6d;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.calendar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.calendar-legend i {
+  width: 9px;
+  height: 9px;
+  background: #dcd0f1;
+  border-radius: 50%;
+}
+
+.calendar-legend .track i {
+  background: #e9dff6;
+}
+
+.calendar-legend .major i {
+  background: #f1d8e8;
+}
+
+.calendar-legend .academic i {
+  background: #e3deef;
+}
+
+.calendar-legend .personal i {
+  background: #efd7e6;
+}
+
+.calendar-legend .holiday i {
+  background: #e7a7a2;
 }
 
 .academic-calendar-weekdays {
@@ -2650,8 +2693,8 @@ textarea::placeholder {
 }
 
 .academic-calendar-day.today {
-  background: #f4faf8;
-  box-shadow: inset 0 0 0 2px rgba(47, 98, 91, 0.2);
+  background: #faf7fd;
+  box-shadow: inset 0 0 0 2px rgba(124, 90, 171, 0.2);
 }
 
 .academic-calendar-day.sunday .calendar-day-head strong,
@@ -2677,7 +2720,7 @@ textarea::placeholder {
 }
 
 .calendar-day-head .today-label {
-  color: #2f625b;
+  color: #7653a4;
   font-size: 10px;
   font-weight: 900;
 }
@@ -2701,8 +2744,8 @@ textarea::placeholder {
   height: 21px;
   margin: 0 2px;
   padding: 0 8px;
-  color: #31494e;
-  background: #dcefeb;
+  color: #574366;
+  background: #e8e0f3;
   border: 0;
   border-radius: 3px;
   cursor: pointer;
@@ -2740,28 +2783,28 @@ textarea::placeholder {
 }
 
 .calendar-event-bar.course {
-  color: #1f5557;
-  background: #d9eeee;
+  color: #51366f;
+  background: #dcd0f1;
 }
 
 .calendar-event-bar.track {
-  color: #51438b;
-  background: #e9e5f8;
+  color: #654a80;
+  background: #e9dff6;
 }
 
 .calendar-event-bar.major {
-  color: #584783;
-  background: #e7e1f5;
+  color: #7b4264;
+  background: #f1d8e8;
 }
 
 .calendar-event-bar.academic {
-  color: #385c35;
-  background: #dfeeda;
+  color: #5f5572;
+  background: #e3deef;
 }
 
 .calendar-event-bar.special {
-  color: #7a4c17;
-  background: #f5e5c8;
+  color: #754f70;
+  background: #ead5e8;
 }
 
 .calendar-event-bar.holiday {
@@ -2770,9 +2813,9 @@ textarea::placeholder {
 }
 
 .calendar-event-bar.personal {
-  color: #6a4a18;
-  background: #ffedca;
-  box-shadow: inset 0 0 0 1px rgba(164, 111, 35, 0.2);
+  color: #75435f;
+  background: #efd7e6;
+  box-shadow: inset 0 0 0 1px rgba(159, 93, 137, 0.2);
 }
 
 .calendar-side-panel {
@@ -2807,35 +2850,35 @@ textarea::placeholder {
   display: inline-flex;
   justify-content: center;
   padding: 4px 8px;
-  color: #356f76;
-  background: #edf8f8;
-  border: 1px solid rgba(86, 161, 164, 0.2);
+  color: #634581;
+  background: #f0eafa;
+  border: 1px solid rgba(124, 90, 171, 0.2);
   font-size: 11px;
   font-weight: 850;
 }
 
 .official-schedule-row.track > span {
-  color: #6b5bb2;
-  background: #f2f0ff;
-  border-color: rgba(125, 111, 192, 0.22);
+  color: #76559a;
+  background: #f2ecfa;
+  border-color: rgba(155, 128, 199, 0.24);
 }
 
 .official-schedule-row.major > span {
-  color: #a76593;
-  background: #fff1f8;
-  border-color: rgba(197, 130, 176, 0.24);
+  color: #9c5680;
+  background: #fbeef6;
+  border-color: rgba(193, 126, 168, 0.24);
 }
 
 .official-schedule-row.academic > span {
-  color: #42683f;
-  background: #edf6ea;
-  border-color: rgba(85, 132, 78, 0.22);
+  color: #675c7a;
+  background: #f1eef6;
+  border-color: rgba(111, 96, 137, 0.22);
 }
 
 .official-schedule-row.special > span {
-  color: #83551d;
-  background: #fbf0dc;
-  border-color: rgba(175, 125, 57, 0.24);
+  color: #86527f;
+  background: #f8edf6;
+  border-color: rgba(184, 111, 159, 0.24);
 }
 
 .official-schedule-row strong,

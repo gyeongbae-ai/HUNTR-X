@@ -331,6 +331,14 @@ function renderPage() {
               <button class="calendar-arrow-button" id="nextMonth" type="button" aria-label="다음 달" title="다음 달">→</button>
             </div>
           </div>
+          <div class="calendar-legend" aria-label="일정 색상 안내">
+            <span class="course"><i aria-hidden="true"></i>수강신청</span>
+            <span class="track"><i aria-hidden="true"></i>융합트랙</span>
+            <span class="major"><i aria-hidden="true"></i>전공 신청</span>
+            <span class="academic"><i aria-hidden="true"></i>학사 일정</span>
+            <span class="personal"><i aria-hidden="true"></i>내 일정</span>
+            <span class="holiday"><i aria-hidden="true"></i>공휴일</span>
+          </div>
           ${renderCalendarGrid()}
         </div>
 
