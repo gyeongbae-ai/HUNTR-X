@@ -1,4 +1,5 @@
 import { ensureProfile, getProfile, getSession, loginDemo, logout, requireAuth } from "./auth.js";
+import { formatKoreanDate, getNextAcademicEvent, getReminderEvents } from "./academic-schedule-data.js";
 import { calculateProgress, getActionItems } from "./data.js";
 import { initMotionEffects } from "./motion.js";
 
@@ -9,6 +10,7 @@ const navItems = [
   { href: "early-graduation.html", label: "조기졸업 진단", page: "early" },
   { href: "assistant.html", label: "AI 학사 도우미", page: "assistant" },
   { href: "programs.html", label: "맞춤 비교과", page: "programs" },
+  { href: "academic-calendar.html", label: "학사 일정", page: "calendar" },
   { href: "onboarding.html", label: "내 정보 수정", page: "onboarding" },
   { href: "about.html", label: "Contact Us", page: "about" },
 ];
@@ -29,6 +31,7 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
   initMotionEffects();
 
   const pendingCount = profile ? getActionItems(profile).length : 0;
+  const noticeBanner = profile ? renderAcademicNoticeBanner(profile) : "";
   const initials = (profile?.name || session.name || "GQ").slice(0, 1);
   const nav = navItems.map(
       (item) => `
@@ -78,9 +81,9 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
         </div>
         <nav class="sidebar-nav" aria-label="주요 메뉴">
           <span class="nav-section-label">졸업 내비게이터</span>
-          ${nav.slice(0, 6).join("")}
+          ${nav.slice(0, 7).join("")}
           <span class="nav-section-label">사용자 메뉴</span>
-          ${nav.slice(6).join("")}
+          ${nav.slice(7).join("")}
         </nav>
         <div class="sidebar-footer">
           <div class="user-mini">
@@ -103,6 +106,7 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
             <button class="btn btn-ghost" id="logoutButton" type="button">로그아웃</button>
           </div>
         </header>
+        ${noticeBanner}
         <div id="pageContent"></div>
       </main>
     </div>
@@ -112,6 +116,26 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
   initRevealShell();
 
   return profile;
+}
+
+function renderAcademicNoticeBanner(profile) {
+  const reminders = getReminderEvents(profile).slice(0, 2);
+  const nextEvent = getNextAcademicEvent(profile);
+  const primary = reminders[0];
+  const message = primary
+    ? `D-${primary.daysUntilDeadline} ${primary.title} 마감 (${formatKoreanDate(primary.end || primary.start)})`
+    : nextEvent
+      ? `다음 학사 일정: ${nextEvent.title} (${formatKoreanDate(nextEvent.start)}${nextEvent.end && nextEvent.end !== nextEvent.start ? `~${formatKoreanDate(nextEvent.end)}` : ""})`
+      : "수강신청·융합트랙·복수전공 일정은 매년 초 공지사항에서 최종 확인하세요.";
+  const secondary = reminders.length > 1 ? ` 외 ${reminders.length - 1}건` : "";
+  return `
+    <aside class="academic-notice-banner ${primary ? "urgent" : ""}" aria-label="학사 일정 알림">
+      <div>
+        <strong>${primary ? "마감 알림" : "공지 확인"}</strong>
+        <span>${message}${secondary}</span>
+      </div>
+      <a class="text-link" href="academic-calendar.html">캘린더 보기</a>
+    </aside>`;
 }
 
 function initRevealShell() {

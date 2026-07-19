@@ -20,6 +20,7 @@ const staticExtensions = new Set([
 const staticRoots = ["assets/", "css/", "js/", "pic/"];
 const rootStaticFiles = new Set([
   "about.html",
+  "academic-calendar.html",
   "assistant.html",
   "dashboard.html",
   "early-graduation.html",
