@@ -1,12 +1,43 @@
-import { getProfile, getSession, saveProfile } from "./auth.js";
+import { getProfile, getSession, loginDemo, saveProfile } from "./auth.js";
 import { initAppShell, showToast } from "./common.js";
-import { CAMPUSES, clonePersona, COLLEGES, SECONDARY_PROGRAMS, STORAGE_KEYS } from "./data.js";
+import { CAMPUSES, clonePersona, COLLEGES, PERSONAS, SECONDARY_PROGRAMS, STORAGE_KEYS } from "./data.js";
 
 const existing = getProfile();
 const session = getSession();
 initAppShell({ page: "onboarding", title: "내 정보 설정", requireProfile: false });
 
-const page = document.querySelector("#pageContent");
+let page = document.querySelector("#pageContent");
+if (!page) {
+  page = document.createElement("div");
+  page.id = "pageContent";
+  document.body.append(page);
+}
+const featuredPersonas = [
+  ["economicsDouble", "복수전공 · 국제어"],
+  ["mediaMicro", "마이크로디그리"],
+  ["designPractice", "졸업전시 · 포트폴리오"],
+  ["chemistryChallenge", "연구 · 도전학기"],
+  ["pharmacyClinical", "통합6년제 · 실무실습"],
+  ["educationTeaching", "교직 · 교원자격"],
+];
+const existingPersonas = [
+  ["globalBiz", "글로벌경영"],
+  ["chemSemi", "화공 · 융합트랙"],
+  ["libEcon", "문헌정보 · 경제 복전"],
+  ["softwareEarly", "SW · 조기졸업"],
+];
+
+function renderPersonaCard([key, tag]) {
+  const persona = PERSONAS[key];
+  return `
+    <button class="persona-card" type="button" data-persona="${key}">
+      <span>${tag}</span>
+      <strong>${persona.department}</strong>
+      <small>${persona.personaSummary || persona.degreeTypeLabel}</small>
+      <i>${persona.sourceStatus || "기존 검증 프로필"}</i>
+    </button>`;
+}
+
 page.innerHTML = `
   <div class="page-content">
     <div class="page-header">
@@ -25,14 +56,13 @@ page.innerHTML = `
 
     <section class="panel">
       <div class="panel-header">
-        <div><h2>데모 프로필 불러오기</h2><p>복수전공·연계전공·단일전공·조기졸업 케이스를 바로 체험할 수 있습니다.</p></div>
+        <div><h2>대표 페르소나 불러오기</h2><p>문서 형식이 아니라 졸업요건 판정 로직이 다른 대표 학과를 선택했습니다.</p></div>
       </div>
-      <div class="demo-buttons" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
-        <button class="btn btn-secondary" type="button" data-persona="globalBiz">글로벌경영</button>
-        <button class="btn btn-secondary" type="button" data-persona="chemSemi">화공 + 융합트랙</button>
-        <button class="btn btn-secondary" type="button" data-persona="libEcon">문정 + 경제</button>
-        <button class="btn btn-secondary" type="button" data-persona="softwareEarly">SW 조기졸업</button>
-      </div>
+      <div class="persona-grid">${featuredPersonas.map(renderPersonaCard).join("")}</div>
+      <details class="legacy-personas">
+        <summary>기존 검증 프로필 4개</summary>
+        <div class="persona-grid compact">${existingPersonas.map(renderPersonaCard).join("")}</div>
+      </details>
     </section>
 
     <section class="panel">
@@ -162,7 +192,19 @@ toggleSecondary();
 
 document.querySelectorAll("[data-persona]").forEach((button) => {
   button.addEventListener("click", async () => {
-    const saved = await saveProfile(clonePersona(button.dataset.persona));
+    const selected = clonePersona(button.dataset.persona);
+    if (session?.demo) {
+      loginDemo(button.dataset.persona);
+      showToast("데모 프로필을 불러왔습니다.");
+      window.setTimeout(() => window.location.assign("dashboard.html"), 350);
+      return;
+    }
+    if (session?.studentNumber) {
+      selected.id = existing?.id || `USER_${session.studentNumber}`;
+      selected.studentNumber = session.studentNumber;
+      selected.name = existing?.name || session.name || selected.name;
+    }
+    const saved = await saveProfile(selected);
     if (!saved) {
       showToast("클라우드 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       return;
@@ -187,6 +229,12 @@ function getTemplateKey(department) {
   if (department === "화학공학부") return "chemSemi";
   if (department === "문헌정보학과") return "libEcon";
   if (department === "소프트웨어학과") return "softwareEarly";
+  if (department === "경제학과") return "economicsDouble";
+  if (department === "미디어커뮤니케이션학과") return "mediaMicro";
+  if (department === "디자인학과") return "designPractice";
+  if (department === "화학과") return "chemistryChallenge";
+  if (department === "약학과") return "pharmacyClinical";
+  if (department === "교육학과") return "educationTeaching";
   return "globalBiz";
 }
 

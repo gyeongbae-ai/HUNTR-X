@@ -23,10 +23,16 @@ export const CAMPUSES = ["인문사회과학캠퍼스", "자연과학캠퍼스"]
 export const COLLEGES = {
   인문사회과학캠퍼스: {
     문과대학: ["문헌정보학과"],
+    경제대학: ["경제학과"],
+    사회과학대학: ["미디어커뮤니케이션학과"],
+    예술대학: ["디자인학과"],
+    사범대학: ["교육학과"],
     경영대학: ["글로벌경영학과"],
   },
   자연과학캠퍼스: {
     공과대학: ["화학공학부"],
+    자연과학대학: ["화학과"],
+    약학대학: ["약학과"],
     소프트웨어융합대학: ["소프트웨어학과"],
   },
 };
@@ -34,6 +40,8 @@ export const COLLEGES = {
 export const SECONDARY_PROGRAMS = [
   "없음",
   "경제학과 복수전공",
+  "미디어커뮤니케이션학과 복수전공",
+  "지능형 실감미디어와 지역문화 콘텐츠 마이크로디그리",
   "반도체소재부품장비패키징 융합트랙",
   "반도체소부장인공지능시스템연계전공",
   "차세대반도체공학 연계전공",
@@ -83,6 +91,34 @@ export const OFFICIAL_SOURCES = [
   {
     label: "화학공학부 교과과정",
     url: "https://cheme.skku.edu/undergraduate-course-offerings/",
+  },
+  {
+    label: "경제학과 교육과정",
+    url: "https://professor.skku.edu/ecostat/under_econ_curriculum.do",
+  },
+  {
+    label: "미디어커뮤니케이션학과 주요규정",
+    url: "https://mediacomm.skku.edu/mediacomm/rule/rule_under.do",
+  },
+  {
+    label: "HUSS 마이크로디그리 교과목",
+    url: "https://huss.skku.edu/subject",
+  },
+  {
+    label: "디자인학과 교육과정",
+    url: "https://design.skku.edu/design/dept_curriculum.do",
+  },
+  {
+    label: "화학과 교육과정",
+    url: "https://skb.skku.edu/cscience/undergraduate/chem_curiculum.do?lang=Korean",
+  },
+  {
+    label: "약학대학 학사 졸업규정",
+    url: "https://pharm.skku.edu/academics/degree02.php",
+  },
+  {
+    label: "사범대학 교직 기본이수과목",
+    url: "https://coe.skku.edu/coe/union/basic.do?articleNo=30578&attachNo=138103&mode=download",
   },
   {
     label: "소프트웨어학과 교육과정",
@@ -207,13 +243,13 @@ export const PERSONAS = {
       completed: 1,
       required: 6,
       label: "두 전공 졸업평가",
-      description: "문헌정보학과 졸업논문과 경제학과 졸업시험 또는 면제 기준을 모두 충족해야 합니다.",
+      description: "문헌정보학과 졸업논문과 경제학과 졸업시험을 모두 확인해야 합니다. 시험의 세부 합격·면제 기준은 최신 내규 확인 전 확정하지 않습니다.",
       checklist: [
         { label: "문헌정보학과 지도교수 배정", completed: true },
         { label: "문헌정보학과 졸업논문 제출", completed: false },
         { label: "문헌정보학과 논문 심사 합격", completed: false },
-        { label: "경제학과 지정과목 점수 환산", completed: false },
-        { label: "환산점수 315점 또는 시험 통과", completed: false },
+        { label: "경제학과 졸업시험 대상 확인", completed: false },
+        { label: "경제학과 최신 응시·합격 기준 확인", completed: false },
         { label: "제1·제2전공 최종 승인", completed: false },
       ],
     },
@@ -232,7 +268,7 @@ export const PERSONAS = {
       { code: "ECO3005", name: "재정학", area: "경제학과 복수전공", credits: 3, completed: false, source: "성균관대 전공학점 이수기준표·GLS 수강편람 대조", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECO3006", name: "산업조직론", area: "경제학과 복수전공", credits: 3, completed: false, source: "성균관대 전공학점 이수기준표·GLS 수강편람 대조", requirementIds: ["totalCredits", "secondaryMajor"] },
     ],
-    notes: ["복수전공자는 두 전공의 졸업평가를 모두 통과해야 합니다.", "경제학과 면제 환산점수는 최신 학과 공지를 확인해야 합니다."],
+    notes: ["복수전공자는 두 전공의 졸업평가를 모두 통과해야 합니다.", "경제학과 시험 시행은 확인됐지만 세부 합격·면제 기준은 최신 학과 내규와 다시 대조해야 합니다."],
   },
   globalBiz: {
     id: "TEST_P03_GLB_BIZ",
@@ -366,6 +402,358 @@ export const PERSONAS = {
       "조기졸업이어도 전공 66학점과 학과 졸업평가는 감면되지 않습니다.",
       "6학기 조기졸업은 연구 일정을 4학기 지도교수 연락, 5학기 계획 제출, 6학기 최종보고 순으로 앞당겨야 합니다.",
     ],
+  },
+  economicsDouble: {
+    id: "TEST_P05_ECON_DOUBLE",
+    name: "정경제",
+    studentNumber: "2024123460",
+    admissionYear: 2024,
+    campus: "인문사회과학캠퍼스",
+    college: "경제대학",
+    department: "경제학과",
+    degreeType: "double_major",
+    degreeTypeLabel: "복수전공·국제어 확인",
+    secondaryProgram: "미디어커뮤니케이션학과 복수전공",
+    earlyGraduation: false,
+    currentSemester: 6,
+    gpa: 3.72,
+    personaType: "시험형 + 복수전공",
+    personaSummary: "두 전공의 졸업평가와 국제어 의무를 각각 추적하는 복합 사례",
+    sourceStatus: "제도 확인 · 시험 세부기준 재확인",
+    sourceUrl: "https://ecostat.skku.edu/ecostat/notice_under.do",
+    totalCredits: { completed: 92, required: 120 },
+    coreGeneral: { completed: 16, required: 16 },
+    balancedGeneral: { completed: 6, required: 6 },
+    dsEducation: { completed: 6, required: 6 },
+    primaryMajor: { completed: 30, required: 42, detail: "경제학과 복수전공 이수 형태의 제1전공 기준" },
+    secondaryMajor: { completed: 21, required: 39, detail: "미디어커뮤니케이션학과 복수전공 학점" },
+    creditBreakdown: {
+      primaryMajor: [
+        { label: "경제학 전공코어", completed: 24, required: 30 },
+        { label: "경제학 전공심화", completed: 6, required: 12 },
+      ],
+      secondaryMajor: [
+        { label: "미디어커뮤니케이션 전공", completed: 21, required: 39 },
+      ],
+    },
+    internationalTotal: { completed: 12, required: 18 },
+    internationalMajor: { completed: 6, required: 12 },
+    specialRequirement: {
+      id: "secondaryInternationalCheck",
+      label: "제2전공 국제어 기준 확인",
+      description: "복수전공자는 각 전공의 국제어 의무를 별도로 확인해야 하며 정확한 학점은 학번별 기준표와 대조합니다.",
+      completed: 0,
+      required: 1,
+      suffix: "건",
+    },
+    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 3 })),
+    graduationEvaluation: {
+      completed: 1,
+      required: 4,
+      label: "경제학과·미디어커뮤니케이션학과 졸업평가",
+      description: "경제학과 졸업시험과 미디어커뮤니케이션학과의 논문 또는 공인어학성적 제출을 각각 확인합니다.",
+      checklist: [
+        { label: "경제학과 졸업시험 대상 확인", completed: true },
+        { label: "경제학과 최신 응시·면제 기준 확인", completed: false },
+        { label: "미디어커뮤니케이션 논문 또는 공인어학성적 제출", completed: false },
+        { label: "두 전공 최종 승인 확인", completed: false },
+      ],
+    },
+    courses: [
+      { code: "ECO2001", name: "경제학원론1", area: "제1전공", credits: 3, completed: true, source: "경제대학 교육과정" },
+      { code: "ECO2003", name: "미시경제학", area: "제1전공", credits: 3, completed: true, source: "경제대학 교육과정" },
+      { code: "MCJ2102", name: "미디어커뮤니케이션개론", area: "제2전공", credits: 3, completed: true, source: "미디어커뮤니케이션학과 교육과정" },
+      { code: "MCJ2040", name: "메타버스와콘텐츠비즈니스", area: "제2전공", credits: 3, completed: false, source: "HUSS 교과목 목록" },
+    ],
+    notes: [
+      "경제학과 졸업시험 시행은 확인됐지만 315점·360점 환산 기준은 경제학과 공식 근거가 없어 적용하지 않았습니다.",
+      "복수전공 국제어 의무는 각 전공별 확인 대상으로 표시하고, 숫자는 최신 학번별 기준표 확인 전 확정하지 않습니다.",
+    ],
+  },
+  mediaMicro: {
+    id: "TEST_P06_MEDIA_MICRO",
+    name: "한미디어",
+    studentNumber: "2023123461",
+    admissionYear: 2023,
+    campus: "인문사회과학캠퍼스",
+    college: "사회과학대학",
+    department: "미디어커뮤니케이션학과",
+    degreeType: "single_major",
+    degreeTypeLabel: "단일전공·마이크로디그리",
+    secondaryProgram: "지능형 실감미디어와 지역문화 콘텐츠 마이크로디그리",
+    earlyGraduation: false,
+    currentSemester: 6,
+    gpa: 3.81,
+    personaType: "복합선택형 + 마이크로디그리",
+    personaSummary: "졸업평가 선택지와 9학점 마이크로디그리를 함께 관리하는 사례",
+    sourceStatus: "공식 규정 확인",
+    sourceUrl: "https://mediacomm.skku.edu/mediacomm/rule/rule_under.do",
+    totalCredits: { completed: 89, required: 120 },
+    coreGeneral: { completed: 16, required: 16 },
+    balancedGeneral: { completed: 6, required: 6 },
+    dsEducation: { completed: 6, required: 6 },
+    primaryMajor: { completed: 36, required: 54, detail: "미디어커뮤니케이션학과 단일전공" },
+    secondaryMajor: null,
+    creditBreakdown: {
+      primaryMajor: [
+        { label: "미디어커뮤니케이션 전공", completed: 36, required: 54 },
+      ],
+    },
+    internationalTotal: { completed: 9, required: 18 },
+    internationalMajor: { completed: 6, required: 12 },
+    specialRequirement: {
+      id: "microdegree",
+      label: "실감미디어 마이크로디그리",
+      description: "지능형 실감미디어와 지역문화 콘텐츠 과정은 9학점 이수 요건이며 졸업요건과는 별도입니다.",
+      completed: 6,
+      required: 9,
+      suffix: "학점",
+    },
+    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 2 })),
+    graduationEvaluation: {
+      completed: 1,
+      required: 3,
+      label: "미디어커뮤니케이션학과 졸업평가",
+      description: "졸업논문 또는 학과가 정한 공인어학성적 중 하나를 제출합니다.",
+      checklist: [
+        { label: "논문지도신청서 제출", completed: true },
+        { label: "졸업논문 또는 공인어학성적 제출", completed: false },
+        { label: "GLS 졸업자가진단 결과 확인", completed: false },
+      ],
+    },
+    courses: [
+      { code: "MCJ2102", name: "미디어커뮤니케이션개론", area: "제1전공", credits: 3, completed: true, source: "미디어커뮤니케이션학과 교육과정" },
+      { code: "MCJ2040", name: "메타버스와콘텐츠비즈니스", area: "마이크로디그리", credits: 3, completed: true, source: "HUSS 교과목 목록" },
+      { code: "MCJ3129", name: "실감형인터랙티브미디어", area: "마이크로디그리", credits: 3, completed: true, source: "HUSS 교과목 목록" },
+      { code: "MCJ3131", name: "인터컬쳐럴커뮤니케이션", area: "마이크로디그리", credits: 3, completed: false, source: "HUSS 교과목 목록" },
+    ],
+    notes: [
+      "마이크로디그리는 제1~3전공 이수기준학점을 바꾸지 않는 별도 인증 과정입니다.",
+      "공인어학성적은 졸업예정일 기준 2년 이내 취득분만 인정됩니다.",
+    ],
+  },
+  designPractice: {
+    id: "TEST_P07_DESIGN",
+    name: "윤디자인",
+    studentNumber: "2023123462",
+    admissionYear: 2023,
+    campus: "인문사회과학캠퍼스",
+    college: "예술대학",
+    department: "디자인학과",
+    degreeType: "single_major",
+    degreeTypeLabel: "단일전공·졸업전시",
+    secondaryProgram: "없음",
+    earlyGraduation: false,
+    currentSemester: 7,
+    gpa: 3.66,
+    personaType: "예술·실기형",
+    personaSummary: "포트폴리오와 졸업전시 마일스톤을 교과목과 연결하는 사례",
+    sourceStatus: "교과목 확인 · 필수 여부 재확인",
+    sourceUrl: "https://design.skku.edu/design/dept_curriculum.do",
+    totalCredits: { completed: 105, required: 120 },
+    coreGeneral: { completed: 16, required: 16 },
+    balancedGeneral: { completed: 6, required: 6 },
+    dsEducation: { completed: 6, required: 6 },
+    primaryMajor: { completed: 45, required: 54, detail: "시각디자인전공 교과와 졸업 프로젝트" },
+    secondaryMajor: null,
+    creditBreakdown: { primaryMajor: [{ label: "디자인 전공", completed: 45, required: 54 }] },
+    internationalTotal: { completed: 9, required: 18 },
+    internationalMajor: { completed: 6, required: 12 },
+    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 3 })),
+    graduationEvaluation: {
+      completed: 2,
+      required: 4,
+      label: "디자인학과 졸업전시·포트폴리오",
+      description: "공식 교육과정의 졸업전시·포트폴리오 연계 과목을 기준으로 준비 단계를 추적합니다.",
+      checklist: [
+        { label: "졸업 프로젝트 주제 확정", completed: true },
+        { label: "DES3032 디자인리서치 이수", completed: true },
+        { label: "개인 포트폴리오 심사", completed: false },
+        { label: "졸업전시 결과물 제출", completed: false },
+      ],
+    },
+    courses: [
+      { code: "DES2031", name: "크리에이티브디자인", area: "제1전공", credits: 3, completed: true, source: "디자인학과 교육과정" },
+      { code: "DES3032", name: "디자인리서치", area: "졸업프로젝트", credits: 3, completed: true, source: "AIEX 개설과목 공지" },
+      { code: "DES3045", name: "UXUI디자인1", area: "제1전공", credits: 3, completed: false, source: "AIEX 개설과목 공지" },
+      { code: "DES4001", name: "융합캡스톤디자인", area: "졸업프로젝트", credits: 3, completed: false, source: "AIEX 개설과목 공지" },
+      { code: "DES3048", name: "디자인앤포트폴리오", area: "졸업프로젝트", credits: 3, completed: false, source: "AIEX 교과목 목록" },
+    ],
+    notes: ["졸업전시 관련 과목은 공식 로드맵에서 확인되지만 최종 필수 이수 여부는 학과 공지와 대조해야 합니다."],
+  },
+  chemistryChallenge: {
+    id: "TEST_P08_CHEM_CHALLENGE",
+    name: "오화학",
+    studentNumber: "2024123463",
+    admissionYear: 2024,
+    campus: "자연과학캠퍼스",
+    college: "자연과학대학",
+    department: "화학과",
+    degreeType: "single_major",
+    degreeTypeLabel: "단일전공·도전학기",
+    secondaryProgram: "없음",
+    earlyGraduation: false,
+    currentSemester: 6,
+    gpa: 3.77,
+    personaType: "연구실 기반 기초과학형",
+    personaSummary: "학부 연구와 졸업논문 사이클에 도전학기 선택을 결합한 사례",
+    sourceStatus: "공식 학과 공지 확인",
+    sourceUrl: "https://professor.skku.edu/chem/News/notice.do",
+    totalCredits: { completed: 94, required: 130 },
+    coreGeneral: { completed: 16, required: 16 },
+    balancedGeneral: { completed: 6, required: 6 },
+    dsEducation: { completed: 6, required: 6 },
+    primaryMajor: { completed: 42, required: 60, detail: "화학과 전공과 학부 연구 교과목" },
+    secondaryMajor: null,
+    creditBreakdown: { primaryMajor: [{ label: "화학 전공", completed: 42, required: 60 }] },
+    internationalTotal: { completed: 12, required: 18 },
+    internationalMajor: { completed: 6, required: 12 },
+    specialRequirement: {
+      id: "challengeSemester",
+      label: "도전학기 연구계획",
+      description: "도전학기 3학점 연구계획을 현재 학업계획에 반영한 상태입니다.",
+      completed: 3,
+      required: 3,
+      suffix: "학점",
+    },
+    whatIfData: { challengeCredits: 3 },
+    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 2 })),
+    graduationEvaluation: {
+      completed: 2,
+      required: 4,
+      label: "화학과 학부 연구·졸업논문",
+      description: "2~3학년 화학개별연구에서 4학년 졸업논문연구와 논문 제출로 이어지는 연구 사이클입니다.",
+      checklist: [
+        { label: "연구실·지도교수 배정", completed: true },
+        { label: "CHY3035 또는 CHY3037 화학개별연구", completed: true },
+        { label: "CHY3021 졸업논문연구 수강", completed: false },
+        { label: "졸업논문 제출·심사", completed: false },
+      ],
+    },
+    courses: [
+      { code: "CHY3035", name: "화학개별연구2", area: "연구교과", credits: 2, completed: true, source: "화학과 교육과정·2025-2 공지" },
+      { code: "CHY3037", name: "화학개별연구4", area: "연구교과", credits: 2, completed: false, source: "화학과 교육과정·2025-2 공지" },
+      { code: "CHY3021", name: "졸업논문연구", area: "졸업평가", credits: 2, completed: false, source: "화학과 2025-2 수강 공지" },
+    ],
+    notes: ["CHY3021 수강과 학부 졸업논문 제출은 서로 다른 절차이므로 각각 완료 여부를 확인합니다."],
+  },
+  pharmacyClinical: {
+    id: "TEST_P09_PHARMACY",
+    name: "서약학",
+    studentNumber: "2024123464",
+    admissionYear: 2024,
+    campus: "자연과학캠퍼스",
+    college: "약학대학",
+    department: "약학과",
+    degreeType: "single_major",
+    degreeTypeLabel: "통합6년제·장기실무실습",
+    secondaryProgram: "없음",
+    earlyGraduation: false,
+    requiredSemesters: 12,
+    currentSemester: 8,
+    gpa: 3.58,
+    personaType: "국가면허·장기 임상형",
+    personaSummary: "12학기 등록과 병원·약국·제약 실습을 장기간 누적하는 사례",
+    sourceStatus: "2026 약학대학 내규 확인",
+    sourceUrl: "https://pharm.skku.edu/academics/degree02.php",
+    totalCredits: { completed: 156, required: 230 },
+    coreGeneral: { completed: 16, required: 16 },
+    balancedGeneral: { completed: 6, required: 6 },
+    dsEducation: { completed: 6, required: 6 },
+    primaryMajor: { completed: 121, required: 185, detail: "전공코어 137 · 전공심화 38 · 실험실습 10학점" },
+    secondaryMajor: null,
+    creditBreakdown: {
+      primaryMajor: [
+        { label: "전공코어", completed: 98, required: 137 },
+        { label: "전공심화", completed: 18, required: 38 },
+        { label: "실험실습", completed: 5, required: 10 },
+      ],
+    },
+    internationalTotal: { completed: 9, required: 18 },
+    internationalMajor: { completed: 6, required: 12 },
+    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 2 })),
+    graduationEvaluation: {
+      completed: 1,
+      required: 5,
+      label: "약학과 심화실무실습·졸업평가",
+      description: "2022학번 이후는 심화실무실습 중 하나를 8주 이상 수행하고 실험실습보고서 심사를 통과합니다.",
+      checklist: [
+        { label: "PHR3015 약학연구1", completed: true },
+        { label: "병원 10주·약국 5주·제약 3주 필수실무실습", completed: false },
+        { label: "심화실무실습 경로 선택", completed: false },
+        { label: "8주 이상 개별연구·실습", completed: false },
+        { label: "종료 후 2주 이내 보고서 제출·심사", completed: false },
+      ],
+    },
+    courses: [
+      { code: "PHR3015", name: "약학연구1", area: "실험실습", credits: 5, completed: true, source: "약학대학 학부 교육과정" },
+      { code: "PHR3016", name: "약학연구2", area: "심화실무실습", credits: 5, completed: false, source: "약학대학 학부 교육과정" },
+    ],
+    notes: ["학수번호가 공식 교육과정 화면에서 확인되지 않은 실무실습은 임의 번호를 만들지 않고 학과지정 항목으로 표시합니다."],
+  },
+  educationTeaching: {
+    id: "TEST_P10_EDUCATION",
+    name: "임교육",
+    studentNumber: "2024123465",
+    admissionYear: 2024,
+    campus: "인문사회과학캠퍼스",
+    college: "사범대학",
+    department: "교육학과",
+    degreeType: "single_major",
+    degreeTypeLabel: "단일전공·교직이수",
+    secondaryProgram: "없음",
+    earlyGraduation: false,
+    currentSemester: 6,
+    gpa: 3.79,
+    personaType: "사범대·교직 복합형",
+    personaSummary: "학위요건과 교원자격 발급 절차를 구분해 동시에 추적하는 사례",
+    sourceStatus: "사범대 자가진단표 확인",
+    sourceUrl: "https://coe.skku.edu/coe/community/data_info.do",
+    totalCredits: { completed: 88, required: 120 },
+    coreGeneral: { completed: 16, required: 16 },
+    balancedGeneral: { completed: 6, required: 6 },
+    dsEducation: { completed: 6, required: 6 },
+    primaryMajor: { completed: 33, required: 54, detail: "교육학 전공 및 교과교육영역" },
+    secondaryMajor: null,
+    creditBreakdown: {
+      primaryMajor: [
+        { label: "교육학 전공", completed: 24, required: 33 },
+        { label: "교과교육·교직", completed: 9, required: 21 },
+      ],
+    },
+    internationalTotal: { completed: 12, required: 18 },
+    internationalMajor: { completed: 6, required: 12 },
+    specialRequirement: {
+      id: "teachingCertificate",
+      label: "교원자격 활동",
+      description: "교직인적성 2회와 응급처치·심폐소생술 2회를 별도로 추적합니다.",
+      completed: 2,
+      required: 4,
+      suffix: "회",
+    },
+    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 3 })),
+    graduationEvaluation: {
+      completed: 2,
+      required: 5,
+      label: "교육학과 졸업평가·교원자격",
+      description: "졸업논문·졸업시험·대체자격증 중 하나와 교직 활동, 무시험검정원 제출을 확인합니다.",
+      checklist: [
+        { label: "전공 75점·교직 80점 이상 확인", completed: true },
+        { label: "졸업평가 경로 선택", completed: true },
+        { label: "교직인적성 2회 적격", completed: false },
+        { label: "응급처치·심폐소생술 2회", completed: false },
+        { label: "졸업예정학기 무시험검정원 제출", completed: false },
+      ],
+    },
+    courses: [
+      { code: "EDU2002", name: "교육심리학", area: "제1전공", credits: 3, completed: true, source: "2024 사범대 기본이수과목" },
+      { code: "EDU2006", name: "교육과정", area: "제1전공", credits: 3, completed: true, source: "2024 사범대 기본이수과목" },
+      { code: "EDU2009", name: "교육평가", area: "제1전공", credits: 3, completed: false, source: "2024 사범대 기본이수과목" },
+      { code: "CFTD035", name: "교육학교육론", area: "교과교육", credits: 3, completed: true, source: "사범대 교직 기본이수과목" },
+      { code: "CFTD064", name: "교육학교재연구및지도법", area: "교과교육", credits: 3, completed: false, source: "사범대 교직 기본이수과목" },
+      { code: "CFTD079", name: "교육학교과논리논술", area: "교과교육", credits: 2, completed: false, source: "2024 사범대 교직 기본이수과목" },
+    ],
+    notes: ["교직 활동은 학위 졸업과 교원자격 발급의 관계를 구분해 최종적으로 사범대 행정실에서 확인합니다."],
   },
 };
 
@@ -1183,9 +1571,13 @@ export function getRequirementItems(profile) {
     {
       id: "registration",
       label: "등록학기",
-      description: profile.earlyGraduation ? "조기졸업은 6~7학기 등록 기준" : "일반졸업은 8학기 이상 등록",
+      description: profile.requiredSemesters
+        ? `${profile.department} 교육과정은 ${profile.requiredSemesters}학기 이상 등록`
+        : profile.earlyGraduation
+          ? "조기졸업은 6~7학기 등록 기준"
+          : "일반졸업은 8학기 이상 등록",
       completed: profile.currentSemester,
-      required: profile.earlyGraduation ? 6 : 8,
+      required: profile.requiredSemesters || (profile.earlyGraduation ? 6 : 8),
       suffix: "학기",
     },
     {
@@ -1267,6 +1659,10 @@ export function getRequirementItems(profile) {
     );
   }
 
+  if (profile.specialRequirement) {
+    items.push({ ...profile.specialRequirement });
+  }
+
   items.push(
     {
       id: "poom",
@@ -1306,6 +1702,151 @@ export function calculateProgress(profile) {
   const items = getRequirementItems(profile);
   const total = items.reduce((sum, item) => sum + getCompletionRatio(item), 0);
   return Math.round((total / items.length) * 100);
+}
+
+function getExpectedGraduationLabel(profile, extraSemesters = 0) {
+  const required = Number(profile.requiredSemesters || (profile.earlyGraduation ? 6 : 8));
+  const remaining = Math.max(0, required - Number(profile.currentSemester || 0)) + extraSemesters;
+  if (!remaining) return "요건 충족 후 현재 학기";
+  const targetIndex = Number(profile.currentSemester || 0) + remaining - 1;
+  const year = Number(profile.admissionYear || 2024) + Math.floor(targetIndex / 2);
+  const semester = targetIndex % 2 === 0 ? 1 : 2;
+  return `${year}학년도 ${semester}학기`;
+}
+
+export function getWhatIfScenarios(profile) {
+  const scenarios = [];
+  if (profile.secondaryMajor) {
+    const programLabel = profile.degreeType === "convergence_track"
+      ? "융합트랙 포기"
+      : profile.degreeType === "linked_major"
+        ? "연계전공 포기"
+        : "복수전공 포기";
+    scenarios.push({
+      id: "drop-secondary",
+      label: programLabel,
+      description: `${profile.secondaryProgram}을 이수하지 않는 경우`,
+    });
+  }
+  if (profile.specialRequirement?.id === "microdegree") {
+    scenarios.push({
+      id: "pause-microdegree",
+      label: "마이크로디그리 중단",
+      description: "별도 인증 과정을 졸업계획에서 제외하는 경우",
+    });
+  }
+  if (profile.specialRequirement?.id === "challengeSemester") {
+    scenarios.push({
+      id: "remove-challenge",
+      label: "도전학기 미참여",
+      description: "계획한 도전학기 연구학점을 취득하지 않는 경우",
+    });
+  }
+  if (profile.specialRequirement?.id === "teachingCertificate") {
+    scenarios.push({
+      id: "pause-teaching",
+      label: "교원자격 취득 보류",
+      description: "학위 진단과 교원자격 활동을 분리해서 보는 경우",
+    });
+  }
+  if (profile.earlyGraduation) {
+    scenarios.push({
+      id: "regular-graduation",
+      label: "일반졸업 전환",
+      description: "조기졸업 계획을 8학기 졸업으로 바꾸는 경우",
+    });
+  }
+  scenarios.push({
+    id: "leave-semester",
+    label: "한 학기 휴학",
+    description: "다음 학기를 휴학해 졸업시점이 한 학기 늦어지는 경우",
+  });
+  return scenarios;
+}
+
+export function simulateWhatIf(profile, scenarioId) {
+  const simulated = JSON.parse(JSON.stringify(profile));
+  const baselineItems = getRequirementItems(profile);
+  let extraSemesters = 0;
+  let headline = "";
+  let explanation = "";
+
+  if (scenarioId === "drop-secondary" && simulated.secondaryMajor) {
+    headline = `${simulated.secondaryProgram} 제외`;
+    explanation = "제2전공 학점과 별도 확인 항목이 진단에서 빠집니다. 이미 취득한 과목은 총 졸업학점에서 유지됩니다.";
+    simulated.secondaryMajor = null;
+    simulated.creditBreakdown.secondaryMajor = [];
+    simulated.degreeType = "single_major";
+    simulated.degreeTypeLabel = "단일전공";
+    simulated.secondaryProgram = "없음";
+    if (simulated.specialRequirement?.id === "secondaryInternationalCheck") simulated.specialRequirement = null;
+    if (simulated.graduationEvaluation?.checklist?.length > 2) {
+      simulated.graduationEvaluation = {
+        completed: 1,
+        required: 2,
+        label: `${simulated.department} 졸업평가`,
+        description: "제1전공의 졸업평가만 남긴 가정입니다.",
+        checklist: simulated.graduationEvaluation.checklist.slice(0, 2),
+      };
+    }
+  } else if (scenarioId === "pause-microdegree") {
+    headline = "마이크로디그리 제외";
+    explanation = "마이크로디그리는 졸업요건이 아니므로 제1전공과 총 졸업학점 기준은 그대로 유지됩니다.";
+    simulated.specialRequirement = null;
+    simulated.secondaryProgram = "없음";
+  } else if (scenarioId === "remove-challenge") {
+    const credits = Number(simulated.whatIfData?.challengeCredits || 0);
+    headline = "도전학기 미참여";
+    explanation = `계획에 반영했던 도전학기 ${credits}학점을 제외했습니다. 졸업논문연구 자체는 별도로 남습니다.`;
+    simulated.specialRequirement = null;
+    simulated.totalCredits.completed = Math.max(0, simulated.totalCredits.completed - credits);
+    simulated.primaryMajor.completed = Math.max(0, simulated.primaryMajor.completed - credits);
+  } else if (scenarioId === "pause-teaching") {
+    headline = "교원자격 활동 분리";
+    explanation = "교직인적성·응급처치 등 교원자격 발급 활동만 진단에서 분리합니다. 실제 학위요건과의 관계는 사범대 확인이 필요합니다.";
+    simulated.specialRequirement = null;
+  } else if (scenarioId === "regular-graduation") {
+    headline = "8학기 일반졸업";
+    explanation = "조기졸업의 6~7학기·평점 기준 대신 일반졸업 등록학기 기준으로 비교합니다.";
+    simulated.earlyGraduation = false;
+    simulated.requiredSemesters = 8;
+  } else {
+    headline = "한 학기 휴학";
+    explanation = "학점과 현재 충족 상태는 바뀌지 않지만 예상 졸업시점이 한 학기 늦어집니다.";
+    extraSemesters = 1;
+  }
+
+  const resultItems = getRequirementItems(simulated);
+  const beforeMap = new Map(baselineItems.map((item) => [item.id, item]));
+  const afterMap = new Map(resultItems.map((item) => [item.id, item]));
+  const changes = [...new Set([...beforeMap.keys(), ...afterMap.keys()])]
+    .map((id) => {
+      const before = beforeMap.get(id);
+      const after = afterMap.get(id);
+      if (!after) return `${before.label} 진단 제외`;
+      if (!before) return `${after.label} 진단 추가`;
+      if (before.required !== after.required || before.completed !== after.completed) {
+        return `${after.label} ${formatNumber(before.completed)}/${formatNumber(before.required)} → ${formatNumber(after.completed)}/${formatNumber(after.required)}${after.suffix}`;
+      }
+      return null;
+    })
+    .filter(Boolean);
+
+  return {
+    headline,
+    explanation,
+    before: {
+      progress: calculateProgress(profile),
+      pending: baselineItems.filter((item) => item.completed < item.required).length,
+      graduation: getExpectedGraduationLabel(profile),
+    },
+    after: {
+      progress: calculateProgress(simulated),
+      pending: resultItems.filter((item) => item.completed < item.required).length,
+      graduation: getExpectedGraduationLabel(simulated, extraSemesters),
+    },
+    changes: changes.length ? changes : ["학점·요건 수치는 동일하며 예상 졸업시점만 변경"],
+  };
 }
 
 export function getActionItems(profile) {
@@ -1397,6 +1938,30 @@ const COURSE_RECOMMENDATION_CATALOG = {
     { code: "ECE4249", name: "컴퓨터비전", credits: 3, target: "전공심화 후보", semester: "3~4학년 권장", reason: "AI 응용 분야 전공심화 보완 후보" },
     { code: "CSE3036", name: "컴퓨터공학세미나", credits: 1, target: "전공 후보", semester: "3~4학년 권장", reason: "총 졸업학점의 소규모 부족분 보완 후보" },
   ],
+  TEST_P05_ECON_DOUBLE: [
+    { code: "ECO2003", name: "미시경제학", credits: 3, target: "경제학 전공", semester: "2~3학년", reason: "경제학과 교육과정의 기초 전공 후보" },
+    { code: "MCJ2040", name: "메타버스와콘텐츠비즈니스", credits: 3, target: "제2전공", semester: "2~3학년", reason: "미디어커뮤니케이션 복수전공 학점 보완" },
+  ],
+  TEST_P06_MEDIA_MICRO: [
+    { code: "MCJ3131", name: "인터컬쳐럴커뮤니케이션", credits: 3, target: "마이크로디그리", semester: "3~4학년", reason: "9학점 마이크로디그리의 남은 과목 후보" },
+  ],
+  TEST_P07_DESIGN: [
+    { code: "DES3045", name: "UXUI디자인1", credits: 3, target: "디자인 전공", semester: "3~4학년", reason: "졸업 프로젝트 전 실무 역량 보완" },
+    { code: "DES4001", name: "융합캡스톤디자인", credits: 3, target: "졸업 프로젝트", semester: "4학년", reason: "전시 결과물과 팀 프로젝트 연결" },
+    { code: "DES3048", name: "디자인앤포트폴리오", credits: 3, target: "포트폴리오", semester: "3~4학년", reason: "개인 포트폴리오 준비 과목" },
+  ],
+  TEST_P08_CHEM_CHALLENGE: [
+    { code: "CHY3037", name: "화학개별연구4", credits: 2, target: "학부 연구", semester: "2~3학년", reason: "연구실 경험을 졸업논문 연구로 연결" },
+    { code: "CHY3021", name: "졸업논문연구", credits: 2, target: "졸업평가", semester: "4학년", reason: "학부 졸업논문 준비 필수 확인 과목" },
+  ],
+  TEST_P09_PHARMACY: [
+    { code: "PHR3016", name: "약학연구2", credits: 5, target: "심화실무실습", semester: "5~6학년", reason: "2022학번 이후 졸업평가 선택 경로" },
+  ],
+  TEST_P10_EDUCATION: [
+    { code: "EDU2009", name: "교육평가", credits: 3, target: "교육학 전공", semester: "2~3학년", reason: "사범대 기본이수과목 보완" },
+    { code: "CFTD064", name: "교육학교재연구및지도법", credits: 3, target: "교과교육", semester: "3~4학년", reason: "교원자격 기본이수과목 보완" },
+    { code: "CFTD079", name: "교육학교과논리논술", credits: 2, target: "교과교육", semester: "3~4학년", reason: "교원자격 교과교육영역 보완" },
+  ],
 };
 
 const POOM_ACTION_CATALOG = {
@@ -1422,7 +1987,7 @@ export function getPersonalizedStudyPlan(profile) {
           ? "https://cheme.skku.edu/undergraduate-course-offerings/"
           : profile.id === "TEST_P03_GLB_BIZ"
             ? "https://skb.skku.edu/gba/curriculum.do?lang=All&pager.offset=60"
-            : "https://ibook.skku.edu/Viewer/OCFDOM5VH4A2",
+            : profile.sourceUrl || "https://ibook.skku.edu/Viewer/OCFDOM5VH4A2",
     }));
   const poomActions = getPoomCount(profile) >= 3
     ? []
@@ -1436,7 +2001,7 @@ export function getPersonalizedStudyPlan(profile) {
     { label: "다음 학기", title: `${courses.length}개 과목 우선 검토`, detail: courses.length ? `${courses.slice(0, 3).map((course) => course.name).join(" · ")} (${courseCredits}학점 후보)` : "수강편람에서 전공선택 과목 확인" },
     { label: "졸업 전", title: "3품·졸업평가 마무리", detail: poomActions.length ? `${poomActions.map((item) => item.area).join(" · ")} 중 필요한 인증 선택` : "3품 입력 기준 충족 · 졸업평가 확인" },
   ];
-  return { courses, poomActions, roadmap, totalGap, sourceUrl: "https://ibook.skku.edu/Viewer/OCFDOM5VH4A2" };
+  return { courses, poomActions, roadmap, totalGap, sourceUrl: profile.sourceUrl || "https://ibook.skku.edu/Viewer/OCFDOM5VH4A2" };
 }
 
 export function getNextSemesterPlan(profile) {

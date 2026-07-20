@@ -1,11 +1,18 @@
 import { escapeHtml, initAppShell } from "./common.js";
-import { formatNumber, getNextSemesterPlan, getPersonalizedStudyPlan } from "./data.js";
+import {
+  formatNumber,
+  getNextSemesterPlan,
+  getPersonalizedStudyPlan,
+  getWhatIfScenarios,
+  simulateWhatIf,
+} from "./data.js";
 
 const profile = initAppShell({ page: "roadmap", title: "개인 로드맵" });
 if (!profile) throw new Error("Profile required");
 
 const nextPlan = getNextSemesterPlan(profile);
 const studyPlan = getPersonalizedStudyPlan(profile);
+const whatIfScenarios = getWhatIfScenarios(profile);
 
 function renderPlanItem(item, index) {
   return `
@@ -62,6 +69,32 @@ function renderEvaluation() {
     <a class="btn btn-secondary" href="evidence.html#certifications">졸업평가 상태 수정</a>`;
 }
 
+function renderWhatIfResult(scenarioId) {
+  const result = simulateWhatIf(profile, scenarioId);
+  const delta = result.after.progress - result.before.progress;
+  return `
+    <div class="what-if-result-head">
+      <div><span>Simulation result</span><h3>${escapeHtml(result.headline)}</h3><p>${escapeHtml(result.explanation)}</p></div>
+      <strong class="${delta > 0 ? "positive" : delta < 0 ? "negative" : ""}">${delta > 0 ? "+" : ""}${delta}%p</strong>
+    </div>
+    <div class="what-if-comparison">
+      <article>
+        <span>현재 계획</span>
+        <strong>${result.before.progress}%</strong>
+        <p>미충족 ${result.before.pending}개 · ${escapeHtml(result.before.graduation)}</p>
+      </article>
+      <i aria-hidden="true">→</i>
+      <article class="after">
+        <span>가정 적용</span>
+        <strong>${result.after.progress}%</strong>
+        <p>미충족 ${result.after.pending}개 · ${escapeHtml(result.after.graduation)}</p>
+      </article>
+    </div>
+    <div class="what-if-changes">
+      ${result.changes.map((change) => `<span>${escapeHtml(change)}</span>`).join("")}
+    </div>`;
+}
+
 document.querySelector("#pageContent").innerHTML = `
   <div class="page-content roadmap-page">
     <div class="page-header">
@@ -78,6 +111,24 @@ document.querySelector("#pageContent").innerHTML = `
       <div><strong>내 상황을 AI에게 물어보기</strong><span>부족한 요건과 다음 수강 순서를 이어서 상담하세요.</span></div>
       <i aria-hidden="true">→</i>
     </a>
+
+    <section class="panel what-if-panel">
+      <div class="panel-header">
+        <div><p class="eyebrow">What-if</p><h2>만약에 시뮬레이션</h2><p>선택을 저장하지 않고 졸업계획에 미치는 영향만 비교합니다.</p></div>
+        <span class="badge badge-info">현재 데이터 유지</span>
+      </div>
+      <div class="what-if-layout">
+        <div class="what-if-options" role="tablist" aria-label="가정 시나리오">
+          ${whatIfScenarios.map((scenario, index) => `
+            <button class="${index === 0 ? "active" : ""}" type="button" data-what-if="${scenario.id}" role="tab" aria-selected="${index === 0}">
+              <strong>${escapeHtml(scenario.label)}</strong>
+              <span>${escapeHtml(scenario.description)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="what-if-output" id="whatIfOutput">${renderWhatIfResult(whatIfScenarios[0].id)}</div>
+      </div>
+      <p class="what-if-notice">시뮬레이션은 선택지 탐색용입니다. 실제 졸업 판정과 신청 가능 여부는 GLS와 학과 공지를 확인하세요.</p>
+    </section>
 
     <section class="panel roadmap-semester-panel">
       <div class="panel-header"><div><p class="eyebrow">Next semester</p><h2>다음 학기 추천 계획</h2><p>마감과 준비 순서를 고려한 우선 항목입니다.</p></div><a class="text-link" href="academic-calendar.html">학사 일정</a></div>
@@ -119,6 +170,17 @@ function activateRoadmapTab(name, updateHash = false) {
 
 document.querySelectorAll("[data-roadmap-tab]").forEach((button) => {
   button.addEventListener("click", () => activateRoadmapTab(button.dataset.roadmapTab, true));
+});
+
+document.querySelectorAll("[data-what-if]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("[data-what-if]").forEach((item) => {
+      const active = item === button;
+      item.classList.toggle("active", active);
+      item.setAttribute("aria-selected", String(active));
+    });
+    document.querySelector("#whatIfOutput").innerHTML = renderWhatIfResult(button.dataset.whatIf);
+  });
 });
 
 activateRoadmapTab(window.location.hash.slice(1) || "courses");
