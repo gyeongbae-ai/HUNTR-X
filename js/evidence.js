@@ -1,7 +1,10 @@
-import { getProfile } from "./auth.js";
-import { escapeHtml, initAppShell } from "./common.js";
+import { getProfile, saveProfile } from "./auth.js";
+import { escapeHtml, initAppShell, showToast } from "./common.js";
 import {
   ensureEvidenceData,
+  formatNumber,
+  getRequirementItems,
+  getStatus as getRequirementStatus,
   REQUIREMENT_OPTIONS,
   STORAGE_KEYS,
 } from "./data.js";
@@ -13,6 +16,57 @@ ensureEvidenceData(profile);
 const completedCourses = profile.courses.filter((course) => course.completed);
 const recordedCredits = completedCourses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
 const requirementLabel = Object.fromEntries(REQUIREMENT_OPTIONS.map((item) => [item.id, item.label]));
+const editableIds = new Set([
+  "totalCredits",
+  "coreGeneral",
+  "balancedGeneral",
+  "dsEducation",
+  "primaryMajor",
+  "secondaryMajor",
+  "internationalTotal",
+  "internationalMajor",
+]);
+
+function statusBadge(item) {
+  const status = getRequirementStatus(item);
+  if (item.exception && status === "complete") return `<span class="badge badge-info">학과 예외 충족</span>`;
+  const label = status === "complete" ? "충족" : status === "warning" ? "보완 필요" : "부족";
+  return `<span class="badge badge-${status === "complete" ? "success" : status}">${label}</span>`;
+}
+
+function renderEditableRows() {
+  return getRequirementItems(profile)
+    .filter((item) => editableIds.has(item.id))
+    .map((item) => `
+      <div class="editable-row" data-item-id="${item.id}">
+        <div class="editable-label"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.description)}</span></div>
+        <input aria-label="${escapeHtml(item.label)} 현재 이수" type="number" min="0" step="1" value="${item.completed}" data-field="completed" />
+        <span class="ratio-separator">/</span>
+        <input aria-label="${escapeHtml(item.label)} 필요 기준" type="number" min="1" step="1" value="${item.required}" data-field="required" />
+        <div class="editable-status">${statusBadge(item)}</div>
+      </div>`).join("");
+}
+
+function renderPoomCards() {
+  return profile.poom.map((item) => `
+    <article class="poom-service-card ${item.completed ? "completed" : ""}" data-poom-card="${item.id}">
+      <div class="poom-service-head">
+        <span class="poom-service-icon">${escapeHtml(item.label.slice(0, 1))}</span>
+        <label class="compact-check"><input type="checkbox" data-poom="${item.id}" ${item.completed ? "checked" : ""} /><span>인증 완료</span></label>
+      </div>
+      <h3>${escapeHtml(item.label)} 영역</h3>
+      <p class="poom-service-state" data-poom-state="${item.id}">${item.completed ? "완료로 반영된 영역" : "아직 인증하지 않은 영역"}</p>
+    </article>`).join("");
+}
+
+function renderEvaluationSteps() {
+  return profile.graduationEvaluation.checklist.map((item, index) => `
+    <article class="evaluation-step-card ${item.completed ? "completed" : ""}" data-evaluation-card="${index}">
+      <div class="evaluation-step-number">${String(index + 1).padStart(2, "0")}</div>
+      <div class="evaluation-step-copy"><strong>${escapeHtml(item.label)}</strong><span data-evaluation-state="${index}">${item.completed ? "완료한 단계" : "확인이 필요한 단계"}</span></div>
+      <label class="compact-check"><input type="checkbox" data-evaluation="${index}" ${item.completed ? "checked" : ""} /><span>완료</span></label>
+    </article>`).join("");
+}
 
 function courseSourceLabel(course) {
   return course.verified ? `${course.source} · 공식 대조` : course.source;
@@ -25,10 +79,11 @@ function renderCourseBadges(course) {
 }
 
 function renderCourseRows() {
-  return completedCourses
+  return profile.courses
     .map(
-      (course) => `
+      (course, index) => `
         <tr>
+          <td><input type="checkbox" data-course="${index}" ${course.completed ? "checked" : ""} aria-label="${escapeHtml(course.name)} 이수" /></td>
           <td>${escapeHtml(course.term)}</td>
           <td><strong>${escapeHtml(course.code)}</strong></td>
           <td>${escapeHtml(course.name)}${course.badges?.length ? `<div class="course-badge-row">${renderCourseBadges(course)}</div>` : ""}</td>
@@ -75,11 +130,11 @@ document.querySelector("#pageContent").innerHTML = `
       <div>
         <p class="eyebrow">Academic records</p>
         <h1>이수내역·문서 등록</h1>
-        <p>저장된 교과목, 비교과 활동, 문서 반영 기록을 확인합니다.</p>
+        <p>졸업 진단에 반영할 모든 이수값을 수정하고, 성적표와 비교과 문서를 등록합니다.</p>
       </div>
       <div class="page-header-actions">
-        <a class="btn btn-secondary" href="requirements.html#evidence">요건별 인정내역</a>
-        <button class="btn" id="openEvidenceImport" type="button">이미지로 입력하기</button>
+        <button class="btn btn-secondary" id="openEvidenceImport" type="button">이미지로 입력하기</button>
+        <button class="btn" id="saveEvidenceChanges" type="button">변경사항 저장</button>
       </div>
     </div>
 
@@ -92,13 +147,31 @@ document.querySelector("#pageContent").innerHTML = `
 
     <section class="record-workspace">
       <div class="tabs record-tabs" role="tablist">
-        <button class="tab-button active" type="button" data-record-tab="courses">교과목·성적</button>
+        <button class="tab-button active" type="button" data-record-tab="edit">요건 수치 수정</button>
+        <button class="tab-button" type="button" data-record-tab="courses">교과목·성적</button>
+        <button class="tab-button" type="button" data-record-tab="certifications">3품·졸업평가</button>
         <button class="tab-button" type="button" data-record-tab="programs">비교과 이수</button>
         <button class="tab-button" type="button" data-record-tab="imports">문서 등록 기록</button>
       </div>
-      <section class="panel record-tab-panel" id="record-courses">
-        <div class="panel-header"><div><h2>GLS 교과목·성적</h2><p>과목별 학점, 성적, 인정 요건을 확인합니다.</p></div><span class="badge">${completedCourses.length}과목</span></div>
-        <div class="evidence-table-wrap"><table class="course-table evidence-table"><thead><tr><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>인정 요건</th><th>출처</th></tr></thead><tbody>${renderCourseRows()}</tbody></table></div>
+      <section class="panel record-tab-panel" id="record-edit">
+        <div class="panel-header"><div><h2>학점 및 교육과정 수치</h2><p>현재 이수값과 적용 기준을 수정하면 진단 대시보드에 바로 반영됩니다.</p></div><a class="text-link" href="dashboard.html">진단 결과 보기</a></div>
+        <div class="editable-requirements">${renderEditableRows()}</div>
+        <div class="alert alert-warning" style="margin-top:16px">필요 기준 수정은 데모 확인용입니다. 실제 졸업 판정은 입학연도별 공식 기준과 학과 공지를 우선합니다.</div>
+      </section>
+      <section class="panel record-tab-panel hidden" id="record-courses">
+        <div class="panel-header"><div><h2>GLS 교과목·성적</h2><p>이수 여부를 수정하고 과목별 학점, 성적, 인정 요건을 확인합니다.</p></div><span class="badge">${completedCourses.length}과목 이수</span></div>
+        <div class="evidence-table-wrap"><table class="course-table evidence-table"><thead><tr><th>이수</th><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>인정 요건</th><th>출처</th></tr></thead><tbody>${renderCourseRows()}</tbody></table></div>
+      </section>
+      <section class="panel record-tab-panel hidden" id="record-certifications">
+        <div class="panel-header"><div><h2>3품 인증 및 졸업평가</h2><p>챌린지스퀘어와 학과 공지에서 확인한 완료 상태를 반영합니다.</p></div><a class="text-link" href="programs.html">맞춤 비교과 찾기</a></div>
+        <div class="record-subsection">
+          <div class="record-subsection-title"><h3>3품 인증</h3><span class="badge" id="poomCount"></span></div>
+          <div class="poom-service-grid">${renderPoomCards()}</div>
+        </div>
+        <div class="record-subsection">
+          <div class="record-subsection-title"><div><h3>${escapeHtml(profile.graduationEvaluation.label)}</h3><p>${escapeHtml(profile.graduationEvaluation.description)}</p></div><span class="badge" id="evaluationCount"></span></div>
+          <div class="evaluation-step-list">${renderEvaluationSteps()}</div>
+        </div>
       </section>
       <section class="panel record-tab-panel hidden" id="record-programs">
         <div class="panel-header"><div><h2>챌린지스퀘어 비교과 이수</h2><p>최종 이수 상태와 인증영역을 확인합니다.</p></div><span class="badge">${profile.nonCurricular.length}건</span></div>
@@ -154,7 +227,7 @@ document.body.insertAdjacentHTML("beforeend", `
     </div>
   </div>`);
 
-function activateRecordTab(name) {
+function activateRecordTab(name, updateHash = false) {
   const button = document.querySelector(`[data-record-tab="${name}"]`);
   const panel = document.querySelector(`#record-${name}`);
   if (!button || !panel) return;
@@ -165,10 +238,87 @@ function activateRecordTab(name) {
   });
   document.querySelectorAll(".record-tab-panel").forEach((item) => item.classList.add("hidden"));
   panel.classList.remove("hidden");
+  if (updateHash) history.replaceState(null, "", `#${name}`);
 }
 
 document.querySelectorAll("[data-record-tab]").forEach((button) => {
-  button.addEventListener("click", () => activateRecordTab(button.dataset.recordTab));
+  button.addEventListener("click", () => activateRecordTab(button.dataset.recordTab, true));
+});
+
+const tabAliases = {
+  credits: "edit",
+  poom: "certifications",
+  evaluation: "certifications",
+  evidence: "courses",
+};
+activateRecordTab(tabAliases[window.location.hash.slice(1)] || window.location.hash.slice(1) || "edit");
+
+function refreshEditableStatus(input) {
+  const row = input.closest(".editable-row");
+  const completed = Number(row.querySelector('[data-field="completed"]').value);
+  const required = Number(row.querySelector('[data-field="required"]').value);
+  row.querySelector(".editable-status").innerHTML = statusBadge({
+    completed,
+    required,
+    exception: Boolean(profile[row.dataset.itemId]?.exception),
+  });
+}
+
+document.querySelectorAll(".editable-row input").forEach((input) => {
+  input.addEventListener("input", () => refreshEditableStatus(input));
+});
+
+function refreshCertificationState() {
+  const poomInputs = [...document.querySelectorAll("[data-poom]")];
+  const poomCount = poomInputs.filter((input) => input.checked).length;
+  const poomBadge = document.querySelector("#poomCount");
+  poomBadge.textContent = `${Math.min(poomCount, 3)}/3 인증`;
+  poomBadge.className = `badge ${poomCount >= 3 ? "badge-success" : "badge-warning"}`;
+  poomInputs.forEach((input) => {
+    document.querySelector(`[data-poom-card="${input.dataset.poom}"]`)?.classList.toggle("completed", input.checked);
+    const state = document.querySelector(`[data-poom-state="${input.dataset.poom}"]`);
+    if (state) state.textContent = input.checked ? "완료로 반영된 영역" : "아직 인증하지 않은 영역";
+  });
+
+  const evaluationInputs = [...document.querySelectorAll("[data-evaluation]")];
+  const evaluationCount = evaluationInputs.filter((input) => input.checked).length;
+  const evaluationBadge = document.querySelector("#evaluationCount");
+  evaluationBadge.textContent = `${evaluationCount}/${evaluationInputs.length} 단계`;
+  evaluationBadge.className = `badge ${evaluationCount === evaluationInputs.length ? "badge-success" : "badge-warning"}`;
+  evaluationInputs.forEach((input) => {
+    document.querySelector(`[data-evaluation-card="${input.dataset.evaluation}"]`)?.classList.toggle("completed", input.checked);
+    const state = document.querySelector(`[data-evaluation-state="${input.dataset.evaluation}"]`);
+    if (state) state.textContent = input.checked ? "완료한 단계" : "확인이 필요한 단계";
+  });
+}
+
+refreshCertificationState();
+document.querySelectorAll("[data-poom], [data-evaluation]").forEach((input) => {
+  input.addEventListener("change", refreshCertificationState);
+});
+
+document.querySelector("#saveEvidenceChanges")?.addEventListener("click", async () => {
+  document.querySelectorAll(".editable-row").forEach((row) => {
+    const target = profile[row.dataset.itemId];
+    if (!target) return;
+    target.completed = Number(row.querySelector('[data-field="completed"]').value);
+    target.required = Number(row.querySelector('[data-field="required"]').value);
+  });
+  profile.courses = profile.courses.map((course, index) => ({
+    ...course,
+    completed: Boolean(document.querySelector(`[data-course="${index}"]`)?.checked),
+  }));
+  profile.poom = profile.poom.map((item) => ({
+    ...item,
+    completed: Boolean(document.querySelector(`[data-poom="${item.id}"]`)?.checked),
+  }));
+  profile.graduationEvaluation.checklist = profile.graduationEvaluation.checklist.map((item, index) => ({
+    ...item,
+    completed: Boolean(document.querySelector(`[data-evaluation="${index}"]`)?.checked),
+  }));
+  profile.graduationEvaluation.completed = profile.graduationEvaluation.checklist.filter((item) => item.completed).length;
+  const saved = await saveProfile(profile);
+  showToast(saved ? "이수정보와 졸업요건 수정 내용을 저장했습니다." : "저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
 });
 
 const importModal = document.querySelector("#evidenceImportModal");

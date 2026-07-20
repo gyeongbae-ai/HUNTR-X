@@ -180,7 +180,7 @@ form.addEventListener("submit", async (event) => {
     showToast("클라우드 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.");
     return;
   }
-  window.location.href = "requirements.html";
+  window.location.href = "dashboard.html";
 });
 
 function getTemplateKey(department) {

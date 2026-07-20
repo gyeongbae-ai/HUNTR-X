@@ -537,7 +537,7 @@ function renderPage() {
             <h2>부족한 역량에 맞춘 비교과 추천</h2>
             <p>점수는 미완료 3품 영역, 인정 후보 시간, 온라인 참여 가능성을 단순 반영한 MVP 기준입니다.</p>
           </div>
-          <a class="btn btn-secondary" href="requirements.html#poom">3품 현황 수정</a>
+          <a class="btn btn-secondary" href="evidence.html#certifications">3품 현황 수정</a>
         </div>
 
         <div class="program-toolbar" role="group" aria-label="프로그램 필터">

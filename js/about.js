@@ -27,8 +27,30 @@ document.querySelector("#pageContent").innerHTML = `
     <section class="panel team-panel">
       <div class="panel-header"><div><h2>Team 헌트릭스💖</h2><p>각자 주축을 맡되 데이터 검증과 데모 완성은 함께 책임집니다.</p></div></div>
       <div class="team-grid">
-        <article class="team-member team-member-purple"><span class="avatar">구</span><span class="team-role">Data & Schema</span><h3>구은진</h3><p>Graduation Rules · Schema<br />학사자료 구조화와 판정 규칙 검증</p></article>
-        <article class="team-member team-member-lilac"><span class="avatar">양</span><span class="team-role">Product & Pitch</span><h3>양성경</h3><p>Product · Storytelling<br />사용자 경험, 발표자료와 데모 스토리</p></article>
+        <article class="team-member team-member-purple team-member-profile">
+          <div class="team-profile-head">
+            <img class="team-photo" src="assets/team-koo-eunjin.png" alt="구은진 프로필 사진" />
+            <div><span class="team-role">Data & Schema</span><h3>구은진</h3></div>
+          </div>
+          <p class="member-meta">
+            성균관대학교 글로벌경영학과 25학번<br />
+            <a href="mailto:ku0515@g.skku.edu">Email: ku0515@g.skku.edu</a><br />
+            <a href="https://www.instagram.com/enj_kk/" target="_blank" rel="noopener noreferrer">Insta: "@enj_kk"</a>
+          </p>
+          <p class="member-work">Graduation Rules · Schema<br />학사자료 구조화와 판정 규칙 검증</p>
+        </article>
+        <article class="team-member team-member-lilac team-member-profile">
+          <div class="team-profile-head">
+            <img class="team-photo" src="assets/team-yang-seonggyeong.png" alt="양성경 프로필 사진" />
+            <div><span class="team-role">Product & Pitch</span><h3>양성경</h3></div>
+          </div>
+          <p class="member-meta">
+            성균관대학교 문헌정보학과 23학번<br />
+            <a href="mailto:yangsk0310@g.skku.edu">Email: yangsk0310@g.skku.edu</a><br />
+            <a href="https://www.instagram.com/did_u._c/" target="_blank" rel="noopener noreferrer">Insta: "@did_u._c"</a>
+          </p>
+          <p class="member-work">Product · Storytelling<br />사용자 경험, 발표자료와 데모 스토리</p>
+        </article>
         <article class="team-member team-member-pink team-member-profile">
           <div class="team-profile-head">
             <img class="team-photo" src="pic/yoo.jpg" alt="유경배 프로필 사진" />

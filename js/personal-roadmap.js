@@ -59,7 +59,7 @@ function renderEvaluation() {
           <small>${item.completed ? "완료" : "계획 필요"}</small>
         </div>`).join("")}
     </div>
-    <a class="btn btn-secondary" href="requirements.html#evaluation">졸업평가 상세 확인</a>`;
+    <a class="btn btn-secondary" href="evidence.html#certifications">졸업평가 상태 수정</a>`;
 }
 
 document.querySelector("#pageContent").innerHTML = `

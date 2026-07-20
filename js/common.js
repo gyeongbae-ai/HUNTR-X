@@ -1,20 +1,14 @@
 import { ensureProfile, getProfile, getSession, loginDemo, logout, requireAuth } from "./auth.js";
-import { calculateProgress, getActionItems } from "./data.js";
+import { calculateProgress } from "./data.js";
 import { initMotionEffects } from "./motion.js";
 
 const navSections = [
   {
-    label: "진단 및 계획",
+    label: "핵심 서비스",
     items: [
       { href: "dashboard.html", label: "진단 대시보드", page: "dashboard" },
       { href: "personal-roadmap.html", label: "개인 로드맵", page: "roadmap" },
-    ],
-  },
-  {
-    label: "졸업요건",
-    items: [
       { href: "evidence.html", label: "이수내역·문서 등록", page: "evidence" },
-      { href: "requirements.html", label: "졸업요건 전체보기", page: "requirements" },
     ],
   },
   {
@@ -50,7 +44,6 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
   document.body.dataset.page = page || "app";
   initMotionEffects();
 
-  const pendingCount = profile ? getActionItems(profile).length : 0;
   const initials = (profile?.name || session.name || "GQ").slice(0, 1);
   const nav = navSections.map((section) => `
     <div class="nav-section">
@@ -58,7 +51,6 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
       ${section.items.map((item) => `
         <a class="nav-link ${page === item.page ? "active" : ""}" href="${item.href}">
           <span>${item.label}</span>
-          ${item.page === "requirements" && pendingCount ? `<span class="nav-count">${pendingCount}</span>` : ""}
         </a>`).join("")}
     </div>`).join("");
   app.innerHTML = `

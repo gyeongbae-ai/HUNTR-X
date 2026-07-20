@@ -31,7 +31,7 @@ onboarding.html             학생 프로필/문서 업로드
 evidence.html               GLS·챌린지스퀘어 이수 내역 등록
 transcript-review.html      Document Parse 추출값 검토
 dashboard.html              졸업 진행률 대시보드
-requirements.html           요건 입력 및 상세 확인
+requirements.html           대시보드에서 연결되는 읽기 전용 요건 상세
 early-graduation.html       조기졸업 계산
 assistant.html              AI 학사 도우미
 programs.html               3품·비교과 맞춤 추천

@@ -260,6 +260,6 @@ if (!parsedDocument?.profileDraft) {
     }
     localStorage.removeItem(STORAGE_KEYS.parsedDocument);
     showToast("검토한 이수 내역을 졸업요건에 연결했습니다.");
-    window.setTimeout(() => window.location.assign("requirements.html#evidence"), 400);
+    window.setTimeout(() => window.location.assign("evidence.html#courses"), 400);
   });
 }

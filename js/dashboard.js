@@ -1,5 +1,11 @@
 import { escapeHtml, initAppShell } from "./common.js";
-import { calculateProgress, formatNumber, getCompletionRatio, getRequirementItems, getStatus } from "./data.js";
+import {
+  calculateProgress,
+  formatNumber,
+  getCompletionRatio,
+  getRequirementItems,
+  getStatus,
+} from "./data.js";
 
 const profile = initAppShell({ page: "dashboard", title: "진단 대시보드" });
 if (!profile) throw new Error("Profile required");
@@ -35,6 +41,7 @@ function renderPoomStatus(item) {
           </div>`).join("")}
       </div>
       <p>${escapeHtml(item.description)}</p>
+      <a class="diagnosis-detail-button" href="requirements.html#${item.id}">자세히 보기</a>
     </article>`;
 }
 
@@ -57,6 +64,7 @@ function renderDiagnosisItem(item) {
         <div class="mini-progress-fill ${meta.className === "success" || meta.className === "info" ? "complete" : meta.className}" style="width:${percent}%"></div>
       </div>
       <p>${escapeHtml(item.description)}</p>
+      <a class="diagnosis-detail-button" href="requirements.html#${item.id}">자세히 보기</a>
     </article>`;
 }
 
@@ -68,7 +76,7 @@ document.querySelector("#pageContent").innerHTML = `
         <h1>${escapeHtml(profile.name)}님의 진단 현황</h1>
         <p>${escapeHtml(profile.admissionYear)}학번 · ${escapeHtml(profile.department)} · ${escapeHtml(profile.degreeTypeLabel)}</p>
       </div>
-      <a class="btn btn-secondary" href="requirements.html">전체 요건 확인</a>
+      <a class="btn btn-secondary" href="evidence.html#edit">이수정보 수정</a>
     </div>
 
     <section class="panel diagnosis-overview">
@@ -97,7 +105,7 @@ document.querySelector("#pageContent").innerHTML = `
           <h2>졸업요건 충족 현황</h2>
           <p>학점, 등록, 평점, 3품, 학과 졸업평가를 한 화면에서 확인합니다.</p>
         </div>
-        <a class="text-link" href="evidence.html">이수내역 수정</a>
+        <a class="text-link" href="evidence.html#edit">이수내역 수정</a>
       </div>
       <div class="diagnosis-item-grid">${requirements.map(renderDiagnosisItem).join("")}</div>
     </section>
