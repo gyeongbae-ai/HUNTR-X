@@ -1,4 +1,4 @@
-import { escapeHtml, initAppShell, showToast } from "./common.js";
+import { escapeHtml, initAppShell } from "./common.js";
 
 const profile = initAppShell({ page: "about", title: "Contact Us", requireProfile: false });
 
@@ -134,18 +134,18 @@ document.querySelector("#pageContent").innerHTML = `
     </div>
 
     <section class="panel hidden" id="contactFormPanel" style="margin-top:18px">
-      <div class="panel-header"><div><h2>의견 남기기</h2><p>해커톤 데모에서는 현재 브라우저에만 저장됩니다.</p></div></div>
+      <div class="panel-header"><div><h2>의견 남기기</h2><p>작성한 내용은 GitHub의 새 이슈 화면에서 최종 확인 후 등록할 수 있습니다.</p></div></div>
       <form id="contactForm">
         <div class="form-grid">
           <div class="field"><label for="contactName">이름</label><input id="contactName" name="name" value="${escapeHtml(profile?.name || "")}" required /></div>
           <div class="field"><label for="contactCategory">문의 유형</label><select id="contactCategory" name="category"><option>졸업요건 오류</option><option>학과 추가 요청</option><option>기능 제안</option><option>기타</option></select></div>
           <div class="field form-span-2"><label for="contactMessage">내용</label><textarea id="contactMessage" name="message" rows="5" required placeholder="확인이 필요한 학과, 입학연도, 요건을 함께 적어주세요."></textarea></div>
         </div>
-        <div class="form-actions"><button class="btn" type="submit">데모 피드백 저장</button></div>
+        <div class="form-actions"><button class="btn" type="submit">GitHub Issue 작성</button></div>
       </form>
     </section>
 
-    <p class="footer-note">현재 로그인 사용자: ${escapeHtml(profile?.name || "프로필 설정 전")} · 실제 배포 전 팀 이메일 또는 GitHub Issues 연결이 필요합니다.</p>
+    <p class="footer-note">현재 로그인 사용자: ${escapeHtml(profile?.name || "프로필 설정 전")} · 의견과 오류 제보는 <a class="text-link" href="https://github.com/gyeongbae-ai/HUNTR-X/issues" target="_blank" rel="noopener noreferrer">GradQuest GitHub Issues</a>에서 관리합니다.</p>
   </div>`;
 
 document.querySelector("#openContactForm").addEventListener("click", () => {
@@ -157,20 +157,28 @@ document.querySelector("#openContactForm").addEventListener("click", () => {
 document.querySelector("#contactForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(event.currentTarget);
-  let feedback = [];
-  try {
-    feedback = JSON.parse(localStorage.getItem("gradquest_feedback")) || [];
-  } catch {
-    feedback = [];
-  }
-  feedback.push({
-    name: String(data.get("name")).trim(),
-    category: String(data.get("category")),
-    message: String(data.get("message")).trim(),
-    createdAt: new Date().toISOString(),
+  const name = String(data.get("name")).trim();
+  const category = String(data.get("category"));
+  const message = String(data.get("message")).trim();
+  const params = new URLSearchParams({
+    title: `[${category}] ${message.slice(0, 60)}`,
+    body: [
+      "### 문의자",
+      name,
+      "",
+      "### 문의 유형",
+      category,
+      "",
+      "### 내용",
+      message,
+      "",
+      "---",
+      "GradQuest Contact Us 페이지에서 작성되었습니다.",
+    ].join("\n"),
   });
-  localStorage.setItem("gradquest_feedback", JSON.stringify(feedback.slice(-20)));
-  event.currentTarget.reset();
-  document.querySelector("#contactFormPanel").classList.add("hidden");
-  showToast("데모 피드백을 현재 브라우저에 저장했습니다.");
+  window.open(
+    `https://github.com/gyeongbae-ai/HUNTR-X/issues/new?${params.toString()}`,
+    "_blank",
+    "noopener,noreferrer",
+  );
 });
