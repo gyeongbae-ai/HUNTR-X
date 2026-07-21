@@ -498,73 +498,6 @@ const LEGACY_PERSONAS = {
 
 export const PERSONAS = {
   ...LEGACY_PERSONAS,
-  economicsDouble: {
-    id: "TEST_P05_ECON_DOUBLE",
-    name: "정경제",
-    studentNumber: "2024123460",
-    admissionYear: 2024,
-    campus: "인문사회과학캠퍼스",
-    college: "경제대학",
-    department: "경제학과",
-    degreeType: "double_major",
-    degreeTypeLabel: "복수전공·국제어 확인",
-    secondaryProgram: "미디어커뮤니케이션학과 복수전공",
-    earlyGraduation: false,
-    currentSemester: 6,
-    gpa: 3.72,
-    personaType: "시험형 + 복수전공",
-    personaSummary: "두 전공의 졸업평가와 국제어 의무를 각각 추적하는 복합 사례",
-    sourceStatus: "제도 확인 · 시험 세부기준 재확인",
-    sourceUrl: "https://ecostat.skku.edu/ecostat/notice_under.do",
-    totalCredits: { completed: 92, required: 120 },
-    coreGeneral: { completed: 16, required: 16 },
-    balancedGeneral: { completed: 6, required: 6 },
-    dsEducation: { completed: 6, required: 6 },
-    primaryMajor: { completed: 30, required: 42, detail: "경제학과 복수전공 이수 형태의 제1전공 기준" },
-    secondaryMajor: { completed: 21, required: 39, detail: "미디어커뮤니케이션학과 복수전공 학점" },
-    creditBreakdown: {
-      primaryMajor: [
-        { label: "경제학 전공코어", completed: 24, required: 30 },
-        { label: "경제학 전공심화", completed: 6, required: 12 },
-      ],
-      secondaryMajor: [
-        { label: "미디어커뮤니케이션 전공", completed: 21, required: 39 },
-      ],
-    },
-    internationalTotal: { completed: 12, required: 18 },
-    internationalMajor: { completed: 6, required: 12 },
-    specialRequirement: {
-      id: "secondaryInternationalCheck",
-      label: "제2전공 국제어 기준 확인",
-      description: "복수전공자는 각 전공의 국제어 의무를 별도로 확인해야 하며 정확한 학점은 학번별 기준표와 대조합니다.",
-      completed: 0,
-      required: 1,
-      suffix: "건",
-    },
-    poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 3 })),
-    graduationEvaluation: {
-      completed: 1,
-      required: 4,
-      label: "경제학과·미디어커뮤니케이션학과 졸업평가",
-      description: "경제학과 졸업시험과 미디어커뮤니케이션학과의 논문 또는 공인어학성적 제출을 각각 확인합니다.",
-      checklist: [
-        { label: "경제학과 졸업시험 대상 확인", completed: true },
-        { label: "경제학과 최신 응시·면제 기준 확인", completed: false },
-        { label: "미디어커뮤니케이션 논문 또는 공인어학성적 제출", completed: false },
-        { label: "두 전공 최종 승인 확인", completed: false },
-      ],
-    },
-    courses: [
-      { code: "ECO2001", name: "경제학원론1", area: "제1전공", credits: 3, completed: true, source: "경제대학 교육과정" },
-      { code: "ECO2003", name: "미시경제학", area: "제1전공", credits: 3, completed: true, source: "경제대학 교육과정" },
-      { code: "MCJ2102", name: "미디어커뮤니케이션개론", area: "제2전공", credits: 3, completed: true, source: "미디어커뮤니케이션학과 교육과정" },
-      { code: "MCJ2040", name: "메타버스와콘텐츠비즈니스", area: "제2전공", credits: 3, completed: false, source: "HUSS 교과목 목록" },
-    ],
-    notes: [
-      "경제학과 졸업시험 시행은 확인됐지만 315점·360점 환산 기준은 경제학과 공식 근거가 없어 적용하지 않았습니다.",
-      "복수전공 국제어 의무는 각 전공별 확인 대상으로 표시하고, 숫자는 최신 학번별 기준표 확인 전 확정하지 않습니다.",
-    ],
-  },
   mediaMicro: {
     id: "TEST_P06_MEDIA_MICRO",
     name: "한미디어",
@@ -861,8 +794,8 @@ export const PERSONAS = {
   },
 };
 
-export function clonePersona(key = "economicsDouble") {
-  const persona = PERSONAS[key] || LEGACY_PERSONAS[key] || PERSONAS.economicsDouble;
+export function clonePersona(key = "globalBiz") {
+  const persona = PERSONAS[key] || LEGACY_PERSONAS[key] || PERSONAS.globalBiz;
   return ensureEvidenceData(JSON.parse(JSON.stringify(persona)));
 }
 
@@ -2069,10 +2002,6 @@ const COURSE_RECOMMENDATION_CATALOG = {
     { code: "AIM4003", name: "자연어처리개론", credits: 3, target: "전공심화 후보", semester: "3~4학년 권장", reason: "부족한 전공심화 6학점 중 3학점 보완 후보" },
     { code: "ECE4249", name: "컴퓨터비전", credits: 3, target: "전공심화 후보", semester: "3~4학년 권장", reason: "AI 응용 분야 전공심화 보완 후보" },
     { code: "CSE3036", name: "컴퓨터공학세미나", credits: 1, target: "전공 후보", semester: "3~4학년 권장", reason: "총 졸업학점의 소규모 부족분 보완 후보" },
-  ],
-  TEST_P05_ECON_DOUBLE: [
-    { code: "ECO2003", name: "미시경제학", credits: 3, target: "경제학 전공", semester: "2~3학년", reason: "경제학과 교육과정의 기초 전공 후보" },
-    { code: "MCJ2040", name: "메타버스와콘텐츠비즈니스", credits: 3, target: "제2전공", semester: "2~3학년", reason: "미디어커뮤니케이션 복수전공 학점 보완" },
   ],
   TEST_P06_MEDIA_MICRO: [
     { code: "MCJ3131", name: "인터컬쳐럴커뮤니케이션", credits: 3, target: "마이크로디그리", semester: "3~4학년", reason: "9학점 마이크로디그리의 남은 과목 후보" },

@@ -17,7 +17,6 @@ const featuredPersonas = [
   ["chemSemi", "융합트랙 · 연구활동"],
   ["libEcon", "복수전공 · 이중평가"],
   ["softwareEarly", "조기졸업 · 연구일정"],
-  ["economicsDouble", "복수전공 · 국제어"],
   ["mediaMicro", "마이크로디그리"],
   ["designPractice", "졸업전시 · 포트폴리오"],
   ["chemistryChallenge", "연구 · 도전학기"],
@@ -223,13 +222,13 @@ function getTemplateKey(department) {
   if (department === "문헌정보학과") return "libEcon";
   if (department === "소프트웨어학과") return "softwareEarly";
   if (department === "글로벌경영학과") return "globalBiz";
-  if (department === "경제학과") return "economicsDouble";
+  if (department === "경제학과") return "libEcon";
   if (department === "미디어커뮤니케이션학과") return "mediaMicro";
   if (department === "디자인학과") return "designPractice";
   if (department === "화학과") return "chemistryChallenge";
   if (department === "약학과") return "pharmacyClinical";
   if (department === "교육학과") return "educationTeaching";
-  return "economicsDouble";
+  return "globalBiz";
 }
 
 function getSecondaryRequirement(program) {
