@@ -1914,6 +1914,258 @@ export function simulateWhatIf(profile, scenarioId) {
   };
 }
 
+export const WHAT_IF_PRESETS = [
+  { id: "leave-one", category: "학적·졸업시점", label: "한 학기 휴학", description: "예상 졸업시점을 한 학기 늦춰 비교", tone: "time" },
+  { id: "early-graduation", category: "학적·졸업시점", label: "조기졸업 검토", description: "6학기 졸업 계획으로 전환", tone: "time", conflict: "graduation-mode" },
+  { id: "regular-graduation", category: "학적·졸업시점", label: "일반졸업 전환", description: "8학기 졸업 계획으로 전환", tone: "time", conflict: "graduation-mode" },
+  { id: "seasonal-six", category: "수강·학점", label: "계절수업 6학점", description: "계절수업에서 총 6학점 취득 가정", tone: "credit" },
+  { id: "major-six", category: "수강·학점", label: "전공 6학점 이수", description: "다음 학기에 제1전공 6학점 취득", tone: "credit" },
+  { id: "international-three", category: "수강·학점", label: "국제어 3학점", description: "국제어·전공 국제어 3학점 추가 인정", tone: "credit" },
+  { id: "drop-secondary", category: "전공·과정", label: "현재 제2전공 포기", description: "복수전공·융합트랙 요구학점을 진단에서 제외", tone: "major", requires: "secondary", conflict: "secondary-path" },
+  { id: "add-double-major", category: "전공·과정", label: "복수전공 추가", description: "새 복수전공 36학점 기준을 가정", tone: "major", conflict: "secondary-path" },
+  { id: "add-convergence", category: "전공·과정", label: "융합트랙 추가", description: "융합트랙 21학점 기준을 가정", tone: "major", conflict: "secondary-path" },
+  { id: "add-microdegree", category: "전공·과정", label: "마이크로디그리", description: "과정별 요구학점을 확인해 별도 인증계획에 추가", tone: "major" },
+  { id: "challenge-semester", category: "교내 경험", label: "도전학기 3학점", description: "도전학기 연구·프로젝트 3학점 취득 가정", tone: "experience" },
+  { id: "exchange-semester", category: "교내 경험", label: "교환학생 한 학기", description: "승인받은 교환학점 12학점과 국제어 경험 가정", tone: "experience" },
+  { id: "coop-three", category: "교내 경험", label: "Co-op·현장실습", description: "승인받은 현장실습 3학점 취득 가정", tone: "experience" },
+  { id: "poom-one", category: "인증·졸업평가", label: "3품 1개 완료", description: "미완료 3품 인증 한 영역 추가", tone: "activity" },
+  { id: "evaluation-one", category: "인증·졸업평가", label: "졸업평가 1단계", description: "논문·시험·전시 등 한 단계 완료", tone: "activity" },
+  { id: "teaching-path", category: "인증·졸업평가", label: "교직이수 병행", description: "교원자격 활동을 별도 계획으로 추가", tone: "activity" },
+];
+
+export function getAvailableWhatIfPresets(profile) {
+  return WHAT_IF_PRESETS.filter((preset) => {
+    if (preset.requires === "secondary" && !profile.secondaryMajor) return false;
+    if (preset.id === "add-microdegree" && profile.specialRequirement?.id === "microdegree") return false;
+    if (preset.id === "challenge-semester" && profile.specialRequirement?.id === "challengeSemester") return false;
+    if (preset.id === "teaching-path" && profile.specialRequirement?.id === "teachingCertificate") return false;
+    return true;
+  });
+}
+
+export function createWhatIfAssumptions() {
+  return {
+    selectedPresets: [],
+    extraLeaveSemesters: 0,
+    extraElectiveCredits: 0,
+    extraPrimaryCredits: 0,
+    extraSecondaryCredits: 0,
+    extraGeneralCredits: 0,
+    extraDsCredits: 0,
+    extraInternationalCredits: 0,
+    extraInternationalMajorCredits: 0,
+    extraPoomCount: 0,
+    extraEvaluationSteps: 0,
+    addedProgramRequired: 0,
+    addedProgramCompleted: 0,
+    note: "",
+  };
+}
+
+function normalizeWhatIfNumber(value, maximum = 999) {
+  return Math.min(maximum, Math.max(0, Number(value) || 0));
+}
+
+function calculateItemsProgress(items) {
+  if (!items.length) return 0;
+  const total = items.reduce((sum, item) => sum + getCompletionRatio(item), 0);
+  return Math.round((total / items.length) * 100);
+}
+
+export function simulateWhatIfCombination(profile, rawAssumptions = {}) {
+  const assumptions = { ...createWhatIfAssumptions(), ...rawAssumptions };
+  const selected = new Set(Array.isArray(assumptions.selectedPresets) ? assumptions.selectedPresets : []);
+  const simulated = JSON.parse(JSON.stringify(profile));
+  const baselineItems = getRequirementItems(profile);
+  const summaries = [];
+  const cautions = [];
+
+  let extraSemesters = normalizeWhatIfNumber(assumptions.extraLeaveSemesters, 8);
+  let electiveCredits = normalizeWhatIfNumber(assumptions.extraElectiveCredits, 60);
+  let primaryCredits = normalizeWhatIfNumber(assumptions.extraPrimaryCredits, 60);
+  let secondaryCredits = normalizeWhatIfNumber(assumptions.extraSecondaryCredits, 60);
+  let generalCredits = normalizeWhatIfNumber(assumptions.extraGeneralCredits, 60);
+  let dsCredits = normalizeWhatIfNumber(assumptions.extraDsCredits, 20);
+  let internationalCredits = normalizeWhatIfNumber(assumptions.extraInternationalCredits, 60);
+  let internationalMajorCredits = normalizeWhatIfNumber(assumptions.extraInternationalMajorCredits, 60);
+  let poomCount = normalizeWhatIfNumber(assumptions.extraPoomCount, 5);
+  let evaluationSteps = normalizeWhatIfNumber(assumptions.extraEvaluationSteps, 20);
+
+  if (selected.has("leave-one")) {
+    extraSemesters += 1;
+    summaries.push("한 학기 휴학");
+  }
+  if (selected.has("seasonal-six")) {
+    electiveCredits += 6;
+    summaries.push("계절수업 6학점");
+  }
+  if (selected.has("major-six")) {
+    primaryCredits += 6;
+    summaries.push("제1전공 6학점");
+  }
+  if (selected.has("international-three")) {
+    internationalCredits += 3;
+    internationalMajorCredits += 3;
+    summaries.push("국제어 3학점");
+  }
+  if (selected.has("challenge-semester")) {
+    primaryCredits += 3;
+    summaries.push("도전학기 3학점");
+    cautions.push("도전학기 학점의 전공 인정 여부는 운영계획과 학과 승인에 따라 달라집니다.");
+  }
+  if (selected.has("exchange-semester")) {
+    electiveCredits += 12;
+    internationalCredits += 12;
+    summaries.push("교환학생 인정학점 12학점");
+    cautions.push("교환학점과 국제어 인정 범위는 출국 전 학점인정 절차와 귀국 후 승인 결과를 확인해야 합니다.");
+  }
+  if (selected.has("coop-three")) {
+    electiveCredits += 3;
+    summaries.push("Co-op·현장실습 3학점");
+    cautions.push("현장실습 학점의 전공·일반선택 구분은 학과와 현장실습지원센터 승인에 따라 달라집니다.");
+  }
+  if (selected.has("poom-one")) {
+    poomCount += 1;
+    summaries.push("3품 1개 추가");
+  }
+  if (selected.has("evaluation-one")) {
+    evaluationSteps += 1;
+    summaries.push("졸업평가 1단계 추가");
+  }
+
+  const manualSummary = [
+    [normalizeWhatIfNumber(assumptions.extraLeaveSemesters, 8), "추가 휴학", "학기"],
+    [normalizeWhatIfNumber(assumptions.extraElectiveCredits, 60), "기타·자유선택", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraPrimaryCredits, 60), "제1전공", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraSecondaryCredits, 60), "제2전공·트랙", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraGeneralCredits, 60), "교양", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraDsCredits, 20), "DS 교육", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraInternationalCredits, 60), "국제어", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraInternationalMajorCredits, 60), "전공 국제어", "학점"],
+    [normalizeWhatIfNumber(assumptions.extraPoomCount, 5), "3품", "개"],
+    [normalizeWhatIfNumber(assumptions.extraEvaluationSteps, 20), "졸업평가", "단계"],
+  ].filter(([value]) => value > 0).map(([value, label, suffix]) => `${label} ${formatNumber(value)}${suffix} 직접 조정`);
+  summaries.push(...manualSummary);
+
+  if (selected.has("drop-secondary") && simulated.secondaryMajor) {
+    summaries.push(`${simulated.secondaryProgram} 제외`);
+    simulated.secondaryMajor = null;
+    simulated.creditBreakdown.secondaryMajor = [];
+    simulated.degreeType = "single_major";
+    simulated.degreeTypeLabel = "단일전공";
+    simulated.secondaryProgram = "없음";
+    secondaryCredits = 0;
+    if (simulated.specialRequirement?.id === "secondaryInternationalCheck") simulated.specialRequirement = null;
+    if (simulated.id === "TEST_P02_LIB_ECON" && simulated.graduationEvaluation?.checklist?.length >= 6) {
+      simulated.graduationEvaluation.checklist = simulated.graduationEvaluation.checklist.slice(0, 3);
+      simulated.graduationEvaluation.required = 3;
+      simulated.graduationEvaluation.completed = simulated.graduationEvaluation.checklist.filter((item) => item.completed).length;
+      simulated.graduationEvaluation.label = "문헌정보학과 졸업평가";
+      simulated.graduationEvaluation.description = "경제학과 복수전공 졸업시험을 제외하고 문헌정보학과 논문·자격증 절차만 남긴 가정입니다.";
+    }
+  }
+
+  if (selected.has("early-graduation")) {
+    simulated.earlyGraduation = true;
+    simulated.requiredSemesters = 6;
+    summaries.push("6학기 조기졸업");
+    cautions.push("조기졸업은 평점, 등록학기, 신청기간과 학과별 제한을 별도로 충족해야 합니다.");
+  } else if (selected.has("regular-graduation")) {
+    simulated.earlyGraduation = false;
+    simulated.requiredSemesters = 8;
+    summaries.push("8학기 일반졸업");
+  }
+
+  simulated.primaryMajor.completed += primaryCredits;
+  const appliedSecondaryCredits = simulated.secondaryMajor ? secondaryCredits : 0;
+  if (simulated.secondaryMajor) simulated.secondaryMajor.completed += appliedSecondaryCredits;
+  simulated.balancedGeneral.completed += generalCredits;
+  simulated.dsEducation.completed += dsCredits;
+  simulated.internationalTotal.completed += internationalCredits;
+  simulated.internationalMajor.completed += internationalMajorCredits;
+  simulated.totalCredits.completed += electiveCredits + primaryCredits + appliedSecondaryCredits + generalCredits + dsCredits;
+
+  if (poomCount > 0) {
+    let remaining = poomCount;
+    simulated.poom = simulated.poom.map((item) => {
+      if (!item.completed && remaining > 0) {
+        remaining -= 1;
+        return { ...item, completed: true };
+      }
+      return item;
+    });
+  }
+
+  if (evaluationSteps > 0 && simulated.graduationEvaluation) {
+    let remaining = evaluationSteps;
+    simulated.graduationEvaluation.checklist = simulated.graduationEvaluation.checklist.map((item) => {
+      if (!item.completed && remaining > 0) {
+        remaining -= 1;
+        return { ...item, completed: true };
+      }
+      return item;
+    });
+    simulated.graduationEvaluation.completed = simulated.graduationEvaluation.checklist.filter((item) => item.completed).length;
+  }
+
+  const resultItems = getRequirementItems(simulated);
+  if (selected.has("add-double-major") || selected.has("add-convergence")) {
+    const isTrack = selected.has("add-convergence");
+    const defaultRequired = isTrack ? 21 : 36;
+    const customRequired = normalizeWhatIfNumber(assumptions.addedProgramRequired, 60);
+    resultItems.push({
+      id: "whatIfAddedProgram",
+      label: isTrack ? "추가 융합트랙" : "추가 복수전공",
+      completed: normalizeWhatIfNumber(assumptions.addedProgramCompleted, 60),
+      required: customRequired || defaultRequired,
+      suffix: "학점",
+      description: "가정한 추가 전공·트랙의 학점입니다.",
+    });
+    summaries.push(`${isTrack ? "융합트랙" : "복수전공"} ${formatNumber(customRequired || defaultRequired)}학점 추가`);
+    cautions.push("실제 요구학점과 중복인정 범위는 학번·학과·선발연도별 기준을 확인해야 합니다.");
+  }
+  if (selected.has("add-microdegree")) {
+    summaries.push("마이크로디그리 별도 과정 추가");
+    cautions.push("마이크로디그리는 과정별 요구학점이 다르며 별도 인증과정이므로 기본 졸업진단 진행률에는 포함하지 않았습니다.");
+  }
+  if (selected.has("teaching-path")) {
+    summaries.push("교직이수 병행");
+    cautions.push("교직이수 선발, 기본이수과목, 교직 적성·인성검사와 실습은 학위요건과 별도로 확인해야 합니다.");
+  }
+
+  const beforeMap = new Map(baselineItems.map((item) => [item.id, item]));
+  const afterMap = new Map(resultItems.map((item) => [item.id, item]));
+  const changes = [...new Set([...beforeMap.keys(), ...afterMap.keys()])]
+    .map((id) => {
+      const before = beforeMap.get(id);
+      const after = afterMap.get(id);
+      if (!after) return `${before.label} 진단 제외`;
+      if (!before) return `${after.label} ${formatNumber(after.completed)}/${formatNumber(after.required)}${after.suffix}`;
+      if (before.required !== after.required || before.completed !== after.completed) {
+        return `${after.label} ${formatNumber(before.completed)}/${formatNumber(before.required)} → ${formatNumber(after.completed)}/${formatNumber(after.required)}${after.suffix}`;
+      }
+      return null;
+    })
+    .filter(Boolean);
+
+  return {
+    headline: summaries.length ? summaries.join(" + ") : "현재 계획 유지",
+    explanation: assumptions.note?.trim() || "선택한 가정과 직접 입력한 수치를 함께 적용한 결과입니다.",
+    before: {
+      progress: calculateItemsProgress(baselineItems),
+      pending: baselineItems.filter((item) => item.completed < item.required).length,
+      graduation: getExpectedGraduationLabel(profile),
+    },
+    after: {
+      progress: calculateItemsProgress(resultItems),
+      pending: resultItems.filter((item) => item.completed < item.required).length,
+      graduation: getExpectedGraduationLabel(simulated, extraSemesters),
+    },
+    changes: changes.length ? changes : [extraSemesters ? `예상 졸업시점 ${extraSemesters}학기 조정` : "현재 학점·요건 수치와 동일"],
+    cautions: [...new Set(cautions)],
+  };
+}
+
 export function getActionItems(profile) {
   return getRequirementItems(profile)
     .filter((item) => item.completed < item.required)
