@@ -134,7 +134,7 @@ const sharedPoom = [
   { id: "internship", label: "인턴십", completed: false },
 ];
 
-export const PERSONAS = {
+const LEGACY_PERSONAS = {
   chemSemi: {
     id: "TEST_P01_CHEM_SEMI",
     name: "김화공",
@@ -403,6 +403,9 @@ export const PERSONAS = {
       "6학기 조기졸업은 연구 일정을 4학기 지도교수 연락, 5학기 계획 제출, 6학기 최종보고 순으로 앞당겨야 합니다.",
     ],
   },
+};
+
+export const PERSONAS = {
   economicsDouble: {
     id: "TEST_P05_ECON_DOUBLE",
     name: "정경제",
@@ -757,8 +760,9 @@ export const PERSONAS = {
   },
 };
 
-export function clonePersona(key = "globalBiz") {
-  return ensureEvidenceData(JSON.parse(JSON.stringify(PERSONAS[key] || PERSONAS.globalBiz)));
+export function clonePersona(key = "economicsDouble") {
+  const persona = PERSONAS[key] || LEGACY_PERSONAS[key] || PERSONAS.economicsDouble;
+  return ensureEvidenceData(JSON.parse(JSON.stringify(persona)));
 }
 
 function inferCourseRequirements(course) {
@@ -1506,13 +1510,13 @@ function buildPoomEvidence(profile) {
 export function ensureEvidenceData(profile) {
   if (!profile) return profile;
   if (profile.id === "TEST_P01_CHEM_SEMI" && (!Array.isArray(profile.courses) || !profile.courses.some((course) => course.code === "SCM3001"))) {
-    profile.courses = JSON.parse(JSON.stringify(PERSONAS.chemSemi.courses));
+    profile.courses = JSON.parse(JSON.stringify(LEGACY_PERSONAS.chemSemi.courses));
   }
   if (profile.id === "TEST_P02_LIB_ECON" && (!Array.isArray(profile.courses) || !profile.courses.some((course) => course.code === "ECO2004"))) {
-    profile.courses = JSON.parse(JSON.stringify(PERSONAS.libEcon.courses));
+    profile.courses = JSON.parse(JSON.stringify(LEGACY_PERSONAS.libEcon.courses));
   }
   if (profile.id === "TEST_P04_SW_EARLY" && (!Array.isArray(profile.courses) || profile.courses.length < 20)) {
-    profile.courses = JSON.parse(JSON.stringify(PERSONAS.softwareEarly.courses));
+    profile.courses = JSON.parse(JSON.stringify(LEGACY_PERSONAS.softwareEarly.courses));
   }
   const grades = ["A+", "A0", "B+", "A+", "B0", "A0", "B+", "A0"];
   profile.courses = (profile.courses || [])

@@ -20,13 +20,6 @@ const featuredPersonas = [
   ["pharmacyClinical", "통합6년제 · 실무실습"],
   ["educationTeaching", "교직 · 교원자격"],
 ];
-const existingPersonas = [
-  ["globalBiz", "글로벌경영"],
-  ["chemSemi", "화공 · 융합트랙"],
-  ["libEcon", "문헌정보 · 경제 복전"],
-  ["softwareEarly", "SW · 조기졸업"],
-];
-
 function renderPersonaCard([key, tag]) {
   const persona = PERSONAS[key];
   return `
@@ -34,7 +27,7 @@ function renderPersonaCard([key, tag]) {
       <span>${tag}</span>
       <strong>${persona.department}</strong>
       <small>${persona.personaSummary || persona.degreeTypeLabel}</small>
-      <i>${persona.sourceStatus || "기존 검증 프로필"}</i>
+      <i>${persona.sourceStatus || "대표 검증 프로필"}</i>
     </button>`;
 }
 
@@ -59,10 +52,6 @@ page.innerHTML = `
         <div><h2>대표 페르소나 불러오기</h2><p>문서 형식이 아니라 졸업요건 판정 로직이 다른 대표 학과를 선택했습니다.</p></div>
       </div>
       <div class="persona-grid">${featuredPersonas.map(renderPersonaCard).join("")}</div>
-      <details class="legacy-personas">
-        <summary>기존 검증 프로필 4개</summary>
-        <div class="persona-grid compact">${existingPersonas.map(renderPersonaCard).join("")}</div>
-      </details>
     </section>
 
     <section class="panel">
@@ -226,16 +215,13 @@ form.addEventListener("submit", async (event) => {
 });
 
 function getTemplateKey(department) {
-  if (department === "화학공학부") return "chemSemi";
-  if (department === "문헌정보학과") return "libEcon";
-  if (department === "소프트웨어학과") return "softwareEarly";
   if (department === "경제학과") return "economicsDouble";
   if (department === "미디어커뮤니케이션학과") return "mediaMicro";
   if (department === "디자인학과") return "designPractice";
   if (department === "화학과") return "chemistryChallenge";
   if (department === "약학과") return "pharmacyClinical";
   if (department === "교육학과") return "educationTeaching";
-  return "globalBiz";
+  return "economicsDouble";
 }
 
 function getSecondaryRequirement(program) {
