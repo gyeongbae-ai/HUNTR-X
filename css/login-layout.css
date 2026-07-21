@@ -1,0 +1,137 @@
+/* Final sign-in layout overrides, loaded after the shared design system. */
+.auth-shell,
+.auth-story,
+.auth-form-side,
+.auth-card {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (min-width: 961px) {
+  .auth-shell {
+    box-sizing: border-box;
+    width: min(1580px, 100%);
+    height: calc(100dvh - 42px);
+    min-height: 680px;
+    padding: 18px 28px;
+    grid-template-columns: minmax(0, 1fr) minmax(500px, 0.72fr);
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .auth-story {
+    height: 100%;
+    min-height: 0;
+    padding: 34px 52px 30px 42px;
+    border-radius: 7px 0 0 7px;
+  }
+
+  .auth-story-main {
+    margin: 38px 0 24px;
+  }
+
+  .auth-story h1 {
+    font-size: 44px;
+    line-height: 1.13;
+  }
+
+  .auth-form-side {
+    height: 100%;
+    margin: 0;
+    align-items: stretch;
+  }
+
+  .auth-card {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 24px 28px 20px;
+    overflow-y: auto;
+    border-radius: 0 7px 7px 0;
+  }
+
+  .auth-card::before {
+    margin: -24px -28px 20px;
+  }
+
+  .auth-card > .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  .auth-card h2 {
+    margin-bottom: 6px;
+    font-size: 24px;
+  }
+
+  .auth-card > .muted {
+    margin-bottom: 14px;
+  }
+
+  .auth-card form {
+    gap: 10px;
+  }
+
+  .auth-card .field {
+    gap: 5px;
+  }
+
+  .auth-card .btn-block {
+    min-height: 44px;
+  }
+
+  .auth-card-footer {
+    margin-top: 12px;
+  }
+
+  .demo-box {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .demo-box .field-hint {
+    margin-top: 3px;
+  }
+
+  .demo-buttons {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .demo-buttons .btn {
+    min-height: 44px;
+    padding: 6px 4px;
+    font-size: 11px;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .auth-card .footer-note {
+    margin-top: 12px;
+    line-height: 1.45;
+  }
+}
+
+@media (min-width: 961px) and (max-width: 1280px) {
+  .auth-shell {
+    padding-inline: 18px;
+    grid-template-columns: minmax(0, 1fr) minmax(500px, 0.86fr);
+  }
+
+  .auth-story {
+    padding-inline: 34px;
+  }
+
+  .auth-story h1 {
+    font-size: 38px;
+  }
+
+  .hero-subcopy {
+    width: 100%;
+  }
+
+  .hero-subcopy span {
+    white-space: normal;
+  }
+}
