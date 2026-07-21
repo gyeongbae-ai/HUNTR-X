@@ -97,6 +97,21 @@ function renderChecklist(item) {
     </section>`;
 }
 
+function renderVerificationSource(item) {
+  const isGeneralEducation = ["coreGeneral", "balancedGeneral", "dsEducation", "internationalTotal", "internationalMajor"].includes(item.id);
+  const href = item.sourceUrl || (isGeneralEducation ? profile.generalEducationSourceUrl : profile.sourceUrl);
+  if (!href) return "";
+  const title = isGeneralEducation ? "학번별 교양·DS 기준" : `${profile.department} 졸업요건 근거`;
+  const notice = isGeneralEducation
+    ? profile.generalEducationNotice
+    : "학과 공지와 교육과정에서 확인된 내용을 반영했으며, 졸업예정학기에는 GLS 졸업자가진단으로 최종 확인합니다.";
+  return `
+    <div class="requirement-source-note">
+      <div><strong>${escapeHtml(title)}</strong><span>${escapeHtml(notice)}</span></div>
+      <a class="text-link" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">공식 기준 확인</a>
+    </div>`;
+}
+
 function renderSelectedRequirement(item) {
   const evidence = getEvidenceForRequirement(profile, item.id);
   const meta = getStatusMeta(item);
@@ -119,6 +134,7 @@ function renderSelectedRequirement(item) {
       <div><span>남은 기준</span><strong>${remaining > 0 ? `${formatNumber(remaining)}${escapeHtml(item.suffix)}` : "충족"}</strong></div>
     </div>
     ${item.exception ? `<div class="alert"><strong>${escapeHtml(item.exceptionLabel || "학과 예외 기준 적용")}</strong><br />${escapeHtml(item.detail || profile.dsEducation?.detail || "")}</div>` : ""}
+    ${renderVerificationSource(item)}
     ${renderChecklist(item)}
     ${renderCourseEvidence(evidence.courses, item.id)}
     ${renderProgramEvidence(evidence.programs)}

@@ -485,15 +485,18 @@ textarea::placeholder {
 
 .demo-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-top: 10px;
 }
 
 .demo-buttons .btn {
-  min-height: 36px;
-  padding: 6px 8px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 7px 8px;
   font-size: 12px;
+  line-height: 1.35;
+  white-space: normal;
 }
 
 .app-shell {
@@ -3445,7 +3448,7 @@ body[data-page="dashboard"] .page-header::after {
 .persona-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .persona-card {
@@ -7121,6 +7124,33 @@ body[data-page="dashboard"] .page-header .btn-secondary {
   border-top: 1px solid #e8e0eb;
 }
 
+.requirement-source-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid #d9cbe6;
+  background: #fbf8fd;
+}
+
+.requirement-source-note > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.requirement-source-note span {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.requirement-source-note .text-link {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 @media (max-width: 900px) {
   .requirement-detail-layout {
     grid-template-columns: 1fr;
@@ -7151,7 +7181,8 @@ body[data-page="dashboard"] .page-header .btn-secondary {
 
 @media (max-width: 600px) {
   .requirement-focus-head,
-  .requirement-detail-actions {
+  .requirement-detail-actions,
+  .requirement-source-note {
     align-items: flex-start;
     flex-direction: column;
   }

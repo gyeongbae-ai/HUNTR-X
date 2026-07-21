@@ -134,6 +134,77 @@ const sharedPoom = [
   { id: "internship", label: "인턴십", completed: false },
 ];
 
+const GENERAL_EDUCATION_SOURCE_URL = "https://www.skku.edu/skku/edu/bachelor/ca_de_schedule01.do";
+const DS_RULE_SOURCE_URL = "https://nano.skku.edu/bbs/board.php?tbl=bbs42&mode=VIEW&num=362&category=&findType=&findWord=&sort1=&sort2=&it_id=&shop_flag=&mobile_flag=&page=9";
+
+function getDsTrackGroup(profile) {
+  if (/반도체시스템|반도체융합|소재부품융합|소프트웨어학과|지능형소프트웨어/.test(profile?.department || "")) return 3;
+  if (/공과대학|정보통신대학|글로벌바이오메디컬공학|에너지학과/.test(`${profile?.college || ""} ${profile?.department || ""}`)) return 2;
+  return 1;
+}
+
+function getGeneralEducationRule(profile) {
+  const year = Number(profile.admissionYear || 0);
+  const engineeringColleges = new Set(["공과대학", "정보통신대학", "소프트웨어융합대학"]);
+  const isNaturalScience = profile.college === "자연과학대학";
+  const isPharmacy = profile.college === "약학대학";
+  const isEngineering = engineeringColleges.has(profile.college);
+  const dsTrackGroup = getDsTrackGroup(profile);
+  const coreRequired = year === 2020 ? 18 : year <= 2023 ? 18 : 16;
+  const foundationRequired = isNaturalScience ? 24 : isPharmacy ? 12 : isEngineering ? 18 : 9;
+  const balancedRequired = 6 + foundationRequired;
+  const coreDetail = year === 2020
+    ? "성균인성·리더십 2, 고전·명저 3, 창의 4, 소통과 사고 3, 글로벌 6학점. 2026년 미래(SW/AI) 의무 소급 폐지를 반영했습니다."
+    : `성균인성·리더십 2, 고전·명저 3, 창의 4, 소통과 사고 3, 글로벌 ${year <= 2023 ? 6 : 4}학점`;
+  const balancedDetail = `${year >= 2025 ? "소속 모집단위 영역을 제외한" : "자유 선택한"} 핵심균형 2개 영역 6학점 + 인문사회/자연과학 기반 ${foundationRequired}학점`;
+  const dsRequired = year === 2020 ? 0 : dsTrackGroup === 3 ? 8 : dsTrackGroup === 2 ? 5 : 4;
+  const dsDetail = year === 2020
+    ? "2016~2020학번의 미래(SW/AI)·소프트웨어기초 의무는 2026년 3월부터 폐지되며 총 졸업학점은 유지됩니다."
+    : dsTrackGroup === 3
+      ? "계열3: DASF003·DASF004 6학점 + AI/데이터 공통영역 2학점 이상, 총 8학점"
+      : dsTrackGroup === 2
+        ? "계열2: DASF003 또는 DASF004 중 3학점 + AI/데이터 공통영역 2학점 이상, 총 5학점"
+        : "계열1: DASF001·DASF002·DASF007 중 2학점 이상 + DASF005·DASF006·DASF008 중 2학점 이상, 총 4학점";
+
+  return {
+    coreRequired,
+    coreDetail,
+    balancedRequired,
+    balancedDetail,
+    dsRequired,
+    dsDetail,
+    dsSourceUrl: DS_RULE_SOURCE_URL,
+    sourceUrl: GENERAL_EDUCATION_SOURCE_URL,
+  };
+}
+
+function applyVerifiedAcademicRules(profile) {
+  const rule = getGeneralEducationRule(profile);
+  profile.coreGeneral = { ...profile.coreGeneral, required: rule.coreRequired, detail: rule.coreDetail };
+  profile.balancedGeneral = { ...profile.balancedGeneral, required: rule.balancedRequired, detail: rule.balancedDetail };
+  profile.dsEducation = {
+    ...profile.dsEducation,
+    required: rule.dsRequired,
+    detail: rule.dsDetail,
+    ...(rule.dsRequired === 0 ? { exception: true, exceptionLabel: "입학연도 기준 DS 의무 없음" } : {}),
+    sourceUrl: rule.dsSourceUrl,
+  };
+  profile.generalEducationSourceUrl = rule.sourceUrl;
+  profile.generalEducationNotice = "교양·DS 과목 인정은 입학연도 경과조치와 GLS 졸업자가진단 결과를 마지막으로 대조합니다.";
+
+  const verifiedTotals = {
+    디자인학과: { total: 130, major: 57 },
+    화학과: { total: 130, major: 56 },
+    약학과: { total: 230, major: 185 },
+    교육학과: { total: 140, major: 62 },
+  }[profile.department];
+  if (verifiedTotals) {
+    profile.totalCredits.required = verifiedTotals.total;
+    profile.primaryMajor.required = verifiedTotals.major;
+  }
+  return profile;
+}
+
 const LEGACY_PERSONAS = {
   chemSemi: {
     id: "TEST_P01_CHEM_SEMI",
@@ -149,6 +220,10 @@ const LEGACY_PERSONAS = {
     earlyGraduation: false,
     currentSemester: 5,
     gpa: 3.68,
+    personaType: "공학인증·연구실습형",
+    personaSummary: "융합트랙 학점과 화학공학부 졸업평가 네 가지 경로를 함께 추적하는 사례",
+    sourceStatus: "2026 화학공학부 졸업평가 공지 확인",
+    sourceUrl: "https://cheme.skku.edu/2026/03/09/%EC%A1%B8%EC%97%85%ED%8F%89%EA%B0%80-%EC%8B%9C%ED%96%89%EC%95%8826-03-09/",
     totalCredits: { completed: 78, required: 130 },
     coreGeneral: { completed: 14, required: 16 },
     balancedGeneral: { completed: 6, required: 6 },
@@ -220,6 +295,10 @@ const LEGACY_PERSONAS = {
     earlyGraduation: false,
     currentSemester: 6,
     gpa: 3.74,
+    personaType: "논문형 + 복수전공",
+    personaSummary: "문헌정보학과 졸업논문과 경제학과 졸업시험을 각각 확인하는 복수전공 사례",
+    sourceStatus: "2026 문헌정보학과 졸업논문 공지 확인",
+    sourceUrl: "https://lis.skku.edu/lis/community/under_notice.do?article.offset=0&articleLimit=10&articleNo=213694&mode=view",
     totalCredits: { completed: 91, required: 120 },
     coreGeneral: { completed: 18, required: 18 },
     balancedGeneral: { completed: 6, required: 6 },
@@ -245,9 +324,9 @@ const LEGACY_PERSONAS = {
       label: "두 전공 졸업평가",
       description: "문헌정보학과 졸업논문과 경제학과 졸업시험을 모두 확인해야 합니다. 시험의 세부 합격·면제 기준은 최신 내규 확인 전 확정하지 않습니다.",
       checklist: [
-        { label: "문헌정보학과 지도교수 배정", completed: true },
-        { label: "문헌정보학과 졸업논문 제출", completed: false },
-        { label: "문헌정보학과 논문 심사 합격", completed: false },
+        { label: "문헌정보학과 졸업논문 주제·제출 형식 확인", completed: true },
+        { label: "졸업논문 또는 인정 가능한 공모전·학술지 논문 제출", completed: false },
+        { label: "사서자격증 발급 서식 제출", completed: false },
         { label: "경제학과 졸업시험 대상 확인", completed: false },
         { label: "경제학과 최신 응시·합격 기준 확인", completed: false },
         { label: "제1·제2전공 최종 승인", completed: false },
@@ -268,7 +347,11 @@ const LEGACY_PERSONAS = {
       { code: "ECO3005", name: "재정학", area: "경제학과 복수전공", credits: 3, completed: false, source: "성균관대 전공학점 이수기준표·GLS 수강편람 대조", requirementIds: ["totalCredits", "secondaryMajor"] },
       { code: "ECO3006", name: "산업조직론", area: "경제학과 복수전공", credits: 3, completed: false, source: "성균관대 전공학점 이수기준표·GLS 수강편람 대조", requirementIds: ["totalCredits", "secondaryMajor"] },
     ],
-    notes: ["복수전공자는 두 전공의 졸업평가를 모두 통과해야 합니다.", "경제학과 시험 시행은 확인됐지만 세부 합격·면제 기준은 최신 학과 내규와 다시 대조해야 합니다."],
+    notes: [
+      "2026년 문헌정보학과 공지상 학부 졸업논문 지도교수는 별도로 배정하지 않으며 주제는 자유롭게 정할 수 있습니다.",
+      "논문 형식의 공모전·학술지 제출물은 최대 3인 공동 결과물까지 인정될 수 있으므로 제출 전 학과 확인이 필요합니다.",
+      "복수전공자는 두 전공의 졸업평가를 모두 통과해야 하며 경제학과 세부 합격·면제 기준은 최신 내규와 다시 대조해야 합니다.",
+    ],
   },
   globalBiz: {
     id: "TEST_P03_GLB_BIZ",
@@ -284,6 +367,10 @@ const LEGACY_PERSONAS = {
     earlyGraduation: false,
     currentSemester: 5,
     gpa: 3.86,
+    personaType: "교과·글로벌활동 연계형",
+    personaSummary: "영어 전공 교과와 I-Core 패키지, 글로벌 활동을 한 흐름으로 관리하는 사례",
+    sourceStatus: "글로벌경영학과 현행 교육과정 확인",
+    sourceUrl: "https://skb.skku.edu/gba/curriculum.do?lang=All&pager.offset=60",
     totalCredits: { completed: 84, required: 120 },
     coreGeneral: { completed: 16, required: 16 },
     balancedGeneral: { completed: 6, required: 6 },
@@ -311,12 +398,12 @@ const LEGACY_PERSONAS = {
       ],
     },
     courses: [
-      { code: "GBA1001", name: "Introduction to Financial Accounting", area: "전공코어", credits: 3, completed: true },
+      { code: "GBA2003", name: "Introduction to Financial Accounting", area: "전공코어", credits: 3, completed: true },
       { code: "GBA2005", name: "Financial Management", area: "전공코어", credits: 3, completed: true },
-      { code: "GBA3001", name: "Intermediate Corporate Finance", area: "I-Core", credits: 3, completed: true },
-      { code: "GBA3011", name: "Marketing Strategy and Planning", area: "I-Core", credits: 3, completed: true },
-      { code: "GBA3021", name: "Strategic Management", area: "I-Core", credits: 3, completed: true },
-      { code: "GBA3031", name: "Operations Management", area: "I-Core", credits: 3, completed: true },
+      { code: "GBA2011", name: "Intermediate Corporate Finance", area: "I-Core", credits: 3, completed: true },
+      { code: "GBA3009", name: "Marketing Strategy and Planning", area: "I-Core", credits: 3, completed: true },
+      { code: "GBA2008", name: "Strategic Management", area: "I-Core", credits: 3, completed: true },
+      { code: "GBA2007", name: "Operations Management", area: "I-Core", credits: 3, completed: true },
     ],
     notes: ["I-Core 과목은 패키지 동시 수강 조건을 확인해야 합니다.", "글로벌 활동 인정 범위는 학과 공지와 최종 대조가 필요합니다."],
   },
@@ -334,6 +421,10 @@ const LEGACY_PERSONAS = {
     earlyGraduation: true,
     currentSemester: 6,
     gpa: 4.08,
+    personaType: "SW·산학 인턴십형",
+    personaSummary: "연구·인턴십 졸업평가를 6학기 조기졸업 일정에 맞춰 앞당기는 사례",
+    sourceStatus: "소프트웨어학과 졸업평가 기준 확인",
+    sourceUrl: "https://cse.skku.edu/_res/cse/etc/cse_com_grad_evaluation_terms_231207.pdf",
     totalCredits: { completed: 122, required: 130 },
     coreGeneral: { completed: 18, required: 18 },
     balancedGeneral: { completed: 6, required: 6 },
@@ -398,7 +489,7 @@ const LEGACY_PERSONAS = {
       { code: "SWE2029", name: "소프트웨어전공탐색", area: "전공심화", credits: 3, completed: false, requirementIds: ["totalCredits", "primaryMajor"] },
     ],
     notes: [
-      "2020학번 소프트웨어학과는 일반 DS 기본과목 대신 DASF003·DASF004를 학과 지정 DS 과목으로 적용합니다.",
+      "2020학번의 미래(SW/AI)·소프트웨어기초 이수 의무는 2026년 3월부터 폐지되며, 기존 DASF003·DASF004 이수학점은 총 졸업학점에 반영합니다.",
       "조기졸업이어도 전공 66학점과 학과 졸업평가는 감면되지 않습니다.",
       "6학기 조기졸업은 연구 일정을 4학기 지도교수 연락, 5학기 계획 제출, 6학기 최종보고 순으로 앞당겨야 합니다.",
     ],
@@ -406,6 +497,7 @@ const LEGACY_PERSONAS = {
 };
 
 export const PERSONAS = {
+  ...LEGACY_PERSONAS,
   economicsDouble: {
     id: "TEST_P05_ECON_DOUBLE",
     name: "정경제",
@@ -553,13 +645,13 @@ export const PERSONAS = {
     personaSummary: "포트폴리오와 졸업전시 마일스톤을 교과목과 연결하는 사례",
     sourceStatus: "교과목 확인 · 필수 여부 재확인",
     sourceUrl: "https://design.skku.edu/design/dept_curriculum.do",
-    totalCredits: { completed: 105, required: 120 },
+    totalCredits: { completed: 105, required: 130 },
     coreGeneral: { completed: 16, required: 16 },
     balancedGeneral: { completed: 6, required: 6 },
     dsEducation: { completed: 6, required: 6 },
-    primaryMajor: { completed: 45, required: 54, detail: "시각디자인전공 교과와 졸업 프로젝트" },
+    primaryMajor: { completed: 45, required: 57, detail: "디자인학과 단일전공 기준과 졸업 프로젝트" },
     secondaryMajor: null,
-    creditBreakdown: { primaryMajor: [{ label: "디자인 전공", completed: 45, required: 54 }] },
+    creditBreakdown: { primaryMajor: [{ label: "디자인 전공", completed: 45, required: 57 }] },
     internationalTotal: { completed: 9, required: 18 },
     internationalMajor: { completed: 6, required: 12 },
     poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 3 })),
@@ -601,14 +693,20 @@ export const PERSONAS = {
     personaType: "연구실 기반 기초과학형",
     personaSummary: "학부 연구와 졸업논문 사이클에 도전학기 선택을 결합한 사례",
     sourceStatus: "공식 학과 공지 확인",
-    sourceUrl: "https://professor.skku.edu/chem/News/notice.do",
+    sourceUrl: "https://cscience.skku.edu/cscience/undergraduate/chem_curiculum.do",
     totalCredits: { completed: 94, required: 130 },
     coreGeneral: { completed: 16, required: 16 },
     balancedGeneral: { completed: 6, required: 6 },
     dsEducation: { completed: 6, required: 6 },
-    primaryMajor: { completed: 42, required: 60, detail: "화학과 전공과 학부 연구 교과목" },
+    primaryMajor: { completed: 42, required: 56, detail: "화학과 단일전공 56학점 기준과 학부 연구 교과목" },
     secondaryMajor: null,
-    creditBreakdown: { primaryMajor: [{ label: "화학 전공", completed: 42, required: 60 }] },
+    creditBreakdown: {
+      primaryMajor: [
+        { label: "전공코어", completed: 28, required: 32 },
+        { label: "전공심화", completed: 10, required: 18 },
+        { label: "실험실습", completed: 4, required: 6 },
+      ],
+    },
     internationalTotal: { completed: 12, required: 18 },
     internationalMajor: { completed: 6, required: 12 },
     specialRequirement: {
@@ -629,16 +727,19 @@ export const PERSONAS = {
       checklist: [
         { label: "연구실·지도교수 배정", completed: true },
         { label: "CHY3035 또는 CHY3037 화학개별연구", completed: true },
-        { label: "CHY3021 졸업논문연구 수강", completed: false },
+        { label: "CHY3021 졸업논문연구2 수강", completed: false },
         { label: "졸업논문 제출·심사", completed: false },
       ],
     },
     courses: [
       { code: "CHY3035", name: "화학개별연구2", area: "연구교과", credits: 2, completed: true, source: "화학과 교육과정·2025-2 공지" },
       { code: "CHY3037", name: "화학개별연구4", area: "연구교과", credits: 2, completed: false, source: "화학과 교육과정·2025-2 공지" },
-      { code: "CHY3021", name: "졸업논문연구", area: "졸업평가", credits: 2, completed: false, source: "화학과 2025-2 수강 공지" },
+      { code: "CHY3021", name: "졸업논문연구2", area: "졸업평가", credits: 2, completed: false, source: "화학과 교육과정·2025-2 수강 공지" },
     ],
-    notes: ["CHY3021 수강과 학부 졸업논문 제출은 서로 다른 절차이므로 각각 완료 여부를 확인합니다."],
+    notes: [
+      "현행 교육과정에는 CHY3020 졸업논문연구1과 CHY3021 졸업논문연구2가 구분되어 있으며, 2025-2 공지는 CHY3021 수강 대상을 안내합니다.",
+      "졸업논문연구 교과목 수강과 학부 졸업논문 제출은 서로 다른 절차이므로 해당 학기 공지에서 각각 완료 여부를 확인합니다.",
+    ],
   },
   pharmacyClinical: {
     id: "TEST_P09_PHARMACY",
@@ -712,16 +813,16 @@ export const PERSONAS = {
     personaSummary: "학위요건과 교원자격 발급 절차를 구분해 동시에 추적하는 사례",
     sourceStatus: "사범대 자가진단표 확인",
     sourceUrl: "https://coe.skku.edu/coe/community/data_info.do",
-    totalCredits: { completed: 88, required: 120 },
+    totalCredits: { completed: 88, required: 140 },
     coreGeneral: { completed: 16, required: 16 },
     balancedGeneral: { completed: 6, required: 6 },
     dsEducation: { completed: 6, required: 6 },
-    primaryMajor: { completed: 33, required: 54, detail: "교육학 전공 및 교과교육영역" },
+    primaryMajor: { completed: 33, required: 62, detail: "교육학과 단일전공 62학점 기준과 교과교육영역" },
     secondaryMajor: null,
     creditBreakdown: {
       primaryMajor: [
-        { label: "교육학 전공", completed: 24, required: 33 },
-        { label: "교과교육·교직", completed: 9, required: 21 },
+        { label: "전공코어", completed: 24, required: 50 },
+        { label: "전공심화·교과교육", completed: 9, required: 12 },
       ],
     },
     internationalTotal: { completed: 12, required: 18 },
@@ -842,12 +943,12 @@ const majorCoreCourseCodes = new Set([
   "ECH2032",
   "ECH3016",
   "ECH3053",
-  "GBA1001",
+  "GBA2003",
   "GBA2005",
-  "GBA3001",
-  "GBA3011",
-  "GBA3021",
-  "GBA3031",
+  "GBA2007",
+  "GBA2008",
+  "GBA2011",
+  "GBA3009",
 ]);
 
 function getPrimaryMajorArea(course) {
@@ -882,16 +983,18 @@ const dsCourseRules = {
   2020: {
     rangeLabel: "2020학번",
     commonRequired: new Set([]),
-    engineeringRequired: new Set(["DASF003", "DASF004"]),
+    engineeringRequired: new Set([]),
   },
   "2021-2024": {
     rangeLabel: "2021~2024학번",
-    commonRequired: new Set(["GEDT020", "GEDT014", "GEDT015"]),
-    engineeringRequired: new Set(["GEDT018", "GEDT019", "DASF003", "DASF004"]),
+    commonRequired: new Set(["DASF005", "DASF006", "DASF008", "GEDT020"]),
+    track1Required: new Set(["DASF001", "DASF002", "DASF007"]),
+    engineeringRequired: new Set(["DASF003", "DASF004"]),
   },
   2025: {
-    rangeLabel: "2025학번",
-    commonRequired: new Set(["DASF008"]),
+    rangeLabel: "2025학번 이후",
+    commonRequired: new Set(["DASF005", "DASF006", "DASF008"]),
+    track1Required: new Set(["DASF001", "DASF002", "DASF007"]),
     engineeringRequired: new Set(["DASF003", "DASF004"]),
   },
 };
@@ -919,6 +1022,9 @@ function getCourseBadges(course, profile) {
   const dsRule = getDsRuleForAdmissionYear(profile?.admissionYear);
   if (dsRule?.commonRequired.has(code)) {
     badges.add(`${dsRule.rangeLabel} DS 공통필수`);
+  }
+  if (dsRule?.track1Required?.has(code) && getDsTrackGroup(profile) === 1) {
+    badges.add(`${dsRule.rangeLabel} DS 계열1`);
   }
   if (dsRule && isEngineeringDsTrack(profile) && dsRule.engineeringRequired.has(code)) {
     badges.add(`${dsRule.rangeLabel} DS기반 필수`);
@@ -1081,9 +1187,14 @@ const officialCourseCatalog = {
   SEE7001: { name: "반도체공정및장비기술", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
   ASE3002: { name: "반도체제품개론", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
   ASE3003: { name: "진공및플라즈마", credits: 3, source: "성균관대 반도체소재부품장비패키징 융합트랙 교과목 구성" },
-  DASF003: { name: "공학컴퓨터프로그래밍", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
-  DASF004: { name: "프로그래밍기초와실습", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
-  DASF008: { name: "데이터분석과AI기초", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
+  DASF001: { name: "컴퓨팅사고와SW코딩", credits: 2, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF002: { name: "문제해결과알고리즘", credits: 2, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF003: { name: "공학컴퓨터프로그래밍", credits: 3, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF004: { name: "프로그래밍기초와실습", credits: 3, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF005: { name: "AI기초와활용", credits: 2, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF006: { name: "데이터분석기초", credits: 3, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF007: { name: "문제해결과컴퓨팅사고", credits: 3, source: "성균관대 2026 DS 기반 영역 개편 공지" },
+  DASF008: { name: "데이터분석과AI기초", credits: 3, source: "성균관대 2026 DS 기반 영역 개편 공지" },
   ESW4011: { name: "AI를활용한소프트웨어보안", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
   ESW4017: { name: "디지털헬스케어보안세미나", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
   ESW4024: { name: "추천시스템개론", credits: 3, source: "성균관대 SW-AI-AX 전교생 교육 AX융합전공" },
@@ -1155,6 +1266,12 @@ const officialSupplementalCourses = {
     "GEDB003",
   ],
   dsEducation: [
+    "DASF001",
+    "DASF002",
+    "DASF005",
+    "DASF006",
+    "DASF007",
+    "DASF008",
     "GEDT018",
     "GEDT019",
     "GEDT014",
@@ -1378,6 +1495,13 @@ function buildOfficialSupplementalCourse(profile, requirementId, code, index) {
 }
 
 function getOfficialSupplementalCodes(profile, requirementId) {
+  if (requirementId === "dsEducation") {
+    if (Number(profile.admissionYear || 0) <= 2020) return [];
+    const track = getDsTrackGroup(profile);
+    if (track === 3) return ["DASF003", "DASF004", "DASF005", "DASF006", "DASF008"];
+    if (track === 2) return ["DASF003", "DASF005", "DASF004", "DASF006", "DASF008"];
+    return ["DASF001", "DASF005", "DASF002", "DASF006", "DASF007", "DASF008"];
+  }
   const departmentCodes = departmentSupplementalCourses[profile.department]?.[requirementId] || [];
   const commonCodes = officialSupplementalCourses[requirementId] || [];
   return [...new Set([...departmentCodes, ...commonCodes])];
@@ -1509,6 +1633,7 @@ function buildPoomEvidence(profile) {
 
 export function ensureEvidenceData(profile) {
   if (!profile) return profile;
+  applyVerifiedAcademicRules(profile);
   if (profile.id === "TEST_P01_CHEM_SEMI" && (!Array.isArray(profile.courses) || !profile.courses.some((course) => course.code === "SCM3001"))) {
     profile.courses = JSON.parse(JSON.stringify(LEGACY_PERSONAS.chemSemi.courses));
   }
@@ -1517,6 +1642,9 @@ export function ensureEvidenceData(profile) {
   }
   if (profile.id === "TEST_P04_SW_EARLY" && (!Array.isArray(profile.courses) || profile.courses.length < 20)) {
     profile.courses = JSON.parse(JSON.stringify(LEGACY_PERSONAS.softwareEarly.courses));
+  }
+  if (profile.id === "TEST_P03_GLB_BIZ" && (!Array.isArray(profile.courses) || profile.courses.some((course) => course.code === "GBA1001"))) {
+    profile.courses = JSON.parse(JSON.stringify(LEGACY_PERSONAS.globalBiz.courses));
   }
   const grades = ["A+", "A0", "B+", "A+", "B0", "A0", "B+", "A0"];
   profile.courses = (profile.courses || [])
@@ -1602,14 +1730,14 @@ export function getRequirementItems(profile) {
     {
       id: "coreGeneral",
       label: "중점교양",
-      description: `${profile.admissionYear}학번 적용 기준`,
+      description: profile.coreGeneral.detail || `${profile.admissionYear}학번 적용 기준`,
       ...profile.coreGeneral,
       suffix: "학점",
     },
     {
       id: "balancedGeneral",
       label: "균형교양",
-      description: "영역 수와 학점을 함께 확인",
+      description: profile.balancedGeneral.detail || "영역 수와 학점을 함께 확인",
       ...profile.balancedGeneral,
       suffix: "학점",
     },
@@ -1956,7 +2084,7 @@ const COURSE_RECOMMENDATION_CATALOG = {
   ],
   TEST_P08_CHEM_CHALLENGE: [
     { code: "CHY3037", name: "화학개별연구4", credits: 2, target: "학부 연구", semester: "2~3학년", reason: "연구실 경험을 졸업논문 연구로 연결" },
-    { code: "CHY3021", name: "졸업논문연구", credits: 2, target: "졸업평가", semester: "4학년", reason: "학부 졸업논문 준비 필수 확인 과목" },
+    { code: "CHY3021", name: "졸업논문연구2", credits: 2, target: "졸업평가", semester: "4학년", reason: "해당 학기 공지와 함께 확인할 학부 졸업논문 교과목" },
   ],
   TEST_P09_PHARMACY: [
     { code: "PHR3016", name: "약학연구2", credits: 5, target: "심화실무실습", semester: "5~6학년", reason: "2022학번 이후 졸업평가 선택 경로" },
