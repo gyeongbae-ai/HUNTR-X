@@ -202,6 +202,38 @@ function applyVerifiedAcademicRules(profile) {
     profile.totalCredits.required = verifiedTotals.total;
     profile.primaryMajor.required = verifiedTotals.major;
   }
+
+  if (profile.id === "TEST_P02_LIB_ECON") {
+    profile.internationalTotal = {
+      ...profile.internationalTotal,
+      required: 18,
+      detail: "2018학번 이후 교양 6학점과 전공 12학점을 합산",
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    };
+    profile.internationalMajor = {
+      ...profile.internationalMajor,
+      required: 12,
+      detail: "문헌정보학과·경제학과 복수전공 과목을 합산하되 동일 과목은 중복 산정하지 않음",
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    };
+    profile.specialRequirement = {
+      id: "secondaryInternationalCheck",
+      label: "경제학과 복전 국제어 적용",
+      description: "경제학과 국제어 전공과목도 전공 국제어 12학점에 합산됩니다. 문헌정보학과는 면제 학과가 아니므로 12학점이 별도로 더해지지는 않습니다.",
+      completed: 1,
+      required: 1,
+      suffix: "규칙",
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    };
+    profile.internationalRule = {
+      generalRequired: 6,
+      majorRequired: 12,
+      totalRequired: 18,
+      additionalCreditsForEconomicsDoubleMajor: 0,
+      duplicateCountingAllowed: false,
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    };
+  }
   return profile;
 }
 
@@ -315,8 +347,27 @@ const LEGACY_PERSONAS = {
         { label: "경제학 전공선택", completed: 0, required: 3 },
       ],
     },
-    internationalTotal: { completed: 9, required: 18 },
-    internationalMajor: { completed: 6, required: 12 },
+    internationalTotal: {
+      completed: 9,
+      required: 18,
+      detail: "교양 6학점 + 전공 12학점",
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    },
+    internationalMajor: {
+      completed: 6,
+      required: 12,
+      detail: "문헌정보학과·경제학과 복수전공 과목 합산 · 동일 과목 중복 산정 불가",
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    },
+    specialRequirement: {
+      id: "secondaryInternationalCheck",
+      label: "경제학과 복전 국제어 적용",
+      description: "경제학과 국제어 전공과목도 전공 국제어 12학점에 합산됩니다. 문헌정보학과는 면제 학과가 아니므로 12학점이 별도로 더해지지는 않습니다.",
+      completed: 1,
+      required: 1,
+      suffix: "규칙",
+      sourceUrl: "https://www.skku.edu/_res/skku/etc/2021_p7.pdf",
+    },
     poom: sharedPoom.map((item, index) => ({ ...item, completed: index < 3 })),
     graduationEvaluation: {
       completed: 1,
@@ -351,6 +402,7 @@ const LEGACY_PERSONAS = {
       "2026년 문헌정보학과 공지상 학부 졸업논문 지도교수는 별도로 배정하지 않으며 주제는 자유롭게 정할 수 있습니다.",
       "논문 형식의 공모전·학술지 제출물은 최대 3인 공동 결과물까지 인정될 수 있으므로 제출 전 학과 확인이 필요합니다.",
       "복수전공자는 두 전공의 졸업평가를 모두 통과해야 하며 경제학과 세부 합격·면제 기준은 최신 내규와 다시 대조해야 합니다.",
+      "2018학번 이후 국제어는 교양 6학점과 전공 12학점으로 총 18학점입니다. 경제학과 복수전공 과목도 전공 국제어에 합산되지만 동일 C/L 과목은 두 번 계산하지 않습니다.",
     ],
   },
   globalBiz: {
@@ -1705,19 +1757,19 @@ export function getRequirementItems(profile) {
     });
   }
 
-  if (profile.admissionYear >= 2024) {
+  if (profile.admissionYear >= 2018) {
     items.push(
       {
         id: "internationalTotal",
         label: "국제어수업 전체",
-        description: "2024학번 이후 내국인 신입생 적용",
+        description: profile.internationalTotal.detail || "2018학번 이후 내국인 신입생은 교양 6학점과 전공 12학점 이수",
         ...profile.internationalTotal,
         suffix: "학점",
       },
       {
         id: "internationalMajor",
         label: "전공 국제어수업",
-        description: "전체 국제어수업 의무학점에 포함",
+        description: profile.internationalMajor.detail || "전체 국제어수업 의무학점에 포함",
         ...profile.internationalMajor,
         suffix: "학점",
       },
@@ -2210,8 +2262,8 @@ export function getCreditGapSummary(profile) {
           profile.creditBreakdown?.secondaryMajor || [],
         )
       : null,
-    profile.admissionYear >= 2024 ? makeCreditSection("internationalTotal", "국제어수업 전체", profile.internationalTotal) : null,
-    profile.admissionYear >= 2024 ? makeCreditSection("internationalMajor", "전공 국제어수업", profile.internationalMajor) : null,
+    profile.admissionYear >= 2018 ? makeCreditSection("internationalTotal", "국제어수업 전체", profile.internationalTotal) : null,
+    profile.admissionYear >= 2018 ? makeCreditSection("internationalMajor", "전공 국제어수업", profile.internationalMajor) : null,
   ].filter(Boolean);
 
   const detailedGaps = sections.flatMap((section) => {
@@ -2330,7 +2382,7 @@ export function getNextSemesterPlan(profile) {
     });
   });
 
-  if (profile.admissionYear >= 2024 && profile.internationalMajor.completed < profile.internationalMajor.required) {
+  if (profile.admissionYear >= 2018 && profile.internationalMajor.completed < profile.internationalMajor.required) {
     const gap = profile.internationalMajor.required - profile.internationalMajor.completed;
     plan.push({
       type: "language",
