@@ -43,7 +43,7 @@ if (!parsedDocument?.profileDraft) {
             area: "미분류",
             completed: true,
             requirementIds: ["totalCredits", "primaryMajor"],
-            source: "GLS 이미지 인식",
+            source: "GLS 파일 인식",
           }
         : {
             id: `OCR-PROGRAM-${Date.now()}-${index}`,
@@ -54,7 +54,7 @@ if (!parsedDocument?.profileDraft) {
             certificationArea: parts[4] || "인성",
             status: "이수",
             requirementIds: ["poom"],
-            source: "챌린지스퀘어 이미지 인식",
+            source: "챌린지스퀘어 파일 인식",
           });
   }
 
@@ -75,7 +75,7 @@ if (!parsedDocument?.profileDraft) {
         area: item.area || existing.area || "미분류",
         completed: true,
         requirementIds: item.requirementIds || existing.requirementIds || ["totalCredits", "primaryMajor"],
-        source: parsedDocument.provider === "Upstage Document Parse" ? "GLS 이미지 인식" : item.source || "GLS 샘플",
+        source: parsedDocument.provider === "Upstage Document Parse" ? "GLS 파일 인식" : item.source || "GLS 샘플",
       };
     });
   }
@@ -96,7 +96,7 @@ if (!parsedDocument?.profileDraft) {
       certificationArea: item.certificationArea || "인성",
       status: item.status || "이수",
       requirementIds: ["poom"],
-      source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 이미지 인식" : item.source || "챌린지스퀘어 샘플",
+      source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 파일 인식" : item.source || "챌린지스퀘어 샘플",
     }));
   }
 
@@ -141,7 +141,7 @@ if (!parsedDocument?.profileDraft) {
       </div>
 
       <div class="recognition-flow recognition-flow-review" aria-label="문서 인식 과정">
-        <div class="complete"><strong>01</strong><span>이미지 등록</span></div><i>→</i>
+        <div class="complete"><strong>01</strong><span>파일 등록</span></div><i>→</i>
         <div class="complete"><strong>02</strong><span>Document Parse</span></div><i>→</i>
         <div class="complete"><strong>03</strong><span>${isGls ? "교과목 구조화" : "비교과 구조화"}</span></div><i>→</i>
         <div class="active"><strong>04</strong><span>사용자 검토</span></div><i>→</i>
@@ -155,9 +155,9 @@ if (!parsedDocument?.profileDraft) {
       <div class="document-review-grid evidence-review-grid">
         <section class="panel document-source-panel">
           <div class="panel-header"><div><h2>인식한 원본</h2><p>${escapeHtml(parsedDocument.fileName)} · ${new Date(parsedDocument.parsedAt).toLocaleString("ko-KR")}</p></div></div>
-          ${parsedDocument.previewDataUrl ? `<img class="document-preview-image" src="${parsedDocument.previewDataUrl}" alt="등록한 문서 이미지" />` : ""}
+          ${parsedDocument.previewDataUrl ? `<img class="document-preview-image" src="${parsedDocument.previewDataUrl}" alt="등록한 파일 미리보기" />` : ""}
           <div class="document-text" tabindex="0">${escapeHtml(extractedText)}</div>
-          <p class="field-hint">이미지와 구조화 결과를 나란히 비교해 오인식된 글자를 수정하세요.</p>
+          <p class="field-hint">파일과 구조화 결과를 나란히 비교해 오인식된 글자를 수정하세요.</p>
         </section>
 
         <section class="panel">
@@ -171,7 +171,7 @@ if (!parsedDocument?.profileDraft) {
           </div>
           <div class="alert" style="margin-top:16px">${isGls ? "모든 교과목은 총 졸업학점에 포함되며, 선택한 주 인정요건과 국제어수업 여부를 추가로 연결합니다." : "이수 상태인 프로그램은 선택한 인증영역과 3품 요건에 연결됩니다."}</div>
           <div class="form-actions">
-            <a class="btn btn-secondary" href="evidence.html">다른 이미지 선택</a>
+            <a class="btn btn-secondary" href="evidence.html">다른 파일 선택</a>
             <button class="btn" id="saveEvidence" type="button">검토 완료하고 요건에 반영</button>
           </div>
         </section>
@@ -197,7 +197,7 @@ if (!parsedDocument?.profileDraft) {
           area: REQUIREMENT_OPTIONS.find((item) => item.id === requirement)?.label || "미분류",
           completed: true,
           requirementIds: [...new Set(requirementIds)],
-          source: parsedDocument.provider === "Upstage Document Parse" ? "GLS 이미지 인식" : "GLS 샘플",
+          source: parsedDocument.provider === "Upstage Document Parse" ? "GLS 파일 인식" : "GLS 샘플",
         };
       });
   }
@@ -214,7 +214,7 @@ if (!parsedDocument?.profileDraft) {
         certificationArea: row.querySelector('[data-field="certificationArea"]').value,
         status: row.querySelector('[data-field="status"]').value,
         requirementIds: ["poom"],
-        source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 이미지 인식" : "챌린지스퀘어 샘플",
+        source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 파일 인식" : "챌린지스퀘어 샘플",
       }));
   }
 

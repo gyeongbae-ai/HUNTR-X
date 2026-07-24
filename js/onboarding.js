@@ -123,7 +123,7 @@ page.innerHTML = `
 
         <div class="panel" style="margin-top: 20px; background: #f8faf9">
           <div class="panel-header">
-            <div><h3>GLS 이수내역·성적표 분석</h3><p>PDF나 이미지 파일을 연결하면 Upstage Document Parse가 읽고, 다음 화면에서 추출값을 직접 검토합니다.</p></div>
+            <div><h3>GLS 이수내역·성적표 분석</h3><p>PNG, JPG 또는 PDF 파일을 연결하면 Upstage Document Parse가 읽고, 다음 화면에서 추출값을 직접 검토합니다.</p></div>
           </div>
           <div class="upload-zone">
             <strong>성적표 파일 선택</strong>
@@ -318,7 +318,7 @@ document.querySelector("#parseButton").addEventListener("click", async () => {
   const input = document.querySelector("#transcriptFile");
   const status = document.querySelector("#parseStatus");
   if (!input.files.length) {
-    status.textContent = "먼저 PDF 또는 이미지 파일을 선택해 주세요.";
+    status.textContent = "먼저 PNG, JPG 또는 PDF 파일을 선택해 주세요.";
     status.className = "alert alert-warning";
     return;
   }

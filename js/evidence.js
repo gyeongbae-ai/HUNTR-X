@@ -113,7 +113,7 @@ function renderProgramCards() {
 
 function renderImportRecords() {
   if (!profile.evidenceImports.length) {
-    return `<div class="empty-evidence"><strong>등록된 문서가 없습니다.</strong><span>이미지로 입력하기에서 GLS 또는 챌린지스퀘어 문서를 등록하세요.</span></div>`;
+    return `<div class="empty-evidence"><strong>등록된 문서가 없습니다.</strong><span>파일로 입력하기에서 GLS 또는 챌린지스퀘어 문서를 등록하세요.</span></div>`;
   }
   const labels = { gls: "GLS", challenge: "챌린지스퀘어", roadmap: "교과 로드맵" };
   return `<div class="import-record-list">${profile.evidenceImports.map((item) => `
@@ -133,7 +133,7 @@ document.querySelector("#pageContent").innerHTML = `
         <p>졸업 진단에 반영할 모든 이수값을 수정하고, 성적표와 비교과 문서를 등록합니다.</p>
       </div>
       <div class="page-header-actions">
-        <button class="btn btn-secondary" id="openEvidenceImport" type="button">이미지로 입력하기</button>
+        <button class="btn btn-secondary" id="openEvidenceImport" type="button">파일로 입력하기</button>
         <button class="btn" id="saveEvidenceChanges" type="button">변경사항 저장</button>
       </div>
     </div>
@@ -178,7 +178,7 @@ document.querySelector("#pageContent").innerHTML = `
         <div class="program-evidence-grid">${renderProgramCards()}</div>
       </section>
       <section class="panel record-tab-panel hidden" id="record-imports">
-        <div class="panel-header"><div><h2>문서 등록 기록</h2><p>계정에 반영된 이미지 및 PDF 기록입니다.</p></div><span class="badge">${profile.evidenceImports.length}회</span></div>
+        <div class="panel-header"><div><h2>문서 등록 기록</h2><p>계정에 반영된 파일 등록 기록입니다.</p></div><span class="badge">${profile.evidenceImports.length}회</span></div>
         ${renderImportRecords()}
       </section>
     </section>
@@ -186,38 +186,38 @@ document.querySelector("#pageContent").innerHTML = `
 
 document.body.insertAdjacentHTML("beforeend", `
   <div class="evidence-import-modal hidden" id="evidenceImportModal" role="dialog" aria-modal="true" aria-labelledby="evidenceImportTitle">
-    <button class="modal-backdrop" type="button" data-close-evidence-import aria-label="이미지 입력 닫기"></button>
+    <button class="modal-backdrop" type="button" data-close-evidence-import aria-label="파일 입력 닫기"></button>
     <div class="evidence-import-dialog">
       <header>
-        <div><p class="eyebrow">Import records</p><h2 id="evidenceImportTitle">이미지로 이수내역 입력</h2><p>GLS와 챌린지스퀘어 문서를 선택해 내용을 확인합니다.</p></div>
+        <div><p class="eyebrow">Import records</p><h2 id="evidenceImportTitle">파일로 이수내역 입력</h2><p>GLS와 챌린지스퀘어 파일을 선택해 내용을 확인합니다.</p></div>
         <button class="modal-close" type="button" data-close-evidence-import aria-label="닫기">×</button>
       </header>
       <div class="evidence-import-content">
         <div class="evidence-source-grid">
           <article class="evidence-source-card" data-document-type="gls">
             <div class="source-card-title"><span class="source-symbol">GLS</span><div><h3>학업성적표·이수내역</h3><p>교과목, 학수번호, 학점, 성적, 수강학기를 추출합니다.</p></div></div>
-            <label class="evidence-upload-zone" for="glsFile" data-upload-type="gls"><strong>GLS 캡처·성적표·PDF 선택</strong><span>클릭, 드래그 앤 드롭, Ctrl+V 붙여넣기 가능</span><input id="glsFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <label class="evidence-upload-zone" for="glsFile" data-upload-type="gls"><strong>GLS 이수내역 파일 선택</strong><span>PNG, JPG, PDF · 클릭 또는 드래그 앤 드롭</span><input id="glsFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
             <div class="upload-preview hidden" id="glsPreview"></div>
-            <div class="source-actions"><button class="btn" type="button" data-analyze="gls">이미지 분석</button><button class="btn btn-secondary" type="button" data-sample="gls">샘플로 체험</button></div>
+            <div class="source-actions"><button class="btn" type="button" data-analyze="gls">파일 분석</button><button class="btn btn-secondary" type="button" data-sample="gls">샘플로 체험</button></div>
             <div class="alert hidden" id="glsStatus"></div>
           </article>
           <article class="evidence-source-card" data-document-type="challenge">
             <div class="source-card-title"><span class="source-symbol source-symbol-pink">CS</span><div><h3>챌린지스퀘어 비교과</h3><p>프로그램명, 이수일, 시간, 인증영역을 추출합니다.</p></div></div>
-            <label class="evidence-upload-zone" for="challengeFile" data-upload-type="challenge"><strong>비교과 이수내역 캡처 선택</strong><span>클릭, 드래그 앤 드롭, Ctrl+V 붙여넣기 가능</span><input id="challengeFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <label class="evidence-upload-zone" for="challengeFile" data-upload-type="challenge"><strong>비교과 이수내역 파일 선택</strong><span>PNG, JPG, PDF · 클릭 또는 드래그 앤 드롭</span><input id="challengeFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
             <div class="upload-preview hidden" id="challengePreview"></div>
-            <div class="source-actions"><button class="btn" type="button" data-analyze="challenge">이미지 분석</button><button class="btn btn-secondary" type="button" data-sample="challenge">샘플로 체험</button></div>
+            <div class="source-actions"><button class="btn" type="button" data-analyze="challenge">파일 분석</button><button class="btn btn-secondary" type="button" data-sample="challenge">샘플로 체험</button></div>
             <div class="alert hidden" id="challengeStatus"></div>
           </article>
           <article class="evidence-source-card" data-document-type="roadmap">
             <div class="source-card-title"><span class="source-symbol source-symbol-blue">MAP</span><div><h3>교과 과정 로드맵</h3><p>학과별 권장 수강 순서를 참고자료로 첨부합니다.</p></div></div>
-            <label class="evidence-upload-zone" for="roadmapFile" data-upload-type="roadmap"><strong>로드맵 이미지 또는 PDF 선택</strong><span>전공 로드맵, 교육과정표, 학과 안내자료</span><input id="roadmapFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <label class="evidence-upload-zone" for="roadmapFile" data-upload-type="roadmap"><strong>로드맵 파일 선택</strong><span>PNG, JPG, PDF · 전공 로드맵, 교육과정표, 학과 안내자료</span><input id="roadmapFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
             <div class="upload-preview hidden" id="roadmapPreview"></div>
             <div class="source-actions"><button class="btn btn-secondary" type="button" data-sample="roadmap">참고자료로 등록</button></div>
             <div class="alert hidden" id="roadmapStatus"></div>
           </article>
         </div>
         <div class="recognition-flow" aria-label="문서 인식 과정">
-          <div><strong>01</strong><span>이미지 등록</span></div><i>→</i>
+          <div><strong>01</strong><span>파일 등록</span></div><i>→</i>
           <div><strong>02</strong><span>문서 인식</span></div><i>→</i>
           <div><strong>03</strong><span>사용자 검토</span></div><i>→</i>
           <div><strong>04</strong><span>요건 연결</span></div>
@@ -455,7 +455,7 @@ async function setSelectedFile(type, file) {
   input.files = transfer.files;
   const dataUrl = await makePreview(file).catch(() => null);
   preview.classList.remove("hidden");
-  preview.innerHTML = dataUrl ? `<img src="${dataUrl}" alt="선택한 이미지 미리보기" /><span>${escapeHtml(file.name)}</span>` : `<strong>PDF</strong><span>${escapeHtml(file.name)}</span>`;
+  preview.innerHTML = dataUrl ? `<img src="${dataUrl}" alt="선택한 파일 미리보기" /><span>${escapeHtml(file.name)}</span>` : `<strong>PDF</strong><span>${escapeHtml(file.name)}</span>`;
   preview.dataset.preview = dataUrl || "";
   status.textContent = `${file.name} 파일을 불러왔습니다.`;
   status.className = "alert alert-success";
@@ -510,11 +510,11 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
     const status = getStatus(type);
     const file = input.files[0];
     if (!file) {
-      status.textContent = "먼저 인식할 이미지 또는 PDF를 선택해 주세요.";
+      status.textContent = "먼저 인식할 파일을 선택해 주세요.";
       status.className = "alert alert-warning";
       return;
     }
-    status.textContent = "이미지를 읽고 표 구조를 분석하고 있습니다...";
+    status.textContent = "파일을 읽고 표 구조를 분석하고 있습니다...";
     status.className = "alert";
     const body = new FormData();
     body.append("document", file);
