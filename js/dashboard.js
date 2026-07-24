@@ -45,8 +45,35 @@ function renderPoomStatus(item) {
     </article>`;
 }
 
+function renderGraduationEvaluationStatus(item) {
+  const meta = getStatusMeta(item);
+  const checklist = profile.graduationEvaluation?.checklist || [];
+  const remaining = Math.max(0, Number(item.required || 0) - Number(item.completed || 0));
+  return `
+    <article class="diagnosis-item diagnosis-item-evaluation">
+      <div class="diagnosis-item-head">
+        <div><span>단계형 요건</span><h3>${escapeHtml(item.label)}</h3></div>
+        <span class="badge badge-${meta.className}">${meta.label}</span>
+      </div>
+      <div class="diagnosis-evaluation-summary">
+        <strong>${formatNumber(item.completed)}단계 완료</strong>
+        <span>${remaining > 0 ? `${formatNumber(remaining)}단계 남음` : "모든 단계 완료"}</span>
+      </div>
+      <ol class="diagnosis-evaluation-steps" aria-label="${escapeHtml(item.label)} 단계별 완료 현황">
+        ${checklist.map((step, index) => `
+          <li class="${step.completed ? "completed" : ""}">
+            <span class="diagnosis-evaluation-step-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
+            <div><strong>${escapeHtml(step.label)}</strong><small>${step.completed ? "완료한 단계" : "확인이 필요한 단계"}</small></div>
+          </li>`).join("")}
+      </ol>
+      <p>${escapeHtml(item.description)}</p>
+      <a class="diagnosis-detail-button" href="requirements.html#${item.id}">자세히 보기</a>
+    </article>`;
+}
+
 function renderDiagnosisItem(item) {
   if (item.id === "poom") return renderPoomStatus(item);
+  if (item.id === "graduationEvaluation") return renderGraduationEvaluationStatus(item);
   const meta = getStatusMeta(item);
   const percent = Math.round(getCompletionRatio(item) * 100);
   const remaining = Math.max(0, item.required - item.completed);

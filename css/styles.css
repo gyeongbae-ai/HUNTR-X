@@ -29,6 +29,104 @@
   --site-header-height: 96px;
 }
 
+/* Dashboard-only step indicator for discrete graduation evaluation stages */
+.diagnosis-evaluation-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 17px 0 15px;
+}
+
+.diagnosis-evaluation-summary strong {
+  color: #352840;
+  font-size: 18px;
+}
+
+.diagnosis-evaluation-summary span {
+  color: var(--muted, #746d7d);
+  font-size: 12px;
+}
+
+.diagnosis-evaluation-steps {
+  display: grid;
+  gap: 0;
+  margin: 0 0 17px;
+  padding: 0;
+  list-style: none;
+}
+
+.diagnosis-evaluation-steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 11px;
+  min-height: 54px;
+  padding-bottom: 10px;
+}
+
+.diagnosis-evaluation-steps li:not(:last-child)::after {
+  position: absolute;
+  top: 30px;
+  bottom: 0;
+  left: 16px;
+  width: 2px;
+  background: #ddd3e5;
+  content: "";
+}
+
+.diagnosis-evaluation-steps li.completed:not(:last-child)::after {
+  background: #8a5eb0;
+}
+
+.diagnosis-evaluation-step-number {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #cfc2d9;
+  border-radius: 50%;
+  background: #fff;
+  color: #806c8e;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.diagnosis-evaluation-steps li.completed .diagnosis-evaluation-step-number {
+  border-color: #8058a8;
+  background: #8058a8;
+  color: #fff;
+}
+
+.diagnosis-evaluation-steps li > div {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.diagnosis-evaluation-steps li strong,
+.diagnosis-evaluation-steps li small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.diagnosis-evaluation-steps li strong {
+  color: #3e3146;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.diagnosis-evaluation-steps li small {
+  margin-top: 3px;
+  color: var(--muted, #746d7d);
+  font-size: 10px;
+}
+
+.diagnosis-item-evaluation > p {
+  margin-top: 0;
+}
+
 /* Account-saved semester planning simulator */
 .timeline-simulator-section {
   margin-top: 28px;
