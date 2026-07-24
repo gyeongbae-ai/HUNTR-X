@@ -43,7 +43,7 @@ page.innerHTML = `
         <h1>${existing ? "내 학업 정보 수정" : "졸업 진단을 시작해볼까요?"}</h1>
         <p>입학연도와 전공 형태에 따라 적용되는 졸업요건이 달라집니다. 현재 상태를 입력하거나 데모 페르소나를 불러오세요.</p>
       </div>
-      ${existing ? `<div class="page-header-actions"><button class="btn btn-danger" id="resetProfileData" type="button">저장 데이터 전체 초기화</button></div>` : ""}
+      ${existing && !session?.demo ? `<div class="page-header-actions"><button class="btn btn-danger" id="resetProfileData" type="button">저장 데이터 전체 초기화</button></div>` : ""}
     </div>
 
     <div class="stepper" aria-label="설정 단계">
@@ -82,7 +82,7 @@ page.innerHTML = `
           <div class="field">
             <label for="currentSemester">현재 등록학기</label>
             <select id="currentSemester" name="currentSemester">
-              ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((semester) => `<option value="${semester}">${semester}학기</option>`).join("")}
+              ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((semester) => `<option value="${semester}">${semester === 0 ? "0학기 (이수 전)" : `${semester}학기`}</option>`).join("")}
             </select>
           </div>
           <div class="field">
@@ -112,7 +112,7 @@ page.innerHTML = `
           </div>
           <div class="field">
             <label for="gpa">현재 총평점</label>
-            <input id="gpa" name="gpa" type="number" min="0" max="4.5" step="0.01" value="${existing?.gpa || 3.5}" />
+            <input id="gpa" name="gpa" type="number" min="0" max="4.5" step="0.01" value="${existing?.gpa ?? 3.5}" />
           </div>
           <div class="field">
             <label for="earlyGraduation">졸업 계획</label>

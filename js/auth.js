@@ -94,10 +94,10 @@ function clearCompletedValues(value) {
 }
 
 export function createEmptyProfile(profile, session = getSession()) {
-  if (!profile || !session?.studentNumber) return null;
+  if (!profile || !session?.studentNumber || session.demo) return null;
 
   const emptyProfile = clearCompletedValues(ensureEvidenceData(structuredClone(profile)));
-  emptyProfile.id = session.demo ? emptyProfile.id : `USER_${session.studentNumber}`;
+  emptyProfile.id = `USER_${session.studentNumber}`;
   emptyProfile.studentNumber = session.studentNumber;
   emptyProfile.name = session.name || emptyProfile.name;
   emptyProfile.currentSemester = 0;
@@ -115,7 +115,7 @@ export function createEmptyProfile(profile, session = getSession()) {
 
 export async function resetProfileData() {
   const session = getSession();
-  if (!session?.studentNumber) return false;
+  if (!session?.studentNumber || session.demo) return false;
   const currentProfile = getProfile();
   const emptyProfile = createEmptyProfile(currentProfile, session);
   if (!emptyProfile) return false;
