@@ -8,6 +8,7 @@ import {
   REQUIREMENT_OPTIONS,
   STORAGE_KEYS,
 } from "./data.js";
+import { getGlsExtractedText, mergeGlsCourses, parseGlsCourseDocument } from "./gls-course-parser.js";
 
 const profile = initAppShell({ page: "evidence", title: "이수내역·문서 등록" });
 if (!profile) throw new Error("Profile required");
@@ -196,14 +197,14 @@ document.body.insertAdjacentHTML("beforeend", `
         <div class="evidence-source-grid">
           <article class="evidence-source-card" data-document-type="gls">
             <div class="source-card-title"><span class="source-symbol">GLS</span><div><h3>학업성적표·이수내역</h3><p>교과목, 학수번호, 학점, 성적, 수강학기를 추출합니다.</p></div></div>
-            <label class="evidence-upload-zone" for="glsFile" data-upload-type="gls"><strong>GLS 이수내역 파일 선택</strong><span>PNG, JPG, PDF · 클릭 또는 드래그 앤 드롭</span><input id="glsFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <label class="evidence-upload-zone" for="glsFile" data-upload-type="gls"><strong>GLS 이수내역 파일 선택</strong><span>PDF 1개 또는 PNG·JPG 여러 장 · 클릭 또는 드래그 앤 드롭</span><input id="glsFile" type="file" accept="image/png,image/jpeg,application/pdf" multiple /></label>
             <div class="upload-preview hidden" id="glsPreview"></div>
             <div class="source-actions"><button class="btn" type="button" data-analyze="gls">파일 분석</button><button class="btn btn-secondary" type="button" data-sample="gls">샘플로 체험</button></div>
             <div class="alert hidden" id="glsStatus"></div>
           </article>
           <article class="evidence-source-card" data-document-type="challenge">
             <div class="source-card-title"><span class="source-symbol source-symbol-pink">CS</span><div><h3>챌린지스퀘어 비교과</h3><p>프로그램명, 이수일, 시간, 인증영역을 추출합니다.</p></div></div>
-            <label class="evidence-upload-zone" for="challengeFile" data-upload-type="challenge"><strong>비교과 이수내역 파일 선택</strong><span>PNG, JPG, PDF · 클릭 또는 드래그 앤 드롭</span><input id="challengeFile" type="file" accept="image/png,image/jpeg,application/pdf" /></label>
+            <label class="evidence-upload-zone" for="challengeFile" data-upload-type="challenge"><strong>비교과 이수내역 파일 선택</strong><span>PDF 1개 또는 PNG·JPG 여러 장 · 클릭 또는 드래그 앤 드롭</span><input id="challengeFile" type="file" accept="image/png,image/jpeg,application/pdf" multiple /></label>
             <div class="upload-preview hidden" id="challengePreview"></div>
             <div class="source-actions"><button class="btn" type="button" data-analyze="challenge">파일 분석</button><button class="btn btn-secondary" type="button" data-sample="challenge">샘플로 체험</button></div>
             <div class="alert hidden" id="challengeStatus"></div>
@@ -445,27 +446,34 @@ document.querySelectorAll("[data-sample]").forEach((button) => {
   });
 });
 
-async function setSelectedFile(type, file) {
-  if (!file) return;
+async function setSelectedFiles(type, files) {
+  const selected = [...files].filter((file) => file?.type.startsWith("image/") || file?.type === "application/pdf");
+  if (!selected.length) return;
   const input = getInput(type);
   const preview = getPreview(type);
   const status = getStatus(type);
+  if (selected.length > 1 && selected.some((file) => file.type === "application/pdf")) {
+    status.textContent = "PDF는 한 번에 한 파일만 선택해 주세요. 여러 장은 PNG 또는 JPG로 선택할 수 있습니다.";
+    status.className = "alert alert-warning";
+    return;
+  }
   const transfer = new DataTransfer();
-  transfer.items.add(file);
+  selected.forEach((file) => transfer.items.add(file));
   input.files = transfer.files;
-  const dataUrl = await makePreview(file).catch(() => null);
+  const firstFile = selected[0];
+  const dataUrl = await makePreview(firstFile).catch(() => null);
   preview.classList.remove("hidden");
-  preview.innerHTML = dataUrl ? `<img src="${dataUrl}" alt="선택한 파일 미리보기" /><span>${escapeHtml(file.name)}</span>` : `<strong>PDF</strong><span>${escapeHtml(file.name)}</span>`;
+  const fileLabel = selected.length === 1 ? firstFile.name : `${firstFile.name} 외 ${selected.length - 1}개`;
+  preview.innerHTML = dataUrl ? `<img src="${dataUrl}" alt="선택한 파일 미리보기" /><span>${escapeHtml(fileLabel)}</span>` : `<strong>PDF</strong><span>${escapeHtml(fileLabel)}</span>`;
   preview.dataset.preview = dataUrl || "";
-  status.textContent = `${file.name} 파일을 불러왔습니다.`;
+  status.textContent = selected.length === 1 ? `${firstFile.name} 파일을 불러왔습니다.` : `${selected.length}개 파일을 순서대로 인식합니다.`;
   status.className = "alert alert-success";
 }
 
 document.querySelectorAll("input[type=file]").forEach((input) => {
   input.addEventListener("change", async () => {
-    const type = input.id === "glsFile" ? "gls" : "challenge";
-    const file = input.files[0];
-    await setSelectedFile(input.id === "roadmapFile" ? "roadmap" : type, file);
+    const type = input.id === "glsFile" ? "gls" : input.id === "challengeFile" ? "challenge" : "roadmap";
+    await setSelectedFiles(type, input.files);
   });
 });
 
@@ -491,7 +499,7 @@ document.querySelectorAll("[data-upload-type]").forEach((zone) => {
   zone.addEventListener("drop", async (event) => {
     event.preventDefault();
     zone.classList.remove("drag-over");
-    await setSelectedFile(type, event.dataTransfer.files[0]);
+    await setSelectedFiles(type, event.dataTransfer.files);
   });
 });
 
@@ -499,7 +507,7 @@ document.addEventListener("paste", async (event) => {
   const file = [...event.clipboardData.files].find((item) => item.type.startsWith("image/") || item.type === "application/pdf");
   if (!file) return;
   const activeType = document.activeElement?.closest?.("[data-upload-type]")?.dataset.uploadType || activeUploadType;
-  await setSelectedFile(activeType, file);
+  await setSelectedFiles(activeType, [...getInput(activeType).files, file]);
 });
 
 document.querySelectorAll("[data-analyze]").forEach((button) => {
@@ -508,26 +516,49 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
     if (type === "roadmap") return;
     const input = getInput(type);
     const status = getStatus(type);
-    const file = input.files[0];
-    if (!file) {
+    const files = [...input.files];
+    if (!files.length) {
       status.textContent = "먼저 인식할 파일을 선택해 주세요.";
       status.className = "alert alert-warning";
       return;
     }
-    status.textContent = "파일을 읽고 표 구조를 분석하고 있습니다...";
+    status.textContent = `${files.length}개 파일에서 표 구조를 분석하고 있습니다...`;
     status.className = "alert";
-    const body = new FormData();
-    body.append("document", file);
-    body.append("model", "document-parse");
-    body.append("ocr", "force");
+    const payloads = [];
+    const failedFiles = [];
     try {
-      const response = await fetch("/api/parse", { method: "POST", body });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload?.error || "API unavailable");
-      saveDraft(type, { fileName: file.name, provider: "Upstage Document Parse", extractedText: extractParsedText(payload), previewDataUrl: document.querySelector(type === "gls" ? "#glsPreview" : "#challengePreview").dataset.preview || "" });
+      for (const [index, file] of files.entries()) {
+        status.textContent = `${index + 1}/${files.length}번째 파일에서 표 구조를 분석하고 있습니다...`;
+        const body = new FormData();
+        body.append("document", file);
+        body.append("model", "document-parse");
+        body.append("ocr", "force");
+        body.append("base64_encoding", "['table']");
+        const response = await fetch("/api/parse", { method: "POST", body });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          failedFiles.push(file.name);
+          continue;
+        }
+        payloads.push({ file, payload });
+      }
+      if (!payloads.length) throw new Error("No documents could be parsed");
+      const extractedItems = type === "gls" ? mergeGlsCourses(payloads.map(({ payload }) => parseGlsCourseDocument(payload))) : undefined;
+      const extractedText = payloads
+        .map(({ file, payload }) => `=== ${file.name} ===\n${type === "gls" ? getGlsExtractedText(payload) : extractParsedText(payload)}`)
+        .join("\n\n");
+      saveDraft(type, {
+        fileName: files.length === 1 ? files[0].name : `${files[0].name} 외 ${files.length - 1}개`,
+        fileNames: files.map((file) => file.name),
+        provider: "Upstage Document Parse",
+        extractedText,
+        extractedItems,
+        parseWarnings: failedFiles.length ? `${failedFiles.length}개 파일은 인식하지 못했습니다.` : "",
+        previewDataUrl: document.querySelector(type === "gls" ? "#glsPreview" : "#challengePreview").dataset.preview || "",
+      });
     } catch {
       const sample = createSample(type);
-      saveDraft(type, { fileName: file.name, provider: "수동 검토 모드", previewDataUrl: document.querySelector(type === "gls" ? "#glsPreview" : "#challengePreview").dataset.preview || "", ...sample });
+      saveDraft(type, { fileName: files.length === 1 ? files[0].name : `${files[0].name} 외 ${files.length - 1}개`, provider: "수동 검토 모드", previewDataUrl: document.querySelector(type === "gls" ? "#glsPreview" : "#challengePreview").dataset.preview || "", ...sample });
     }
   });
 });

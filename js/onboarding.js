@@ -1,6 +1,7 @@
 import { getProfile, getSession, loginDemo, resetProfileData, saveProfile } from "./auth.js";
 import { initAppShell, showToast } from "./common.js";
 import { CAMPUSES, clonePersona, COLLEGES, PERSONAS, SECONDARY_PROGRAMS, STORAGE_KEYS } from "./data.js";
+import { getGlsExtractedText, mergeGlsCourses, parseGlsCourseDocument } from "./gls-course-parser.js";
 
 const existing = getProfile();
 const session = getSession();
@@ -128,8 +129,8 @@ page.innerHTML = `
           </div>
           <div class="upload-zone">
             <strong>성적표 파일 선택</strong>
-            <p class="field-hint">PDF, PNG, JPG · 민감정보가 포함된 실제 성적표는 발표용 공개 환경에 업로드하지 마세요.</p>
-            <input id="transcriptFile" type="file" accept="application/pdf,image/png,image/jpeg" />
+            <p class="field-hint">PDF 1개 또는 PNG·JPG 여러 장 · 민감정보가 포함된 실제 성적표는 발표용 공개 환경에 업로드하지 마세요.</p>
+            <input id="transcriptFile" type="file" accept="application/pdf,image/png,image/jpeg" multiple />
             <button class="btn btn-secondary" id="parseButton" type="button">분석하고 추출값 검토</button>
             <button class="btn btn-ghost" id="sampleParseButton" type="button">샘플 추출 결과 보기</button>
             <div class="alert hidden" id="parseStatus" style="margin-top: 12px"></div>
@@ -339,32 +340,52 @@ document.querySelector("#sampleParseButton").addEventListener("click", () => {
 document.querySelector("#parseButton").addEventListener("click", async () => {
   const input = document.querySelector("#transcriptFile");
   const status = document.querySelector("#parseStatus");
-  if (!input.files.length) {
+  const files = [...input.files];
+  if (!files.length) {
     status.textContent = "먼저 PNG, JPG 또는 PDF 파일을 선택해 주세요.";
     status.className = "alert alert-warning";
     return;
   }
+  if (files.length > 1 && files.some((file) => file.type === "application/pdf")) {
+    status.textContent = "PDF는 한 번에 한 파일만 선택해 주세요. 여러 장은 PNG 또는 JPG로 선택할 수 있습니다.";
+    status.className = "alert alert-warning";
+    return;
+  }
 
-  status.textContent = "문서를 분석하고 있습니다...";
+  status.textContent = `${files.length}개 파일을 순서대로 분석하고 있습니다...`;
   status.className = "alert";
-  const body = new FormData();
-  body.append("document", input.files[0]);
-  body.append("model", "document-parse");
-  body.append("ocr", "force");
-  body.append("base64_encoding", "['table']");
   const profileDraft = buildProfileFromForm();
 
   try {
-    const response = await fetch("/api/parse", { method: "POST", body });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload?.error || "API unavailable");
+    const payloads = [];
+    const failedFiles = [];
+    for (const [index, file] of files.entries()) {
+      status.textContent = `${index + 1}/${files.length}번째 파일을 분석하고 있습니다...`;
+      const body = new FormData();
+      body.append("document", file);
+      body.append("model", "document-parse");
+      body.append("ocr", "force");
+      body.append("base64_encoding", "['table']");
+      const response = await fetch("/api/parse", { method: "POST", body });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        failedFiles.push(file.name);
+        continue;
+      }
+      payloads.push({ file, payload });
+    }
+    if (!payloads.length) throw new Error("No documents could be parsed");
     localStorage.setItem(
       STORAGE_KEYS.parsedDocument,
       JSON.stringify({
-        fileName: input.files[0].name,
+        documentType: "gls",
+        fileName: files.length === 1 ? files[0].name : `${files[0].name} 외 ${files.length - 1}개`,
+        fileNames: files.map((file) => file.name),
         provider: "Upstage Document Parse",
         parsedAt: new Date().toISOString(),
-        extractedText: extractParsedText(payload),
+        extractedText: payloads.map(({ file, payload }) => `=== ${file.name} ===\n${getGlsExtractedText(payload)}`).join("\n\n"),
+        extractedItems: mergeGlsCourses(payloads.map(({ payload }) => parseGlsCourseDocument(payload))),
+        parseWarnings: failedFiles.length ? `${failedFiles.length}개 파일은 인식하지 못했습니다.` : "",
         profileDraft,
       }),
     );

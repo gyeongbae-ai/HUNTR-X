@@ -18,12 +18,12 @@ if (!parsedDocument?.profileDraft) {
   const documentType = parsedDocument.documentType || "gls";
   const isGls = documentType === "gls";
   const extractedText = parsedDocument.extractedText || "추출된 원문 텍스트가 없습니다.";
-  const requirementChoices = REQUIREMENT_OPTIONS.filter((item) => !["totalCredits", "poom", "graduationEvaluation"].includes(item.id));
+  const courseCodePattern = /^[A-Z]{2,8}\d{3,4}[A-Z]?$/i;
+  const requirementChoices = REQUIREMENT_OPTIONS.filter((item) => !["poom", "graduationEvaluation"].includes(item.id));
 
   function primaryRequirement(course) {
     return (course.requirementIds || []).find((id) => !["totalCredits", "internationalTotal", "internationalMajor"].includes(id))
-      || (course.requirementIds || []).find((id) => id !== "totalCredits")
-      || "primaryMajor";
+      || "totalCredits";
   }
 
   function parsePipeRows(text, type) {
@@ -63,6 +63,7 @@ if (!parsedDocument?.profileDraft) {
     const fallback = parsedDocument.provider === "Upstage Document Parse"
       ? [{ term: `${profile.admissionYear}-1`, code: "확인 필요", name: "교과목명 확인 필요", credits: 3, grade: "예정", requirementIds: ["totalCredits", "primaryMajor"] }]
       : profile.courses.filter((course) => course.completed).slice(0, 7);
+    const seen = new Set();
     return (extracted.length ? extracted : fallback).map((item, index) => {
       const existing = profile.courses.find((course) => course.code === item.code) || {};
       return {
@@ -73,10 +74,17 @@ if (!parsedDocument?.profileDraft) {
         credits: Number(item.credits || existing.credits || 3),
         grade: item.grade || existing.grade || "A0",
         area: item.area || existing.area || "미분류",
-        completed: true,
+        completed: item.completed ?? true,
         requirementIds: item.requirementIds || existing.requirementIds || ["totalCredits", "primaryMajor"],
+        completionType: item.completionType || "",
+        international: Boolean(item.international || (item.requirementIds || []).some((id) => id.startsWith("international"))),
         source: parsedDocument.provider === "Upstage Document Parse" ? "GLS 파일 인식" : item.source || "GLS 샘플",
       };
+    }).filter((item) => {
+      const key = `${item.term}:${item.code}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
     });
   }
 
@@ -105,14 +113,14 @@ if (!parsedDocument?.profileDraft) {
   function renderCourseRows() {
     return items.map((course, index) => `
       <tr data-course-row="${index}">
-        <td><input type="checkbox" data-include checked aria-label="${escapeHtml(course.name)} 반영" /></td>
+        <td><input type="checkbox" data-include ${course.completed ? "checked" : ""} aria-label="${escapeHtml(course.name)} 반영" /></td>
         <td><input class="table-input term-input" data-field="term" value="${escapeHtml(course.term)}" aria-label="수강학기" /></td>
         <td><input class="table-input code-input" data-field="code" value="${escapeHtml(course.code)}" aria-label="학수번호" /></td>
         <td><input class="table-input name-input" data-field="name" value="${escapeHtml(course.name)}" aria-label="교과목명" /></td>
         <td><input class="table-input number-input" data-field="credits" type="number" min="0" max="12" step="0.5" value="${course.credits}" aria-label="학점" /></td>
-        <td><select class="table-input grade-input" data-field="grade" aria-label="성적">${["A+", "A0", "B+", "B0", "C+", "C0", "P", "S", "예정"].map((grade) => `<option ${grade === course.grade ? "selected" : ""}>${grade}</option>`).join("")}</select></td>
+        <td><select class="table-input grade-input" data-field="grade" aria-label="성적">${["A+", "A0", "A", "B+", "B0", "B", "C+", "C0", "C", "D+", "D0", "D", "F", "P", "S", "U", "예정", "확인 필요"].map((grade) => `<option ${grade === course.grade ? "selected" : ""}>${grade}</option>`).join("")}</select></td>
         <td><select class="table-input requirement-select" data-field="requirement" aria-label="주 인정요건">${requirementChoices.map((option) => `<option value="${option.id}" ${option.id === primaryRequirement(course) ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></td>
-        <td><label class="inline-check"><input type="checkbox" data-field="international" ${(course.requirementIds || []).some((id) => id.startsWith("international")) ? "checked" : ""} /><span>국제어</span></label></td>
+        <td><div class="course-extra"><label class="inline-check"><input type="checkbox" data-field="international" ${course.international ? "checked" : ""} /><span>국제어</span></label>${course.completionType || course.area ? `<small>${escapeHtml([course.completionType, course.area].filter(Boolean).join(" · "))}</small>` : ""}</div></td>
       </tr>`).join("");
   }
 
@@ -151,6 +159,7 @@ if (!parsedDocument?.profileDraft) {
       <div class="alert" style="margin-bottom:16px">
         전체를 다시 입력할 필요는 없습니다. Document Parse가 읽은 구조를 바탕으로 과목명, 학점, 인정요건처럼 애매하거나 중요한 칸만 확인해 주세요.
       </div>
+      ${parsedDocument.parseWarnings ? `<div class="alert alert-warning" style="margin-bottom:16px">${escapeHtml(parsedDocument.parseWarnings)} 인식되지 않은 파일은 다시 올려 주세요.</div>` : ""}
 
       <div class="document-review-grid evidence-review-grid">
         <section class="panel document-source-panel">
@@ -236,6 +245,11 @@ if (!parsedDocument?.profileDraft) {
   document.querySelector("#saveEvidence").addEventListener("click", async () => {
     if (isGls) {
       const courses = collectCourses();
+      const invalidCourse = courses.find((course) => !courseCodePattern.test(course.code) || !course.name || course.credits < 0 || course.credits > 12 || ["예정", "확인 필요"].includes(course.grade));
+      if (invalidCourse) {
+        showToast("학수번호, 교과목명, 학점, 성적을 확인한 뒤 반영해 주세요.");
+        return;
+      }
       profile.courses = mergeByKey(profile.courses, courses, "code");
       updateCreditEvidence(profile.courses.filter((course) => course.completed));
     } else {

@@ -4956,6 +4956,18 @@ body.modal-open {
   gap: 10px;
 }
 
+.course-extra {
+  display: grid;
+  min-width: 92px;
+  gap: 5px;
+}
+
+.course-extra small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .page-header h1,
 .page-header p,
 .evidence-tab-header h2,
