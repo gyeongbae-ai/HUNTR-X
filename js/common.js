@@ -55,6 +55,7 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
 
   const initials = (profile?.name || session.name || "GQ").slice(0, 1);
   const firstUseGuideKey = `gradquest:first-use-guide:${session.studentNumber || "guest"}`;
+  const firstUseGuideSizeKey = `gradquest:first-use-guide-size:${session.studentNumber || "guest"}`;
   const firstUseGuideExpanded = localStorage.getItem(firstUseGuideKey) !== "collapsed";
   const currentPath = window.location.pathname.split("/").pop() || "dashboard.html";
   const nav = navSections.map((section) => `
@@ -144,6 +145,9 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
         <span>처음 이용 가이드</span><i aria-hidden="true">?</i>
       </button>
       <div class="first-use-guide-panel" id="firstUseGuidePanel">
+        <span class="guide-resize-handle guide-resize-horizontal" data-guide-resize="horizontal" title="가로 크기 조절" aria-hidden="true"></span>
+        <span class="guide-resize-handle guide-resize-vertical" data-guide-resize="vertical" title="세로 크기 조절" aria-hidden="true"></span>
+        <span class="guide-resize-handle guide-resize-diagonal" data-guide-resize="diagonal" title="가로·세로 크기 조절" aria-hidden="true"></span>
         <div class="first-use-guide-head">
           <div><span>First guide</span><strong>GradQuest, 처음이신가요?</strong></div>
           <button id="firstUseGuideCollapse" type="button" aria-label="처음 이용 가이드 접기" title="접기">›</button>
@@ -181,17 +185,38 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
 
   document.querySelector("#logoutButton")?.addEventListener("click", logout);
   initRevealShell();
-  initFirstUseGuide(firstUseGuideKey);
+  initFirstUseGuide(firstUseGuideKey, firstUseGuideSizeKey);
 
   return profile;
 }
 
-function initFirstUseGuide(storageKey) {
+function initFirstUseGuide(storageKey, sizeStorageKey) {
   const guide = document.querySelector("#firstUseGuide");
   const toggle = document.querySelector("#firstUseGuideToggle");
   const collapse = document.querySelector("#firstUseGuideCollapse");
   const dialog = document.querySelector("#guideVideoDialog");
   if (!guide || !toggle) return;
+
+  const getSizeLimits = () => ({
+    minWidth: Math.min(300, window.innerWidth - 24),
+    maxWidth: Math.max(300, Math.min(620, window.innerWidth - 24)),
+    minHeight: Math.min(350, window.innerHeight - 90),
+    maxHeight: Math.max(350, window.innerHeight - 90),
+  });
+  const applySize = (width, height) => {
+    const limits = getSizeLimits();
+    const nextWidth = Math.min(limits.maxWidth, Math.max(limits.minWidth, Number(width) || 370));
+    const nextHeight = Math.min(limits.maxHeight, Math.max(limits.minHeight, Number(height) || guide.scrollHeight));
+    guide.style.width = `${Math.round(nextWidth)}px`;
+    guide.style.height = `${Math.round(nextHeight)}px`;
+    return { width: Math.round(nextWidth), height: Math.round(nextHeight) };
+  };
+  try {
+    const savedSize = JSON.parse(localStorage.getItem(sizeStorageKey));
+    if (savedSize?.width && savedSize?.height) applySize(savedSize.width, savedSize.height);
+  } catch {
+    localStorage.removeItem(sizeStorageKey);
+  }
 
   const setExpanded = (expanded) => {
     guide.classList.toggle("expanded", expanded);
@@ -208,6 +233,42 @@ function initFirstUseGuide(storageKey) {
   document.querySelector("#guideVideoClose")?.addEventListener("click", () => dialog?.close());
   dialog?.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
+  });
+
+  document.querySelectorAll("[data-guide-resize]").forEach((handle) => {
+    handle.addEventListener("pointerdown", (event) => {
+      if (!guide.classList.contains("expanded")) return;
+      event.preventDefault();
+      const direction = handle.dataset.guideResize;
+      const startX = event.clientX;
+      const startY = event.clientY;
+      const startRect = guide.getBoundingClientRect();
+      handle.setPointerCapture?.(event.pointerId);
+      document.body.classList.add("guide-resizing");
+
+      const resize = (moveEvent) => {
+        const width = direction === "vertical" ? startRect.width : startRect.width + startX - moveEvent.clientX;
+        const height = direction === "horizontal" ? startRect.height : startRect.height + moveEvent.clientY - startY;
+        applySize(width, height);
+      };
+      const finish = () => {
+        handle.removeEventListener("pointermove", resize);
+        handle.removeEventListener("pointerup", finish);
+        handle.removeEventListener("pointercancel", finish);
+        document.body.classList.remove("guide-resizing");
+        const rect = guide.getBoundingClientRect();
+        localStorage.setItem(sizeStorageKey, JSON.stringify({ width: Math.round(rect.width), height: Math.round(rect.height) }));
+      };
+      handle.addEventListener("pointermove", resize);
+      handle.addEventListener("pointerup", finish);
+      handle.addEventListener("pointercancel", finish);
+    });
+  });
+
+  window.addEventListener("resize", () => {
+    if (!guide.style.width || !guide.style.height) return;
+    const rect = guide.getBoundingClientRect();
+    applySize(rect.width, rect.height);
   });
 }
 
