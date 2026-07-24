@@ -262,6 +262,7 @@ if (!parsedDocument?.profileDraft) {
     creditIds.forEach((id) => {
       if (!profile[id]) return;
       const evidenceCredits = courses.filter((course) => course.requirementIds.includes(id)).reduce((sum, course) => sum + course.credits, 0);
+      if (id === "totalCredits" && Number(profile[id].completed || 0) > 0) return;
       profile[id].completed = Math.max(Number(profile[id].completed || 0), evidenceCredits);
     });
   }

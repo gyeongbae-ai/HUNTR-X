@@ -44,12 +44,13 @@ function cleanProgram(row, fallbackArea) {
   const organizer = String(row?.organizer || "성균관대학교").replace(/\s+/g, " ").trim();
   const year = String(row?.year || row?.completedAt || "").match(/20\d{2}/)?.[0] || "";
   const term = String(row?.term || "").match(/[12]/)?.[0] || "";
+  const inferredTerm = term || (/겨울|하반기/.test(title) ? "2" : "1");
   const rawDate = String(row?.completedAt || "").trim();
   const dateMatch = rawDate.match(/^(20\d{2})-(\d{2})-(\d{2})$/);
   const hasValidDate = dateMatch && Number(dateMatch[2]) >= 1 && Number(dateMatch[2]) <= 12 && Number(dateMatch[3]) >= 1 && Number(dateMatch[3]) <= 31;
   const completedAt = hasValidDate
     ? rawDate
-    : year ? `${year}-${term === "2" ? "12-31" : "06-30"}` : "";
+    : year ? `${year}-${inferredTerm === "2" ? "12-31" : "06-30"}` : "";
   const hours = Number(row?.hours);
   const credits = Number(row?.credits);
   const certificationArea = CERTIFICATION_AREAS.has(String(row?.certificationArea || ""))
@@ -58,6 +59,7 @@ function cleanProgram(row, fallbackArea) {
   const hasHours = Number.isFinite(hours) && hours > 0 && hours <= 2000;
   const hasCredits = Number.isFinite(credits) && credits > 0 && credits <= 30;
   if (!title || /조회된 데이터가 없습니다|프로그램명 확인 필요/.test(title) || !completedAt || (!hasHours && !hasCredits)) return null;
+  if (fallbackArea === "인턴십" && /^(교과현장실습|교과연구체험|비교과현장실습|비교과연구체험)$/.test(title)) return null;
   return {
     title,
     organizer: organizer === "교내" ? "성균관대학교" : organizer,

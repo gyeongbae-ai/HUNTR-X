@@ -15,7 +15,10 @@ if (!profile) throw new Error("Profile required");
 ensureEvidenceData(profile);
 
 const completedCourses = profile.courses.filter((course) => course.completed);
-const recordedCredits = completedCourses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
+const courseCreditSum = completedCourses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
+const recordedCredits = Number.isFinite(Number(profile.totalCredits?.completed))
+  ? Number(profile.totalCredits.completed)
+  : courseCreditSum;
 const requirementLabel = Object.fromEntries(REQUIREMENT_OPTIONS.map((item) => [item.id, item.label]));
 const editableIds = new Set([
   "totalCredits",
@@ -141,7 +144,7 @@ document.querySelector("#pageContent").innerHTML = `
 
     <div class="evidence-summary-grid">
       <div><span>이수 교과목</span><strong>${completedCourses.length}개</strong><small>성적까지 저장됨</small></div>
-      <div><span>연결된 교과 학점</span><strong>${recordedCredits}학점</strong><small>현재 등록된 내역 기준</small></div>
+      <div><span>연결된 교과 학점</span><strong>${recordedCredits}학점</strong><small>확정한 총 이수학점 기준</small></div>
       <div><span>비교과 이수</span><strong>${profile.nonCurricular.length}건</strong><small>챌린지스퀘어 내역</small></div>
       <div><span>문서 인식 기록</span><strong>${profile.evidenceImports.length}회</strong><small>GLS·챌린지스퀘어</small></div>
     </div>
@@ -409,6 +412,20 @@ function challengeCertificationArea(fileName, source = "") {
   return "인성";
 }
 
+async function parseDocumentFile(file) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const body = new FormData();
+    body.append("document", file);
+    body.append("model", "document-parse");
+    body.append("ocr", "force");
+    body.append("base64_encoding", "['table']");
+    const response = await fetch("/api/parse", { method: "POST", body });
+    if (response.ok || ![429, 502, 503].includes(response.status) || attempt === 2) return response;
+    await new Promise((resolve) => window.setTimeout(resolve, 1200 * (attempt + 1)));
+  }
+  throw new Error("Document Parse retry failed");
+}
+
 function createSample(type) {
   if (type === "roadmap") {
     return {
@@ -538,12 +555,7 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
     try {
       for (const [index, file] of files.entries()) {
         status.textContent = `${index + 1}/${files.length}번째 파일에서 표 구조를 분석하고 있습니다...`;
-        const body = new FormData();
-        body.append("document", file);
-        body.append("model", "document-parse");
-        body.append("ocr", "force");
-        body.append("base64_encoding", "['table']");
-        const response = await fetch("/api/parse", { method: "POST", body });
+        const response = await parseDocumentFile(file);
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) {
           failedFiles.push(file.name);
