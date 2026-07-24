@@ -3689,10 +3689,13 @@ body[data-page="dashboard"] .page-header::after {
 
 .nav-section .nav-section-label {
   display: block;
-  padding-top: 14px;
-  color: #71677e;
-  font-size: 11px;
+  margin: 4px 0 5px;
+  padding: 14px 10px 8px;
+  color: #4f356e;
+  border-bottom: 2px solid #d9cae6;
+  font-size: 14px;
   font-weight: 800;
+  line-height: 1.35;
 }
 
 .diagnosis-page,
