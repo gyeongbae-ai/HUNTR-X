@@ -1004,7 +1004,11 @@ function isVerifiedDsCourse(profile, course) {
 
 function normalizeCourseRequirementIds(course, profile) {
   const requirementIds = new Set(course.requirementIds || inferCourseRequirements(course));
-  if (isVerifiedDsCourse(profile, course)) requirementIds.add("dsEducation");
+  if (isVerifiedDsCourse(profile, course)) {
+    requirementIds.add("dsEducation");
+  } else {
+    requirementIds.delete("dsEducation");
+  }
   return { ...course, requirementIds: [...requirementIds] };
 }
 
