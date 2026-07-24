@@ -121,3 +121,18 @@ export async function setCloudValue(key, value) {
   if (error) throw error;
   return data;
 }
+
+export async function deleteCloudValue(key) {
+  const supabase = await getCloudClient();
+  const user = await getCloudUser();
+  if (!supabase || !user) return null;
+
+  const { error } = await supabase
+    .from("gradquest_user_data")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("key", key);
+
+  if (error) throw error;
+  return true;
+}

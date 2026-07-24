@@ -1,5 +1,6 @@
 import { clonePersona, ensureEvidenceData, STORAGE_KEYS } from "./data.js";
 import {
+  deleteCloudValue,
   getCloudValue,
   signInCloudUser,
   signOutCloudUser,
@@ -78,6 +79,27 @@ export async function saveProfile(profile) {
       return false;
     }
   }
+  return true;
+}
+
+export async function resetProfileData() {
+  const session = getSession();
+  if (!session?.studentNumber) return false;
+
+  if (session.cloud) {
+    try {
+      const deleted = await deleteCloudValue("profile");
+      if (!deleted) return false;
+    } catch (error) {
+      console.warn("Failed to reset cloud profile data.", error);
+      return false;
+    }
+  }
+
+  localStorage.removeItem(STORAGE_KEYS.profile);
+  localStorage.removeItem(getProfileStorageKey(session.studentNumber));
+  localStorage.removeItem(STORAGE_KEYS.parsedDocument);
+  window.dispatchEvent(new CustomEvent("gradquest:profile-reset", { detail: { studentNumber: session.studentNumber } }));
   return true;
 }
 
