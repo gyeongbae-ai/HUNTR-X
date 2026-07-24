@@ -8,7 +8,7 @@ import {
   REQUIREMENT_OPTIONS,
   STORAGE_KEYS,
 } from "./data.js";
-import { getGlsExtractedText, mergeGlsCourses, parseChallengePrograms, parseGlsCourseDocument } from "./gls-course-parser.js";
+import { getGlsExtractedText, mergeGlsCourses, normalizeStructuredChallengePrograms, normalizeStructuredGlsCourses, parseChallengePrograms, parseGlsCourseDocument } from "./gls-course-parser.js";
 
 const profile = initAppShell({ page: "evidence", title: "이수내역·문서 등록" });
 if (!profile) throw new Error("Profile required");
@@ -400,6 +400,15 @@ function extractParsedText(payload) {
     .slice(0, 30000);
 }
 
+function challengeCertificationArea(fileName, source = "") {
+  const value = `${fileName || ""} ${source || ""}`;
+  if (/인턴/.test(value)) return "인턴십";
+  if (/AI\s*인증|AI\s*교육|\bAI\b/i.test(value)) return "AI";
+  if (/글로벌|국제/.test(value)) return "글로벌";
+  if (/창의|역량구분/.test(value)) return "창의";
+  return "인성";
+}
+
 function createSample(type) {
   if (type === "roadmap") {
     return {
@@ -543,9 +552,58 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
         payloads.push({ file, payload });
       }
       if (!payloads.length) throw new Error("No documents could be parsed");
-      const extractedItems = type === "gls"
-        ? mergeGlsCourses(payloads.map(({ payload }) => parseGlsCourseDocument(payload)))
-        : payloads.flatMap(({ file, payload }) => parseChallengePrograms(payload, file.name));
+      let extractedItems;
+      if (type === "gls") {
+        const courseGroups = [];
+        for (const { payload } of payloads) {
+          const deterministicCourses = parseGlsCourseDocument(payload);
+          let structuredCourses = [];
+          try {
+            status.textContent = "인식한 표를 교과목·성적 항목으로 연결하고 있습니다...";
+            const structureResponse = await fetch("/api/structure-transcript", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ rawText: getGlsExtractedText(payload) }),
+            });
+            const structurePayload = await structureResponse.json().catch(() => ({}));
+            if (structureResponse.ok) structuredCourses = normalizeStructuredGlsCourses(structurePayload.courses);
+          } catch {
+            structuredCourses = [];
+          }
+          courseGroups.push([...structuredCourses, ...deterministicCourses]);
+        }
+        extractedItems = mergeGlsCourses(courseGroups);
+      } else {
+        const programGroups = [];
+        for (const { file, payload } of payloads) {
+          const rawText = extractParsedText(payload);
+          const deterministicPrograms = parseChallengePrograms(payload, file.name);
+          let structuredPrograms = [];
+          try {
+            status.textContent = "인식한 표를 비교과 이수내역으로 연결하고 있습니다...";
+            const structureResponse = await fetch("/api/structure-transcript", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                documentType: "challenge",
+                certificationArea: challengeCertificationArea(file.name, rawText),
+                rawText,
+              }),
+            });
+            const structurePayload = await structureResponse.json().catch(() => ({}));
+            if (structureResponse.ok) structuredPrograms = normalizeStructuredChallengePrograms(structurePayload.programs, file.name, rawText);
+          } catch {
+            structuredPrograms = [];
+          }
+          programGroups.push([...structuredPrograms, ...deterministicPrograms]);
+        }
+        const programMap = new Map();
+        programGroups.flat().forEach((program) => {
+          const key = `${program.certificationArea}:${program.completedAt}:${program.title}`;
+          if (!programMap.has(key)) programMap.set(key, program);
+        });
+        extractedItems = [...programMap.values()];
+      }
       const extractedText = payloads
         .map(({ file, payload }) => `=== ${file.name} ===\n${type === "gls" ? getGlsExtractedText(payload) : extractParsedText(payload)}`)
         .join("\n\n");

@@ -59,9 +59,11 @@ if (!parsedDocument?.profileDraft) {
   }
 
   function buildCourseItems() {
-    const extracted = Array.isArray(parsedDocument.extractedItems) ? parsedDocument.extractedItems : parsePipeRows(extractedText, "gls");
+    const extracted = Array.isArray(parsedDocument.extractedItems) && parsedDocument.extractedItems.length
+      ? parsedDocument.extractedItems
+      : parsePipeRows(extractedText, "gls");
     const fallback = parsedDocument.provider === "Upstage Document Parse"
-      ? [{ term: `${profile.admissionYear}-1`, code: "확인 필요", name: "교과목명 확인 필요", credits: 3, grade: "예정", requirementIds: ["totalCredits", "primaryMajor"] }]
+      ? []
       : profile.courses.filter((course) => course.completed).slice(0, 7);
     const seen = new Set();
     return (extracted.length ? extracted : fallback).map((item, index) => {
@@ -89,9 +91,11 @@ if (!parsedDocument?.profileDraft) {
   }
 
   function buildProgramItems() {
-    const extracted = Array.isArray(parsedDocument.extractedItems) ? parsedDocument.extractedItems : parsePipeRows(extractedText, "challenge");
+    const extracted = Array.isArray(parsedDocument.extractedItems) && parsedDocument.extractedItems.length
+      ? parsedDocument.extractedItems
+      : parsePipeRows(extractedText, "challenge");
     const fallback = parsedDocument.provider === "Upstage Document Parse"
-      ? [{ title: "프로그램명 확인 필요", organizer: "운영기관 확인 필요", completedAt: new Date().toISOString().slice(0, 10), hours: 1, certificationArea: "인성" }]
+      ? []
       : profile.nonCurricular.length
         ? profile.nonCurricular
         : [{ title: "프로그램명 확인 필요", organizer: "성균관대학교", completedAt: new Date().toISOString().slice(0, 10), hours: 1, certificationArea: "인성" }];
@@ -246,6 +250,10 @@ if (!parsedDocument?.profileDraft) {
   document.querySelector("#saveEvidence").addEventListener("click", async () => {
     if (isGls) {
       const courses = collectCourses();
+      if (!courses.length) {
+        showToast("반영할 교과목이 없습니다. GLS 파일을 다시 선택해 주세요.");
+        return;
+      }
       const invalidCourse = courses.find((course) => !courseCodePattern.test(course.code) || !course.name || course.credits < 0 || course.credits > 12 || ["예정", "확인 필요"].includes(course.grade));
       if (invalidCourse) {
         showToast("학수번호, 교과목명, 학점, 성적을 확인한 뒤 반영해 주세요.");
@@ -255,6 +263,10 @@ if (!parsedDocument?.profileDraft) {
       updateCreditEvidence(profile.courses.filter((course) => course.completed));
     } else {
       const programs = collectPrograms();
+      if (!programs.length) {
+        showToast("반영할 비교과 이수내역이 없습니다. 실제 이수 행이 보이는 파일을 다시 선택해 주세요.");
+        return;
+      }
       profile.nonCurricular = mergeByKey(profile.nonCurricular, programs, "id");
       profile.poom = profile.poom.map((item) => ({
         ...item,

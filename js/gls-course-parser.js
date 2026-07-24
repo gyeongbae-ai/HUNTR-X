@@ -1,4 +1,5 @@
 const COURSE_CODE = /^[A-Z]{2,8}\d{3,4}[A-Z]?$/i;
+const COURSE_CODE_IN_TEXT = /\b([A-Z]{2,8}\d{3,4}[A-Z]?)\b/gi;
 const GRADE = /^(A\+|A0|A|B\+|B0|B|C\+|C0|C|D\+|D0|D|F|P|S|U|수강\*?.*|예정)$/i;
 
 function text(value) {
@@ -11,7 +12,8 @@ function text(value) {
 function normalizeGrade(value) {
   const grade = text(value).replace(/＋/g, "+");
   if (/수강|예정/.test(grade)) return "예정";
-  return GRADE.test(grade) ? grade.toUpperCase() : "확인 필요";
+  const match = grade.match(/(?:^|\s)(A\+|A0|A|B\+|B0|B|C\+|C0|C|D\+|D0|D|F|P|S|U)(?:$|\s)/i);
+  return match ? match[1].toUpperCase() : GRADE.test(grade) ? grade.toUpperCase() : "확인 필요";
 }
 
 function normalizeTerm(year, term) {
@@ -56,7 +58,8 @@ function parseCredits(value) {
 }
 
 function normalizeRow(raw, index) {
-  const code = text(raw.code).replace(/\s/g, "").toUpperCase();
+  const code = text(raw.code).match(COURSE_CODE_IN_TEXT)?.[0]?.toUpperCase() || "";
+  COURSE_CODE_IN_TEXT.lastIndex = 0;
   if (!COURSE_CODE.test(code)) return null;
 
   const grade = normalizeGrade(raw.grade);
@@ -64,7 +67,10 @@ function normalizeRow(raw, index) {
   const international = isInternational(raw.international);
   const completionType = text(raw.completionType);
   const area = text(raw.area);
-  const name = text(raw.name);
+  const name = text(raw.name)
+    .replace(new RegExp(`^${code}\\s*`, "i"), "")
+    .replace(/\s+(?:합계|취득학점)\s*:.*$/i, "")
+    .trim();
   if (!name || credits < 0 || credits > 12) return null;
 
   return {
@@ -113,28 +119,47 @@ function rowsFromHtml(fragment) {
   const headerIndex = rows.findIndex((row) => row.some((cell) => /학수번호/.test(cell)));
   if (headerIndex < 0) return [];
   const map = columnMap(rows[headerIndex]);
-  if (map.code === undefined || map.name === undefined || map.credits === undefined) return [];
-  return rows.slice(headerIndex + 1).map((cells, index) => normalizeRow({
-    year: value(cells, map, "year"),
-    term: value(cells, map, "term"),
-    code: value(cells, map, "code"),
-    name: value(cells, map, "name"),
-    credits: value(cells, map, "credits"),
-    grade: value(cells, map, "grade"),
-    completionType: value(cells, map, "completionType"),
-    area: value(cells, map, "area"),
-    international: value(cells, map, "international"),
-  }, index)).filter(Boolean);
+  if (map.code === undefined || map.credits === undefined || map.grade === undefined) return [];
+  if (map.name === undefined) map.name = map.code + 1;
+  return rows.slice(headerIndex + 1).map((cells, index) => {
+    const joined = cells.join(" | ");
+    const codes = [...joined.matchAll(COURSE_CODE_IN_TEXT)].map((match) => match[0]);
+    COURSE_CODE_IN_TEXT.lastIndex = 0;
+    if (codes.length !== 1) return null;
+
+    const codeIndex = cells.findIndex((cell) => cell.toUpperCase().includes(codes[0].toUpperCase()));
+    const codeCell = cells[codeIndex] || "";
+    const beforeCode = cells.slice(0, codeIndex + 1).join(" ");
+    const inlineName = text(codeCell.slice(codeCell.toUpperCase().indexOf(codes[0].toUpperCase()) + codes[0].length));
+    const mappedName = value(cells, map, "name");
+    const name = inlineName && !/^(?:\d+(?:\.\d+)?|[12]\s*학기)$/.test(inlineName) ? inlineName : mappedName;
+    return normalizeRow({
+      year: value(cells, map, "year") || beforeCode,
+      term: value(cells, map, "term") || beforeCode,
+      code: codes[0],
+      name,
+      credits: value(cells, map, "credits"),
+      grade: value(cells, map, "grade"),
+      completionType: value(cells, map, "completionType"),
+      area: value(cells, map, "area"),
+      international: value(cells, map, "international"),
+    }, index);
+  }).filter(Boolean);
 }
 
 function rowsFromDelimitedText(source) {
   const rows = [];
   source.split(/\r?\n/).forEach((line, index) => {
     const cells = line.split(/\s*\|\s*|\t+| {2,}/).map(text).filter(Boolean);
-    const codeIndex = cells.findIndex((cell) => COURSE_CODE.test(cell.replace(/\s/g, "")));
+    const lineCodes = [...line.matchAll(COURSE_CODE_IN_TEXT)].map((match) => match[0]);
+    COURSE_CODE_IN_TEXT.lastIndex = 0;
+    if (lineCodes.length !== 1) return;
+    const codeIndex = cells.findIndex((cell) => cell.toUpperCase().includes(lineCodes[0].toUpperCase()));
     if (codeIndex < 0) return;
     const before = cells.slice(0, codeIndex).join(" ");
-    const after = cells.slice(codeIndex + 1);
+    const codeCell = cells[codeIndex];
+    const inlineName = text(codeCell.slice(codeCell.toUpperCase().indexOf(lineCodes[0].toUpperCase()) + lineCodes[0].length));
+    const after = [...(inlineName ? [inlineName] : []), ...cells.slice(codeIndex + 1)];
     const gradeIndex = after.findIndex((cell) => GRADE.test(text(cell).replace(/＋/g, "+")));
     const creditIndex = after.findIndex((cell) => /^\d+(?:\.\d+)?$/.test(cell));
     if (creditIndex < 1 || gradeIndex < 0) return;
@@ -144,7 +169,7 @@ function rowsFromDelimitedText(source) {
     rows.push(normalizeRow({
       year,
       term,
-      code: cells[codeIndex],
+      code: lineCodes[0],
       name: after.slice(0, creditIndex).join(" "),
       credits: after[creditIndex],
       grade: after[gradeIndex],
@@ -157,9 +182,9 @@ function rowsFromDelimitedText(source) {
 }
 
 function payloadFragments(payload) {
-  const values = [payload?.content?.html, payload?.content?.text, payload?.html, payload?.text, payload?.result?.html, payload?.result?.text];
+  const values = [payload?.content?.html, payload?.content?.markdown, payload?.content?.text, payload?.html, payload?.text, payload?.result?.html, payload?.result?.text];
   if (Array.isArray(payload?.elements)) {
-    payload.elements.forEach((element) => values.push(element?.content?.html, element?.content?.text, element?.html, element?.text));
+    payload.elements.forEach((element) => values.push(element?.content?.html, element?.content?.markdown, element?.content?.text, element?.html, element?.text));
   }
   return values.filter(Boolean).map(String);
 }
@@ -176,6 +201,11 @@ export function parseGlsCourseDocument(payload) {
     if (!previous || Object.values(row).filter(Boolean).length > Object.values(previous).filter(Boolean).length) deduped.set(key, row);
   });
   return [...deduped.values()];
+}
+
+export function normalizeStructuredGlsCourses(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((row, index) => normalizeRow(row, `SOLAR-${index}`)).filter(Boolean);
 }
 
 export function getGlsExtractedText(payload) {
@@ -212,6 +242,33 @@ function challengeArea(fileName, source) {
   if (/인성|사회봉사/.test(value)) return "인성";
   if (/창의|역량구분/.test(value)) return "창의";
   return "확인 필요";
+}
+
+export function normalizeStructuredChallengePrograms(rows, fileName = "", source = "") {
+  if (!Array.isArray(rows)) return [];
+  const fallbackArea = challengeArea(fileName, source);
+  return rows.map((row, index) => {
+    const title = text(row?.title);
+    const organizer = text(row?.organizer) || "성균관대학교";
+    const completedAt = text(row?.completedAt);
+    const hours = parseCredits(row?.hours);
+    const certificationArea = ["인성", "글로벌", "창의", "AI", "인턴십"].includes(text(row?.certificationArea))
+      ? text(row.certificationArea)
+      : fallbackArea;
+    if (!title || !/^20\d{2}-\d{2}-\d{2}$/.test(completedAt) || hours <= 0 || certificationArea === "확인 필요") return null;
+    return {
+      id: `CS-SOLAR-${completedAt}-${index}-${title}`,
+      title,
+      organizer,
+      completedAt,
+      hours,
+      certificationArea,
+      status: "이수",
+      completed: true,
+      requirementIds: ["poom"],
+      source: "챌린지스퀘어 파일 인식",
+    };
+  }).filter(Boolean);
 }
 
 export function parseChallengePrograms(payload, fileName = "") {
