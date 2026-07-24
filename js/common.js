@@ -7,6 +7,7 @@ const navSections = [
     label: "핵심 서비스",
     items: [
       { href: "dashboard.html", label: "진단 대시보드", page: "dashboard" },
+      { href: "evidence.html", label: "이수내역·문서 등록", page: "evidence" },
       {
         href: "personal-roadmap.html",
         label: "개인 로드맵",
@@ -17,7 +18,6 @@ const navSections = [
           { href: "detailed-roadmap.html", label: "상세 로드맵" },
         ],
       },
-      { href: "evidence.html", label: "이수내역·문서 등록", page: "evidence" },
     ],
   },
   {

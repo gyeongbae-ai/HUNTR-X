@@ -1,6 +1,5 @@
 import { clonePersona, ensureEvidenceData, STORAGE_KEYS } from "./data.js";
 import {
-  deleteCloudProfileData,
   getCloudValue,
   signInCloudUser,
   signOutCloudUser,
@@ -82,25 +81,49 @@ export async function saveProfile(profile) {
   return true;
 }
 
+function clearCompletedValues(value) {
+  if (Array.isArray(value)) return value.map((item) => clearCompletedValues(item));
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => {
+      if (key === "completed") return [key, typeof item === "boolean" ? false : 0];
+      return [key, clearCompletedValues(item)];
+    }),
+  );
+}
+
+export function createEmptyProfile(profile, session = getSession()) {
+  if (!profile || !session?.studentNumber) return null;
+
+  const emptyProfile = clearCompletedValues(ensureEvidenceData(structuredClone(profile)));
+  emptyProfile.id = session.demo ? emptyProfile.id : `USER_${session.studentNumber}`;
+  emptyProfile.studentNumber = session.studentNumber;
+  emptyProfile.name = session.name || emptyProfile.name;
+  emptyProfile.currentSemester = 0;
+  emptyProfile.gpa = 0;
+  emptyProfile.courses = [];
+  emptyProfile.nonCurricular = [];
+  emptyProfile.evidenceImports = [];
+  emptyProfile.academicCalendarEvents = [];
+  emptyProfile.programPlans = [];
+  emptyProfile.whatIfWorkspace = { activePlanId: null, plans: [] };
+  emptyProfile.courseEvidenceGaps = [];
+  emptyProfile.lastResetAt = new Date().toISOString();
+  return emptyProfile;
+}
+
 export async function resetProfileData() {
   const session = getSession();
   if (!session?.studentNumber) return false;
+  const currentProfile = getProfile();
+  const emptyProfile = createEmptyProfile(currentProfile, session);
+  if (!emptyProfile) return false;
 
-  if (session.cloud) {
-    try {
-      const deleted = await deleteCloudProfileData();
-      if (!deleted) return false;
-    } catch (error) {
-      console.warn("Failed to reset cloud profile data.", error);
-      return false;
-    }
-  }
-
-  localStorage.removeItem(STORAGE_KEYS.profile);
-  localStorage.removeItem(getProfileStorageKey(session.studentNumber));
+  const saved = await saveProfile(emptyProfile);
   localStorage.removeItem(STORAGE_KEYS.parsedDocument);
-  window.dispatchEvent(new CustomEvent("gradquest:profile-reset", { detail: { studentNumber: session.studentNumber } }));
-  return true;
+  window.dispatchEvent(new CustomEvent("gradquest:profile-reset", { detail: emptyProfile }));
+  return saved;
 }
 
 export async function registerUser(payload) {

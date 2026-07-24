@@ -176,7 +176,7 @@ degreeTypeSelect.addEventListener("change", toggleSecondary);
 
 fillColleges(existing?.college, existing?.department);
 document.querySelector("#admissionYear").value = String(existing?.admissionYear || 2024);
-document.querySelector("#currentSemester").value = String(existing?.currentSemester || 4);
+document.querySelector("#currentSemester").value = String(existing?.currentSemester ?? 4);
 campusSelect.value = existing?.campus || "인문사회과학캠퍼스";
 fillColleges(existing?.college, existing?.department);
 degreeTypeSelect.value = existing?.degreeType || "single_major";
@@ -201,8 +201,8 @@ document.querySelector("#resetProfileData")?.addEventListener("click", async () 
     return;
   }
 
-  showToast("저장된 모든 데이터를 초기화했습니다.");
-  window.setTimeout(() => window.location.replace("onboarding.html?reset=1"), 350);
+  showToast("모든 이수값을 0으로 초기화해 계정에 저장했습니다.");
+  window.setTimeout(() => window.location.replace("dashboard.html?reset=1"), 350);
 });
 
 document.querySelectorAll("[data-persona]").forEach((button) => {
