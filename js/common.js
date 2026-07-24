@@ -54,6 +54,8 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
   initMotionEffects();
 
   const initials = (profile?.name || session.name || "GQ").slice(0, 1);
+  const firstUseGuideKey = `gradquest:first-use-guide:${session.studentNumber || "guest"}`;
+  const firstUseGuideExpanded = localStorage.getItem(firstUseGuideKey) !== "collapsed";
   const currentPath = window.location.pathname.split("/").pop() || "dashboard.html";
   const nav = navSections.map((section) => `
     <div class="nav-section">
@@ -137,12 +139,76 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
         <div id="pageContent"></div>
       </main>
     </div>
+    <aside class="first-use-guide ${firstUseGuideExpanded ? "expanded" : "collapsed"}" id="firstUseGuide" aria-label="GradQuest 처음 이용 가이드">
+      <button class="first-use-guide-tab" id="firstUseGuideToggle" type="button" aria-controls="firstUseGuidePanel" aria-expanded="${firstUseGuideExpanded}">
+        <span>처음 이용 가이드</span><i aria-hidden="true">?</i>
+      </button>
+      <div class="first-use-guide-panel" id="firstUseGuidePanel">
+        <div class="first-use-guide-head">
+          <div><span>First guide</span><strong>GradQuest, 처음이신가요?</strong></div>
+          <button id="firstUseGuideCollapse" type="button" aria-label="처음 이용 가이드 접기" title="접기">›</button>
+        </div>
+        <p class="first-use-guide-intro">성적표와 비교과 활동 이수 이력을 등록하면 현재 상태부터 다음 계획까지 이어서 확인할 수 있습니다.</p>
+        <ol class="first-use-guide-steps">
+          <li><span>01</span><p><strong>파일을 올리면 AI가 읽어요</strong><small>성적표와 비교과 이수 이력을 한 번에 검토합니다.</small></p></li>
+          <li><span>02</span><p><strong>부족한 졸업요건을 확인해요</strong><small>학점·3품·졸업평가의 현재 상태를 모아 봅니다.</small></p></li>
+          <li><span>03</span><p><strong>다음 계획을 추천받아요</strong><small>다음 학기 과제와 졸업 플랜을 직접 조립합니다.</small></p></li>
+        </ol>
+        <div class="first-use-guide-menus">
+          <div><strong>핵심 서비스</strong><span>진단 대시보드 · 이수내역·문서 등록 · 개인 로드맵</span></div>
+          <div><strong>학사 도구</strong><span>조기졸업 진단 · AI 학사 도우미 · 맞춤 비교과 · 학사 일정</span></div>
+        </div>
+        <p class="first-use-guide-note">교과목뿐 아니라 비교과, 3품, 졸업평가, 국제어와 학사 일정도 함께 검토할 수 있습니다.</p>
+        <div class="first-use-guide-actions">
+          <button class="btn" id="guideVideoButton" type="button">사용법 영상 보기</button>
+          <a class="text-link" href="evidence.html">파일 등록 시작</a>
+        </div>
+      </div>
+    </aside>
+    <dialog class="guide-video-dialog" id="guideVideoDialog" aria-labelledby="guideVideoTitle">
+      <div class="guide-video-head">
+        <div><span>60-second preview</span><h2 id="guideVideoTitle">GradQuest 사용 흐름</h2></div>
+        <button id="guideVideoClose" type="button" aria-label="사용법 미리보기 닫기">×</button>
+      </div>
+      <div class="guide-video-flow">
+        <article><span>01</span><div><strong>성적표 + 비교과 이력 등록</strong><p>이미지와 PDF를 올리고 AI가 추출한 교과목·성적·활동을 검토합니다.</p><a href="evidence.html">이수내역·문서 등록</a></div></article>
+        <article><span>02</span><div><strong>현재 졸업요건 진단</strong><p>총학점, 교양, 전공, 국제어, 3품과 졸업평가의 충족 여부를 확인합니다.</p><a href="dashboard.html">진단 대시보드</a></div></article>
+        <article><span>03</span><div><strong>다음 학기 계획 조립</strong><p>추천 과제를 원하는 학기에 배치하고 저장된 졸업 플랜을 다시 확인합니다.</p><a href="next-semester.html">개인 로드맵</a></div></article>
+      </div>
+      <p class="guide-video-caption">실제 인정 여부와 최신 기준은 GLS와 학교·학과 공지를 마지막으로 확인해 주세요.</p>
+    </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>`;
 
   document.querySelector("#logoutButton")?.addEventListener("click", logout);
   initRevealShell();
+  initFirstUseGuide(firstUseGuideKey);
 
   return profile;
+}
+
+function initFirstUseGuide(storageKey) {
+  const guide = document.querySelector("#firstUseGuide");
+  const toggle = document.querySelector("#firstUseGuideToggle");
+  const collapse = document.querySelector("#firstUseGuideCollapse");
+  const dialog = document.querySelector("#guideVideoDialog");
+  if (!guide || !toggle) return;
+
+  const setExpanded = (expanded) => {
+    guide.classList.toggle("expanded", expanded);
+    guide.classList.toggle("collapsed", !expanded);
+    toggle.setAttribute("aria-expanded", String(expanded));
+    localStorage.setItem(storageKey, expanded ? "expanded" : "collapsed");
+  };
+
+  toggle.addEventListener("click", () => setExpanded(true));
+  collapse?.addEventListener("click", () => setExpanded(false));
+  document.querySelector("#guideVideoButton")?.addEventListener("click", () => {
+    if (typeof dialog?.showModal === "function") dialog.showModal();
+  });
+  document.querySelector("#guideVideoClose")?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
 }
 
 function initRevealShell() {
