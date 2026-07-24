@@ -104,7 +104,9 @@ if (!parsedDocument?.profileDraft) {
       title: item.title || "프로그램명 확인 필요",
       organizer: item.organizer || "성균관대학교",
       completedAt: item.completedAt || new Date().toISOString().slice(0, 10),
-      hours: Number(item.hours || 1),
+      hours: Number(item.hours || 0),
+      credits: Number(item.credits || 0),
+      unit: Number(item.credits || 0) > 0 ? "학점" : "시간",
       certificationArea: item.certificationArea || "인성",
       status: item.status || "확인 필요",
       completed: item.completed ?? item.status === "이수",
@@ -136,7 +138,8 @@ if (!parsedDocument?.profileDraft) {
         <td><input class="table-input name-input" data-field="title" value="${escapeHtml(program.title)}" aria-label="프로그램명" /></td>
         <td><input class="table-input" data-field="organizer" value="${escapeHtml(program.organizer)}" aria-label="운영기관" /></td>
         <td><input class="table-input" data-field="completedAt" type="date" value="${escapeHtml(program.completedAt)}" aria-label="이수일" /></td>
-        <td><input class="table-input number-input" data-field="hours" type="number" min="0" max="1000" value="${program.hours}" aria-label="이수시간" /></td>
+        <td><input class="table-input number-input" data-field="amount" type="number" min="0" max="2000" step="0.5" value="${program.unit === "학점" ? program.credits : program.hours}" aria-label="인정량" /></td>
+        <td><select class="table-input" data-field="unit" aria-label="인정 단위"><option ${program.unit === "시간" ? "selected" : ""}>시간</option><option ${program.unit === "학점" ? "selected" : ""}>학점</option></select></td>
         <td><select class="table-input" data-field="certificationArea" aria-label="인증영역">${["인성", "글로벌", "창의", "AI", "인턴십"].map((area) => `<option ${area === program.certificationArea ? "selected" : ""}>${area}</option>`).join("")}</select></td>
         <td><select class="table-input" data-field="status" aria-label="이수상태"><option ${program.status === "확인 필요" ? "selected" : ""}>확인 필요</option><option ${program.status === "이수" ? "selected" : ""}>이수</option><option ${program.status === "진행중" ? "selected" : ""}>진행중</option></select></td>
       </tr>`).join("");
@@ -180,7 +183,7 @@ if (!parsedDocument?.profileDraft) {
             <table class="course-table review-table">
               ${isGls
                 ? `<thead><tr><th>반영</th><th>수강학기</th><th>학수번호</th><th>교과목명</th><th>학점</th><th>성적</th><th>주 인정요건</th><th>추가</th></tr></thead><tbody>${renderCourseRows()}</tbody>`
-                : `<thead><tr><th>반영</th><th>프로그램명</th><th>운영기관</th><th>이수일</th><th>시간</th><th>인증영역</th><th>상태</th></tr></thead><tbody>${renderProgramRows()}</tbody>`}
+                : `<thead><tr><th>반영</th><th>프로그램명·교과목명</th><th>운영기관</th><th>이수일</th><th>인정량</th><th>단위</th><th>인증영역</th><th>상태</th></tr></thead><tbody>${renderProgramRows()}</tbody>`}
             </table>
           </div>
           <div class="alert" style="margin-top:16px">${isGls ? "모든 교과목은 총 졸업학점에 포함되며, 선택한 주 인정요건과 국제어수업 여부를 추가로 연결합니다." : "이수 상태인 프로그램은 선택한 인증영역과 3품 요건에 연결됩니다."}</div>
@@ -219,17 +222,33 @@ if (!parsedDocument?.profileDraft) {
   function collectPrograms() {
     return [...document.querySelectorAll("[data-program-row]")]
       .filter((row) => row.querySelector("[data-include]").checked)
-      .map((row) => ({
-        id: items[Number(row.dataset.programRow)].id,
-        title: row.querySelector('[data-field="title"]').value.trim(),
-        organizer: row.querySelector('[data-field="organizer"]').value.trim(),
-        completedAt: row.querySelector('[data-field="completedAt"]').value,
-        hours: Number(row.querySelector('[data-field="hours"]').value),
-        certificationArea: row.querySelector('[data-field="certificationArea"]').value,
-        status: row.querySelector('[data-field="status"]').value,
-        requirementIds: ["poom"],
-        source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 파일 인식" : "챌린지스퀘어 샘플",
-      }));
+      .map((row) => {
+        const amount = Number(row.querySelector('[data-field="amount"]').value);
+        const unit = row.querySelector('[data-field="unit"]').value;
+        return {
+          id: items[Number(row.dataset.programRow)].id,
+          title: row.querySelector('[data-field="title"]').value.trim(),
+          organizer: row.querySelector('[data-field="organizer"]').value.trim(),
+          completedAt: row.querySelector('[data-field="completedAt"]').value,
+          hours: unit === "시간" ? amount : 0,
+          credits: unit === "학점" ? amount : 0,
+          certificationArea: row.querySelector('[data-field="certificationArea"]').value,
+          status: row.querySelector('[data-field="status"]').value,
+          requirementIds: ["poom"],
+          source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 파일 인식" : "챌린지스퀘어 샘플",
+        };
+      });
+  }
+
+  function meetsCertificationRequirement(area, records) {
+    const completed = records.filter((record) => record.status === "이수" && record.certificationArea === area);
+    const credits = completed.reduce((sum, record) => sum + Number(record.credits || 0), 0);
+    const hours = completed.reduce((sum, record) => sum + Number(record.hours || 0), 0);
+    if (area === "글로벌") return credits >= 21 || hours >= 60;
+    if (area === "AI") return credits >= 9 && hours >= 90;
+    if (area === "인턴십") return credits >= 2 || hours >= 280;
+    if (area === "인성") return hours >= 40;
+    return completed.length > 0;
   }
 
   function mergeByKey(current, incoming, key) {
@@ -267,10 +286,15 @@ if (!parsedDocument?.profileDraft) {
         showToast("반영할 비교과 이수내역이 없습니다. 실제 이수 행이 보이는 파일을 다시 선택해 주세요.");
         return;
       }
+      const invalidProgram = programs.find((program) => !program.title || !program.completedAt || (program.hours <= 0 && program.credits <= 0));
+      if (invalidProgram) {
+        showToast("프로그램명·교과목명, 이수일, 인정량을 확인한 뒤 반영해 주세요.");
+        return;
+      }
       profile.nonCurricular = mergeByKey(profile.nonCurricular, programs, "id");
       profile.poom = profile.poom.map((item) => ({
         ...item,
-        completed: item.completed || programs.some((program) => program.status === "이수" && program.certificationArea === item.label),
+        completed: item.completed || meetsCertificationRequirement(item.label, profile.nonCurricular),
       }));
     }
     profile.evidenceImports.push({

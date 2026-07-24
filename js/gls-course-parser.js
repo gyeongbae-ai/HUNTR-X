@@ -252,16 +252,18 @@ export function normalizeStructuredChallengePrograms(rows, fileName = "", source
     const organizer = text(row?.organizer) || "성균관대학교";
     const completedAt = text(row?.completedAt);
     const hours = parseCredits(row?.hours);
+    const credits = parseCredits(row?.credits);
     const certificationArea = ["인성", "글로벌", "창의", "AI", "인턴십"].includes(text(row?.certificationArea))
       ? text(row.certificationArea)
       : fallbackArea;
-    if (!title || !/^20\d{2}-\d{2}-\d{2}$/.test(completedAt) || hours <= 0 || certificationArea === "확인 필요") return null;
+    if (!title || !/^20\d{2}-\d{2}-\d{2}$/.test(completedAt) || (hours <= 0 && credits <= 0) || certificationArea === "확인 필요") return null;
     return {
       id: `CS-SOLAR-${completedAt}-${index}-${title}`,
       title,
       organizer,
       completedAt,
       hours,
+      credits,
       certificationArea,
       status: "이수",
       completed: true,
@@ -289,10 +291,11 @@ export function parseChallengePrograms(payload, fileName = "") {
       const termIndex = headers.findIndex((cell) => /학기/.test(cell));
       const organizerIndex = headers.findIndex((cell) => /주관부서|운영기관|기관/.test(cell));
       if (hoursIndex < 0 || (programIndex < 0 && organizerIndex < 0)) return;
+      const usesCredits = /학점/.test(headers[hoursIndex]) && !/시간/.test(headers[hoursIndex]);
       rows.slice(headerIndex + 1).forEach((cells, index) => {
-        const hours = parseCredits(cells[hoursIndex]);
+        const amount = parseCredits(cells[hoursIndex]);
         const title = text(cells[programIndex]) || text(cells[organizerIndex]);
-        if (!title || hours <= 0) return;
+        if (!title || amount <= 0) return;
         const year = text(cells[yearIndex]).match(/20\d{2}/)?.[0] || "";
         const term = text(cells[termIndex]).match(/[12]/)?.[0] || "";
         programs.push({
@@ -300,7 +303,8 @@ export function parseChallengePrograms(payload, fileName = "") {
           title,
           organizer: text(cells[organizerIndex]) || "챌린지스퀘어",
           completedAt: year ? `${year}-${term === "2" ? "12" : "06"}-01` : "",
-          hours,
+          hours: usesCredits ? 0 : amount,
+          credits: usesCredits ? amount : 0,
           certificationArea: area,
           status: "확인 필요",
           completed: false,
@@ -310,6 +314,6 @@ export function parseChallengePrograms(payload, fileName = "") {
     });
   });
   const deduped = new Map();
-  programs.forEach((program) => deduped.set(`${program.certificationArea}:${program.title}:${program.hours}`, program));
+  programs.forEach((program) => deduped.set(`${program.certificationArea}:${program.title}:${program.hours || program.credits}`, program));
   return [...deduped.values()];
 }

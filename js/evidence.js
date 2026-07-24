@@ -105,7 +105,7 @@ function renderProgramCards() {
         <article class="program-evidence-card">
           <div><span class="badge badge-success">${escapeHtml(program.status)}</span><span class="source-label">${escapeHtml(program.source)}</span></div>
           <h3>${escapeHtml(program.title)}</h3>
-          <p>${escapeHtml(program.organizer)} · ${escapeHtml(program.completedAt)} · ${program.hours}시간</p>
+          <p>${escapeHtml(program.organizer)} · ${escapeHtml(program.completedAt)} · ${Number(program.credits || 0) > 0 ? `${program.credits}학점` : `${program.hours}시간`}</p>
           <div class="evidence-card-footer"><strong>${escapeHtml(program.certificationArea)} 인증</strong><span>3품 연결</span></div>
         </article>`,
     )
@@ -599,7 +599,7 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
         }
         const programMap = new Map();
         programGroups.flat().forEach((program) => {
-          const key = `${program.certificationArea}:${program.completedAt}:${program.title}`;
+          const key = `${program.certificationArea}:${program.title}:${program.credits || 0}:${program.hours || 0}`;
           if (!programMap.has(key)) programMap.set(key, program);
         });
         extractedItems = [...programMap.values()];
