@@ -585,7 +585,7 @@ document.querySelector("#pageContent").innerHTML = `
       </section>
       <section class="panel roadmap-tab-panel hidden" id="roadmap-poom">${renderPoomActivities()}</section>
       <section class="panel roadmap-tab-panel hidden" id="roadmap-evaluation">${renderEvaluation()}</section>
-    </section>` : ""}
+    </section><section class="timeline-simulator-section" id="timelineSimulator"></section>` : ""}
   </div>`;
 
 function activateRoadmapTab(name, updateHash = false) {
@@ -607,5 +607,5 @@ document.querySelectorAll("[data-roadmap-tab]").forEach((button) => {
 });
 
 if (roadmapView === "what-if") renderWhatIfWorkspace();
-if (roadmapView === "next-semester") renderTimelineSimulator();
+if (["next-semester", "detailed"].includes(roadmapView)) renderTimelineSimulator();
 if (roadmapView === "detailed") activateRoadmapTab(window.location.hash.slice(1) || "courses");
