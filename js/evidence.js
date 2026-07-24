@@ -611,7 +611,8 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
         }
         const programMap = new Map();
         programGroups.flat().forEach((program) => {
-          const key = `${program.certificationArea}:${program.title}:${program.credits || 0}:${program.hours || 0}`;
+          const year = String(program.completedAt || "").slice(0, 4);
+          const key = `${program.certificationArea}:${year}:${program.title}:${program.credits || 0}:${program.hours || 0}`;
           if (!programMap.has(key)) programMap.set(key, program);
         });
         extractedItems = [...programMap.values()];
