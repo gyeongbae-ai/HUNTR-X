@@ -9,7 +9,14 @@ import {
   simulateWhatIfCombination,
 } from "./data.js";
 
-const profile = initAppShell({ page: "roadmap", title: "개인 로드맵" });
+const roadmapView = document.body.dataset.roadmapView || "what-if";
+const roadmapViewMeta = {
+  "what-if": { eyebrow: "What-if workspace", title: "만약에 시뮬레이션", description: "여러 선택지를 조합해 졸업계획에 미치는 영향을 비교합니다." },
+  "next-semester": { eyebrow: "Next semester", title: "다음 학기 추천 계획", description: "현재 진단 결과를 바탕으로 다음 학기에 먼저 할 일을 정리했습니다." },
+  detailed: { eyebrow: "Detailed roadmap", title: "상세 로드맵", description: "수강 후보, 3품 활동, 학과 졸업요건을 영역별로 확인합니다." },
+};
+const activeViewMeta = roadmapViewMeta[roadmapView] || roadmapViewMeta["what-if"];
+const profile = initAppShell({ page: "roadmap", title: activeViewMeta.title });
 if (!profile) throw new Error("Profile required");
 
 const nextPlan = getNextSemesterPlan(profile);
@@ -283,12 +290,18 @@ document.querySelector("#pageContent").innerHTML = `
   <div class="page-content roadmap-page">
     <div class="page-header">
       <div>
-        <p class="eyebrow">Personal roadmap</p>
-        <h1>${escapeHtml(profile.name)}님의 개인 로드맵</h1>
-        <p>현재 진단 결과를 바탕으로 다음 학기와 졸업 전 계획을 정리했습니다.</p>
+        <p class="eyebrow">${escapeHtml(activeViewMeta.eyebrow)}</p>
+        <h1>${escapeHtml(profile.name)}님의 ${escapeHtml(activeViewMeta.title)}</h1>
+        <p>${escapeHtml(activeViewMeta.description)}</p>
       </div>
       <a class="btn btn-secondary" href="dashboard.html">진단 현황 보기</a>
     </div>
+
+    <nav class="roadmap-page-tabs" aria-label="개인 로드맵 하위 페이지">
+      <a class="${roadmapView === "what-if" ? "active" : ""}" href="personal-roadmap.html" ${roadmapView === "what-if" ? `aria-current="page"` : ""}><span>What-if workspace</span><strong>만약에 시뮬레이션</strong></a>
+      <a class="${roadmapView === "next-semester" ? "active" : ""}" href="next-semester.html" ${roadmapView === "next-semester" ? `aria-current="page"` : ""}><span>Next semester</span><strong>다음 학기 추천 계획</strong></a>
+      <a class="${roadmapView === "detailed" ? "active" : ""}" href="detailed-roadmap.html" ${roadmapView === "detailed" ? `aria-current="page"` : ""}><span>Detailed roadmap</span><strong>상세 로드맵</strong></a>
+    </nav>
 
     <a class="ai-roadmap-bar" href="assistant.html">
       <span class="ai-roadmap-mark">AI</span>
@@ -296,14 +309,14 @@ document.querySelector("#pageContent").innerHTML = `
       <i aria-hidden="true">→</i>
     </a>
 
-    <section class="panel what-if-panel" id="whatIfPanel"></section>
+    ${roadmapView === "what-if" ? `<section class="panel what-if-panel" id="whatIfPanel"></section>` : ""}
 
-    <section class="panel roadmap-semester-panel">
+    ${roadmapView === "next-semester" ? `<section class="panel roadmap-semester-panel">
       <div class="panel-header"><div><p class="eyebrow">Next semester</p><h2>다음 학기 추천 계획</h2><p>마감과 준비 순서를 고려한 우선 항목입니다.</p></div><a class="text-link" href="academic-calendar.html">학사 일정</a></div>
       <div class="semester-plan-list">${nextPlan.length ? nextPlan.map(renderPlanItem).join("") : `<div class="empty-roadmap"><strong>현재 입력된 항목은 모두 충족 상태입니다.</strong><span>다음 학기 개설 과목과 학과 공지를 확인하세요.</span></div>`}</div>
-    </section>
+    </section>` : ""}
 
-    <section class="roadmap-detail-section">
+    ${roadmapView === "detailed" ? `<section class="roadmap-detail-section">
       <div class="panel-header"><div><p class="eyebrow">Detailed roadmap</p><h2>상세 로드맵</h2><p>확인할 영역을 선택하세요.</p></div></div>
       <div class="roadmap-track" aria-label="개인 맞춤 졸업 로드맵">
         ${studyPlan.roadmap.map((step, index) => `<article class="roadmap-step"><span>${String(index + 1).padStart(2, "0")} · ${escapeHtml(step.label)}</span><strong>${escapeHtml(step.title)}</strong><p>${escapeHtml(step.detail)}</p></article>`).join("")}
@@ -319,7 +332,7 @@ document.querySelector("#pageContent").innerHTML = `
       </section>
       <section class="panel roadmap-tab-panel hidden" id="roadmap-poom">${renderPoomActivities()}</section>
       <section class="panel roadmap-tab-panel hidden" id="roadmap-evaluation">${renderEvaluation()}</section>
-    </section>
+    </section>` : ""}
   </div>`;
 
 function activateRoadmapTab(name, updateHash = false) {
@@ -340,5 +353,5 @@ document.querySelectorAll("[data-roadmap-tab]").forEach((button) => {
   button.addEventListener("click", () => activateRoadmapTab(button.dataset.roadmapTab, true));
 });
 
-renderWhatIfWorkspace();
-activateRoadmapTab(window.location.hash.slice(1) || "courses");
+if (roadmapView === "what-if") renderWhatIfWorkspace();
+if (roadmapView === "detailed") activateRoadmapTab(window.location.hash.slice(1) || "courses");

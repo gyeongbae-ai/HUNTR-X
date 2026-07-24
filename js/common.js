@@ -7,7 +7,16 @@ const navSections = [
     label: "핵심 서비스",
     items: [
       { href: "dashboard.html", label: "진단 대시보드", page: "dashboard" },
-      { href: "personal-roadmap.html", label: "개인 로드맵", page: "roadmap" },
+      {
+        href: "personal-roadmap.html",
+        label: "개인 로드맵",
+        page: "roadmap",
+        children: [
+          { href: "personal-roadmap.html", label: "만약에 시뮬레이션" },
+          { href: "next-semester.html", label: "다음 학기 추천 계획" },
+          { href: "detailed-roadmap.html", label: "상세 로드맵" },
+        ],
+      },
       { href: "evidence.html", label: "이수내역·문서 등록", page: "evidence" },
     ],
   },
@@ -45,13 +54,22 @@ export function initAppShell({ page, title, requireProfile = true } = {}) {
   initMotionEffects();
 
   const initials = (profile?.name || session.name || "GQ").slice(0, 1);
+  const currentPath = window.location.pathname.split("/").pop() || "dashboard.html";
   const nav = navSections.map((section) => `
     <div class="nav-section">
       <span class="nav-section-label">${section.label}</span>
-      ${section.items.map((item) => `
-        <a class="nav-link ${page === item.page ? "active" : ""}" href="${item.href}">
-          <span>${item.label}</span>
-        </a>`).join("")}
+      ${section.items.map((item) => {
+        const active = page === item.page;
+        return `
+          <div class="nav-item-group ${item.children ? "has-children" : ""}">
+            <a class="nav-link ${active ? "active" : ""}" href="${item.href}">
+              <span>${item.label}</span>${item.children ? `<i aria-hidden="true">⌄</i>` : ""}
+            </a>
+            ${item.children && active ? `<div class="nav-submenu" aria-label="${item.label} 하위 메뉴">
+              ${item.children.map((child) => `<a class="${currentPath === child.href ? "active" : ""}" href="${child.href}" ${currentPath === child.href ? `aria-current="page"` : ""}>${child.label}</a>`).join("")}
+            </div>` : ""}
+          </div>`;
+      }).join("")}
     </div>`).join("");
   app.innerHTML = `
     <div class="app-shell">

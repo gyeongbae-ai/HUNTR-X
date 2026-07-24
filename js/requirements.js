@@ -7,6 +7,11 @@ import {
   getStatus,
   REQUIREMENT_OPTIONS,
 } from "./data.js";
+import {
+  CONVERGENCE_TRACK_CONTACTS,
+  LINKED_MAJOR_CONTACTS,
+  MICRODEGREE_CONTACTS,
+} from "./program-contact-data.js";
 
 const profile = initAppShell({ page: "requirements", title: "졸업요건 상세" });
 if (!profile) throw new Error("Profile required");
@@ -112,6 +117,68 @@ function renderVerificationSource(item) {
     </div>`;
 }
 
+function renderProgramNames(programs, includeCredits = true) {
+  return `<div class="contact-program-list">${programs.map((program) => {
+    const [name, credits, note] = Array.isArray(program) ? program : [program];
+    return `<span><strong>${escapeHtml(name)}</strong>${includeCredits && credits ? `<small>${formatNumber(credits)}학점</small>` : ""}${note ? `<em>${escapeHtml(note)}</em>` : ""}</span>`;
+  }).join("")}</div>`;
+}
+
+function renderContactDirectory(item) {
+  let title = "";
+  let description = "";
+  let rows = [];
+  let sourceUrl = "";
+  let includeLocation = false;
+
+  if (item.id === "microdegree") {
+    title = "마이크로디그리 주관학과·연락처";
+    description = "동일한 주관학과와 연락처는 한 행으로 묶었습니다.";
+    rows = MICRODEGREE_CONTACTS;
+    sourceUrl = "https://www.skku.edu/skku/campus/skk_comm/notice02.do?articleNo=136054&mode=view";
+  } else if (item.id === "secondaryMajor" && profile.degreeType === "convergence_track") {
+    title = "융합트랙 주관부서·연락처";
+    description = "같은 행정실과 연락처가 담당하는 트랙은 한 행에 모았습니다.";
+    rows = CONVERGENCE_TRACK_CONTACTS;
+    sourceUrl = "https://www.skku.edu/skku/campus/skk_comm/notice02.do?articleNo=136054&mode=view";
+  } else if (item.id === "secondaryMajor" && profile.degreeType === "linked_major") {
+    title = "연계전공 주관부서·연락처·위치";
+    description = "같은 사무실이 담당하는 전공은 한 칸에 합쳐 표시했습니다.";
+    rows = LINKED_MAJOR_CONTACTS;
+    includeLocation = true;
+  }
+
+  if (!rows.length) return "";
+  const programCount = rows.reduce((sum, row) => sum + row.programs.length, 0);
+
+  return `
+    <section class="requirement-detail-section contact-directory-section">
+      <div class="requirement-detail-heading contact-directory-heading">
+        <div>
+          <p class="eyebrow">Academic contacts</p>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(description)} 총 ${programCount}개 과정을 확인할 수 있습니다.</p>
+        </div>
+        ${sourceUrl ? `<a class="text-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noreferrer">학교 공지 확인</a>` : ""}
+      </div>
+      <div class="evidence-table-wrap contact-directory-wrap">
+        <table class="evidence-table contact-directory-table">
+          <thead><tr><th>${includeLocation ? "연계전공" : "과정"}</th><th>주관부서</th><th>연락처</th>${includeLocation ? "<th>위치</th>" : ""}</tr></thead>
+          <tbody>
+            ${rows.map((row) => `
+              <tr>
+                <td>${renderProgramNames(row.programs, !includeLocation)}</td>
+                <td><strong>${escapeHtml(row.department)}</strong></td>
+                <td><a href="tel:${escapeHtml(row.phone.replace(/-/g, ""))}">${escapeHtml(row.phone)}</a></td>
+                ${includeLocation ? `<td>${escapeHtml(row.location)}</td>` : ""}
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+      <p class="contact-directory-note">안내자료 기준 정보이며, 신청 전 최신 학사공지와 해당 주관부서에서 운영 여부 및 연락처를 다시 확인해 주세요.</p>
+    </section>`;
+}
+
 function renderSelectedRequirement(item) {
   const evidence = getEvidenceForRequirement(profile, item.id);
   const meta = getStatusMeta(item);
@@ -139,6 +206,7 @@ function renderSelectedRequirement(item) {
     ${renderCourseEvidence(evidence.courses, item.id)}
     ${renderProgramEvidence(evidence.programs)}
     ${!hasEvidence ? `<div class="diagnosis-empty-state">이 항목은 직접 입력한 현재 값으로 진단합니다. 값 수정은 이수내역·문서 등록 페이지에서 할 수 있습니다.</div>` : ""}
+    ${renderContactDirectory(item)}
     <div class="requirement-detail-actions">
       <a class="btn btn-secondary" href="dashboard.html">진단 대시보드로 돌아가기</a>
       <a class="btn" href="evidence.html#edit">이수정보 수정</a>
