@@ -637,7 +637,7 @@ function renderPage() {
           <div class="panel-header">
             <div>
               <p class="eyebrow">Saved plans</p>
-              <h2 id="savedPlansTitle">로그인별 저장된 계획</h2>
+              <h2 id="savedPlansTitle">나의 저장된 계획</h2>
               <p>같은 브라우저에서도 계정이 바뀌면 각자 저장한 계획만 불러옵니다.</p>
             </div>
           </div>

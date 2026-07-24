@@ -2329,6 +2329,69 @@ const COURSE_RECOMMENDATION_CATALOG = {
   ],
 };
 
+function getCourseRecommendationCatalog(profile) {
+  if (COURSE_RECOMMENDATION_CATALOG[profile.id]) return COURSE_RECOMMENDATION_CATALOG[profile.id];
+  const matchingPersona = Object.values(PERSONAS).find((persona) => persona.department === profile.department);
+  return matchingPersona ? COURSE_RECOMMENDATION_CATALOG[matchingPersona.id] || [] : [];
+}
+
+export function getPriorityCourseRecommendations(profile, requirementId) {
+  if (!profile || !["primaryMajor", "dsEducation"].includes(requirementId)) return [];
+
+  const completedCodes = new Set(
+    (profile.courses || [])
+      .filter((course) => course.completed)
+      .map((course) => normalizeCourseCode(course.code)),
+  );
+  const recommendations = [];
+  const usedCodes = new Set();
+  const addCourse = (course) => {
+    const code = normalizeCourseCode(course.code);
+    if (!code || completedCodes.has(code) || usedCodes.has(code)) return;
+    usedCodes.add(code);
+    recommendations.push({ ...course, code });
+  };
+
+  if (requirementId === "dsEducation") {
+    const dsRule = getDsRuleForAdmissionYear(profile.admissionYear);
+    getOfficialSupplementalCodes(profile, "dsEducation").forEach((code) => {
+      const official = officialCourseCatalog[code];
+      if (!official) return;
+      let reason = "학번·계열별 DS 지정영역 이수 후보";
+      if (dsRule?.commonRequired.has(code)) reason = "AI·데이터 공통영역 우선 이수 후보";
+      else if (dsRule?.track1Required?.has(code)) reason = "DS 계열1 지정영역 우선 이수 후보";
+      else if (dsRule?.engineeringRequired.has(code)) reason = "공학계열 DS 지정영역 우선 이수 후보";
+      addCourse({
+        code,
+        name: official.name,
+        credits: official.credits,
+        target: "DS 교육과정",
+        semester: dsRule?.rangeLabel || `${profile.admissionYear}학번 기준`,
+        reason,
+        sourceUrl: profile.generalEducationSourceUrl,
+      });
+    });
+  } else {
+    getCourseRecommendationCatalog(profile)
+      .filter((course) => !/(융합트랙|제2전공|마이크로디그리)/.test(course.target || ""))
+      .forEach((course) => addCourse({ ...course, sourceUrl: profile.sourceUrl }));
+
+    (profile.courses || [])
+      .filter((course) => !course.completed && (course.requirementIds || []).includes("primaryMajor"))
+      .forEach((course) => addCourse({
+        code: course.code,
+        name: course.name,
+        credits: course.credits,
+        target: course.area || "제1전공",
+        semester: course.term || "개설 학기 확인",
+        reason: "현재 미이수 전공과목 중 전공학점 보완 후보",
+        sourceUrl: profile.sourceUrl,
+      }));
+  }
+
+  return recommendations.slice(0, 6).map((course, index) => ({ ...course, priority: index + 1 }));
+}
+
 const POOM_ACTION_CATALOG = {
   character: { title: "인성·리더십 또는 봉사 프로그램", detail: "챌린지스퀘어에서 인성 영역으로 표시된 프로그램을 신청하고 최종 인증 상태를 확인", href: "https://chsquare.skku.edu/challenge/nxui/index.html" },
   global: { title: "교환학생·글로벌 버디·국제행사", detail: "글로벌 영역 인정 프로그램의 활동시간과 증빙 제출 조건을 먼저 확인", href: "https://chsquare.skku.edu/challenge/nxui/index.html" },
@@ -2340,7 +2403,7 @@ const POOM_ACTION_CATALOG = {
 export function getPersonalizedStudyPlan(profile) {
   const gapSummary = getCreditGapSummary(profile);
   const completedCodes = new Set(profile.courses.filter((course) => course.completed).map((course) => course.code));
-  const catalog = COURSE_RECOMMENDATION_CATALOG[profile.id] || [];
+  const catalog = getCourseRecommendationCatalog(profile);
   const courses = catalog
     .filter((course) => !completedCodes.has(course.code))
     .slice(0, 4)

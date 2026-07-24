@@ -3,10 +3,11 @@ import {
   formatNumber,
   getCompletionRatio,
   getEvidenceForRequirement,
+  getPriorityCourseRecommendations,
   getRequirementItems,
   getStatus,
   REQUIREMENT_OPTIONS,
-} from "./data.js";
+} from "./data.js?v=20260724-priority-courses";
 import {
   CONVERGENCE_TRACK_CONTACTS,
   LINKED_MAJOR_CONTACTS,
@@ -62,6 +63,42 @@ function renderCourseEvidence(courses, selectedId) {
               </tr>`).join("")}
           </tbody>
         </table>
+      </div>
+    </section>`;
+}
+
+function renderPriorityCourseRecommendations(item) {
+  const courses = getPriorityCourseRecommendations(profile, item.id);
+  if (!courses.length) return "";
+  const isDs = item.id === "dsEducation";
+  const panelId = `priorityCourses-${item.id}`;
+  return `
+    <section class="requirement-detail-section priority-course-section">
+      <div class="requirement-detail-heading priority-course-heading">
+        <div>
+          <p class="eyebrow">Priority course list</p>
+          <h3>${isDs ? "DS 지정과목 우선 수강 목록" : "전공과목 우선 수강 목록"}</h3>
+          <p>현재 이수내역에서 완료한 과목을 제외하고 우선순위에 따라 정리했습니다.</p>
+        </div>
+        <button class="btn btn-secondary priority-course-toggle" type="button" aria-expanded="false" aria-controls="${panelId}">
+          <span>목록 펼치기</span><i aria-hidden="true">⌄</i>
+        </button>
+      </div>
+      <div class="priority-course-list hidden" id="${panelId}">
+        ${courses.map((course) => `
+          <article class="priority-course-item">
+            <span class="priority-course-rank">${String(course.priority).padStart(2, "0")}</span>
+            <div class="priority-course-main">
+              <div><strong>${escapeHtml(course.name)}</strong><span>${escapeHtml(course.code)}</span></div>
+              <p>${escapeHtml(course.reason)}</p>
+            </div>
+            <div class="priority-course-meta">
+              <span>${formatNumber(course.credits)}학점</span>
+              <span>${escapeHtml(course.semester)}</span>
+              <span>${escapeHtml(course.target)}</span>
+            </div>
+          </article>`).join("")}
+        <p class="priority-course-notice">실제 개설 학기, 선수과목 및 최종 인정 여부는 수강신청 전 GLS 수강편람과 학과 교육과정에서 확인하세요.</p>
       </div>
     </section>`;
 }
@@ -204,6 +241,7 @@ function renderSelectedRequirement(item) {
     ${renderVerificationSource(item)}
     ${renderChecklist(item)}
     ${renderCourseEvidence(evidence.courses, item.id)}
+    ${renderPriorityCourseRecommendations(item)}
     ${renderProgramEvidence(evidence.programs)}
     ${!hasEvidence ? `<div class="diagnosis-empty-state">이 항목은 직접 입력한 현재 값으로 진단합니다. 값 수정은 이수내역·문서 등록 페이지에서 할 수 있습니다.</div>` : ""}
     ${renderContactDirectory(item)}
@@ -246,6 +284,15 @@ function selectRequirement() {
     else link.removeAttribute("aria-current");
   });
   document.querySelector("#requirementFocus").innerHTML = renderSelectedRequirement(selected);
+  const priorityToggle = document.querySelector(".priority-course-toggle");
+  priorityToggle?.addEventListener("click", () => {
+    const panel = document.querySelector(`#${priorityToggle.getAttribute("aria-controls")}`);
+    const expanded = priorityToggle.getAttribute("aria-expanded") === "true";
+    priorityToggle.setAttribute("aria-expanded", String(!expanded));
+    priorityToggle.querySelector("span").textContent = expanded ? "목록 펼치기" : "목록 접기";
+    priorityToggle.querySelector("i").textContent = expanded ? "⌄" : "⌃";
+    panel?.classList.toggle("hidden", expanded);
+  });
   document.title = `GradQuest | ${selected.label} 상세`;
 }
 
