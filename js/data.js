@@ -992,6 +992,22 @@ function getDsRuleForAdmissionYear(admissionYear) {
   return null;
 }
 
+function isVerifiedDsCourse(profile, course) {
+  const rule = getDsRuleForAdmissionYear(profile?.admissionYear);
+  if (!rule) return false;
+  const code = normalizeCourseCode(course?.code);
+  if (rule.commonRequired.has(code)) return true;
+  const track = getDsTrackGroup(profile);
+  if (track === 1) return Boolean(rule.track1Required?.has(code));
+  return rule.engineeringRequired.has(code);
+}
+
+function normalizeCourseRequirementIds(course, profile) {
+  const requirementIds = new Set(course.requirementIds || inferCourseRequirements(course));
+  if (isVerifiedDsCourse(profile, course)) requirementIds.add("dsEducation");
+  return { ...course, requirementIds: [...requirementIds] };
+}
+
 function isEngineeringDsTrack(profile) {
   return /공학|소프트웨어|반도체|소재부품|에너지|양자정보|바이오메디컬/.test(`${profile?.college || ""} ${profile?.department || ""}`);
 }
@@ -1492,7 +1508,30 @@ function getOfficialSupplementalCodes(profile, requirementId) {
   return [...new Set([...departmentCodes, ...commonCodes])];
 }
 
+const dsEquivalentCourseGroups = [
+  new Set(["DASF001", "GEDT014"]),
+  new Set(["DASF002", "GEDT015"]),
+  new Set(["DASF003", "GEDT018"]),
+  new Set(["DASF004", "GEDT019"]),
+  new Set(["DASF005", "GEDT020"]),
+];
+
+function getDsEvidenceCredits(profile) {
+  const counted = new Set();
+  return profile.courses
+    .filter((course) => course.completed && (course.requirementIds || []).includes("dsEducation"))
+    .reduce((sum, course) => {
+      const code = normalizeCourseCode(course.code);
+      const groupIndex = dsEquivalentCourseGroups.findIndex((group) => group.has(code));
+      const key = groupIndex >= 0 ? `DS_GROUP_${groupIndex}` : code;
+      if (counted.has(key)) return sum;
+      counted.add(key);
+      return sum + Number(course.credits || 0);
+    }, 0);
+}
+
 function getRequirementEvidenceCredits(profile, requirementId) {
+  if (requirementId === "dsEducation") return getDsEvidenceCredits(profile);
   return profile.courses
     .filter((course) => course.completed && (course.requirementIds || []).includes(requirementId))
     .reduce((sum, course) => sum + Number(course.credits || 0), 0);
@@ -1634,15 +1673,18 @@ export function ensureEvidenceData(profile) {
   const grades = ["A+", "A0", "B+", "A+", "B0", "A0", "B+", "A0"];
   profile.courses = (profile.courses || [])
     .filter((course) => !isSyntheticCourse(course))
-    .map((course, index) => normalizePrimaryMajorArea(normalizeOfficialCourse({
+    .map((course, index) => normalizeCourseRequirementIds(normalizePrimaryMajorArea(normalizeOfficialCourse({
         ...course,
         id: course.id || `GLS-${profile.studentNumber}-${course.code || index}`,
         term: isTermInDisplayRange(profile, course.term) ? course.term : getSampleCourseTerm(profile, index),
         grade: course.grade || (course.completed ? grades[index % grades.length] : "예정"),
         source: course.source || "GLS 등록 과목",
         requirementIds: course.requirementIds || inferCourseRequirements(course),
-      })));
+      })), profile));
   supplementCourseEvidence(profile);
+  if (profile.dsEducation) {
+    profile.dsEducation.completed = getRequirementEvidenceCredits(profile, "dsEducation");
+  }
   profile.courses = profile.courses.map((course) => annotateCourseMetadata(course, profile));
   profile.nonCurricular = Array.isArray(profile.nonCurricular) ? profile.nonCurricular : buildPoomEvidence(profile);
   profile.evidenceImports = Array.isArray(profile.evidenceImports)
@@ -1675,7 +1717,9 @@ export function getEvidenceForRequirement(profile, requirementId) {
   return {
     courses,
     programs,
-    credits: courses.reduce((sum, course) => sum + Number(course.credits || 0), 0),
+    credits: requirementId === "dsEducation"
+      ? getDsEvidenceCredits(profile)
+      : courses.reduce((sum, course) => sum + Number(course.credits || 0), 0),
   };
 }
 
