@@ -11,7 +11,7 @@ document.querySelector("#pageContent").innerHTML = `
         <p>성균관대학교 학생 세 명이 복잡한 졸업요건을 더 선명하고 아름다운 경험으로 바꾸고 있습니다.</p>
         <div class="huntrix-tags"><span>DOCUMENT AI</span><span>STUDENT UX</span><span>TEAM OF 3</span></div>
       </div>
-      <div class="huntrix-hero-visual"><img src="assets/huntrix-team.png" alt="파스텔 톤의 팀 헌트릭스💖 이미지" /></div>
+      <div class="huntrix-hero-visual"><img src="assets/huntrix-team.png" alt="파스텔 톤의 팀 헌트릭스💖 이미지" /><a class="huntrix-image-source" href="https://www.google.com/search?q=%ED%97%8C%ED%8A%B8%EB%A6%AD%EC%8A%A4+%EC%9D%B4%EB%AF%B8%EC%A7%80&udm=2" target="_blank" rel="noopener noreferrer">이미지 출처: Google 이미지 검색</a></div>
     </section>
 
     <section class="panel">

@@ -8,7 +8,7 @@ import {
   REQUIREMENT_OPTIONS,
   STORAGE_KEYS,
 } from "./data.js";
-import { getGlsExtractedText, mergeGlsCourses, parseGlsCourseDocument } from "./gls-course-parser.js";
+import { getGlsExtractedText, mergeGlsCourses, parseChallengePrograms, parseGlsCourseDocument } from "./gls-course-parser.js";
 
 const profile = initAppShell({ page: "evidence", title: "이수내역·문서 등록" });
 if (!profile) throw new Error("Profile required");
@@ -543,7 +543,9 @@ document.querySelectorAll("[data-analyze]").forEach((button) => {
         payloads.push({ file, payload });
       }
       if (!payloads.length) throw new Error("No documents could be parsed");
-      const extractedItems = type === "gls" ? mergeGlsCourses(payloads.map(({ payload }) => parseGlsCourseDocument(payload))) : undefined;
+      const extractedItems = type === "gls"
+        ? mergeGlsCourses(payloads.map(({ payload }) => parseGlsCourseDocument(payload)))
+        : payloads.flatMap(({ file, payload }) => parseChallengePrograms(payload, file.name));
       const extractedText = payloads
         .map(({ file, payload }) => `=== ${file.name} ===\n${type === "gls" ? getGlsExtractedText(payload) : extractParsedText(payload)}`)
         .join("\n\n");

@@ -136,3 +136,18 @@ export async function deleteCloudValue(key) {
   if (error) throw error;
   return true;
 }
+
+export async function deleteCloudProfileData() {
+  const supabase = await getCloudClient();
+  const user = await getCloudUser();
+  if (!supabase || !user) return null;
+
+  const { error } = await supabase
+    .from("gradquest_user_data")
+    .delete()
+    .eq("user_id", user.id)
+    .neq("key", "account");
+
+  if (error) throw error;
+  return true;
+}

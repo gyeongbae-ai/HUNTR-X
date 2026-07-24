@@ -15,6 +15,13 @@ form?.addEventListener("submit", async (event) => {
   const password = String(data.get("password"));
   const passwordConfirm = String(data.get("passwordConfirm"));
 
+  if (password.length < 6) {
+    errorBox.textContent = "비밀번호는 6자 이상으로 입력해 주세요.";
+    errorBox.classList.remove("hidden");
+    submitButton.disabled = false;
+    return;
+  }
+
   if (password !== passwordConfirm) {
     errorBox.textContent = "비밀번호가 서로 다릅니다.";
     errorBox.classList.remove("hidden");
@@ -31,7 +38,9 @@ form?.addEventListener("submit", async (event) => {
     });
     window.location.href = "onboarding.html";
   } catch (error) {
-    errorBox.textContent = error.message || "Signup failed.";
+    errorBox.textContent = /password|6 character/i.test(error.message || "")
+      ? "비밀번호는 6자 이상으로 입력해 주세요."
+      : error.message || "회원가입 중 문제가 발생했습니다.";
     errorBox.classList.remove("hidden");
     submitButton.disabled = false;
   }

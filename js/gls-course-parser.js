@@ -203,3 +203,56 @@ export function mergeGlsCourses(rows) {
   });
   return [...merged.values()];
 }
+
+function challengeArea(fileName, source) {
+  const value = `${fileName || ""} ${source || ""}`;
+  if (/인턴/.test(value)) return "인턴십";
+  if (/AI\s*인증|AI\s*교육|\bAI\b/.test(value)) return "AI";
+  if (/글로벌|국제/.test(value)) return "글로벌";
+  if (/인성|사회봉사/.test(value)) return "인성";
+  if (/창의|역량구분/.test(value)) return "창의";
+  return "확인 필요";
+}
+
+export function parseChallengePrograms(payload, fileName = "") {
+  const fragments = payloadFragments(payload);
+  const area = challengeArea(fileName, fragments.join(" "));
+  const programs = [];
+  fragments.forEach((fragment) => {
+    if (!/<(?:table|tr|td|th)\b/i.test(fragment)) return;
+    const documentNode = new DOMParser().parseFromString(fragment, "text/html");
+    [...documentNode.querySelectorAll("table")].forEach((table) => {
+      const rows = [...table.querySelectorAll("tr")].map((row) => [...row.querySelectorAll("th, td")].map((cell) => text(cell.textContent))).filter((row) => row.length);
+      const headerIndex = rows.findIndex((row) => row.some((cell) => /프로그램명|봉사시간|이수시간/.test(cell)));
+      if (headerIndex < 0) return;
+      const headers = rows[headerIndex];
+      const programIndex = headers.findIndex((cell) => /프로그램명|봉사유형|과목명/.test(cell));
+      const hoursIndex = headers.findIndex((cell) => /봉사시간|이수시간|학점/.test(cell));
+      const yearIndex = headers.findIndex((cell) => /이수년도|학년도|제출학년도/.test(cell));
+      const termIndex = headers.findIndex((cell) => /학기/.test(cell));
+      const organizerIndex = headers.findIndex((cell) => /주관부서|운영기관|기관/.test(cell));
+      if (hoursIndex < 0 || (programIndex < 0 && organizerIndex < 0)) return;
+      rows.slice(headerIndex + 1).forEach((cells, index) => {
+        const hours = parseCredits(cells[hoursIndex]);
+        const title = text(cells[programIndex]) || text(cells[organizerIndex]);
+        if (!title || hours <= 0) return;
+        const year = text(cells[yearIndex]).match(/20\d{2}/)?.[0] || "";
+        const term = text(cells[termIndex]).match(/[12]/)?.[0] || "";
+        programs.push({
+          id: `CS-${area}-${year}-${index}-${title}`,
+          title,
+          organizer: text(cells[organizerIndex]) || "챌린지스퀘어",
+          completedAt: year ? `${year}-${term === "2" ? "12" : "06"}-01` : "",
+          hours,
+          certificationArea: area,
+          status: "확인 필요",
+          completed: false,
+          source: "챌린지스퀘어 파일 인식",
+        });
+      });
+    });
+  });
+  const deduped = new Map();
+  programs.forEach((program) => deduped.set(`${program.certificationArea}:${program.title}:${program.hours}`, program));
+  return [...deduped.values()];
+}

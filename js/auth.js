@@ -1,6 +1,6 @@
 import { clonePersona, ensureEvidenceData, STORAGE_KEYS } from "./data.js";
 import {
-  deleteCloudValue,
+  deleteCloudProfileData,
   getCloudValue,
   signInCloudUser,
   signOutCloudUser,
@@ -88,7 +88,7 @@ export async function resetProfileData() {
 
   if (session.cloud) {
     try {
-      const deleted = await deleteCloudValue("profile");
+      const deleted = await deleteCloudProfileData();
       if (!deleted) return false;
     } catch (error) {
       console.warn("Failed to reset cloud profile data.", error);

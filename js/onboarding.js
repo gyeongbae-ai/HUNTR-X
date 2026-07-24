@@ -43,7 +43,7 @@ page.innerHTML = `
         <h1>${existing ? "내 학업 정보 수정" : "졸업 진단을 시작해볼까요?"}</h1>
         <p>입학연도와 전공 형태에 따라 적용되는 졸업요건이 달라집니다. 현재 상태를 입력하거나 데모 페르소나를 불러오세요.</p>
       </div>
-      ${existing ? `<div class="page-header-actions"><button class="btn btn-danger" id="resetProfileData" type="button">내 데이터 초기화</button></div>` : ""}
+      ${existing ? `<div class="page-header-actions"><button class="btn btn-danger" id="resetProfileData" type="button">저장 데이터 전체 초기화</button></div>` : ""}
     </div>
 
     <div class="stepper" aria-label="설정 단계">
@@ -186,7 +186,7 @@ toggleSecondary();
 
 document.querySelector("#resetProfileData")?.addEventListener("click", async () => {
   const confirmed = window.confirm(
-    "저장한 이수내역, 비교과, 일정, 개인 로드맵, What-if 계획과 문서 인식 기록을 모두 초기화할까요?\n\n계정과 로그인 정보는 유지됩니다.",
+    "졸업요건 이수내역, 교과목·성적, 비교과, 일정, 개인 로드맵, What-if 계획과 문서 인식 기록 등 저장된 모든 데이터를 초기화할까요?\n\n계정과 로그인 정보만 유지됩니다.",
   );
   if (!confirmed) return;
 
@@ -196,12 +196,12 @@ document.querySelector("#resetProfileData")?.addEventListener("click", async () 
   const reset = await resetProfileData();
   if (!reset) {
     button.disabled = false;
-    button.textContent = "내 데이터 초기화";
+    button.textContent = "저장 데이터 전체 초기화";
     showToast("데이터를 초기화하지 못했습니다. 로그인 상태를 확인한 뒤 다시 시도해 주세요.");
     return;
   }
 
-  showToast("저장한 학사 데이터를 초기화했습니다.");
+  showToast("저장된 모든 데이터를 초기화했습니다.");
   window.setTimeout(() => window.location.replace("onboarding.html?reset=1"), 350);
 });
 

@@ -102,7 +102,8 @@ if (!parsedDocument?.profileDraft) {
       completedAt: item.completedAt || new Date().toISOString().slice(0, 10),
       hours: Number(item.hours || 1),
       certificationArea: item.certificationArea || "인성",
-      status: item.status || "이수",
+      status: item.status || "확인 필요",
+      completed: item.completed ?? item.status === "이수",
       requirementIds: ["poom"],
       source: parsedDocument.provider === "Upstage Document Parse" ? "챌린지스퀘어 파일 인식" : item.source || "챌린지스퀘어 샘플",
     }));
@@ -127,13 +128,13 @@ if (!parsedDocument?.profileDraft) {
   function renderProgramRows() {
     return items.map((program, index) => `
       <tr data-program-row="${index}">
-        <td><input type="checkbox" data-include checked aria-label="${escapeHtml(program.title)} 반영" /></td>
+        <td><input type="checkbox" data-include ${program.completed ? "checked" : ""} aria-label="${escapeHtml(program.title)} 반영" /></td>
         <td><input class="table-input name-input" data-field="title" value="${escapeHtml(program.title)}" aria-label="프로그램명" /></td>
         <td><input class="table-input" data-field="organizer" value="${escapeHtml(program.organizer)}" aria-label="운영기관" /></td>
         <td><input class="table-input" data-field="completedAt" type="date" value="${escapeHtml(program.completedAt)}" aria-label="이수일" /></td>
         <td><input class="table-input number-input" data-field="hours" type="number" min="0" max="1000" value="${program.hours}" aria-label="이수시간" /></td>
         <td><select class="table-input" data-field="certificationArea" aria-label="인증영역">${["인성", "글로벌", "창의", "AI", "인턴십"].map((area) => `<option ${area === program.certificationArea ? "selected" : ""}>${area}</option>`).join("")}</select></td>
-        <td><select class="table-input" data-field="status" aria-label="이수상태"><option ${program.status === "이수" ? "selected" : ""}>이수</option><option ${program.status === "진행중" ? "selected" : ""}>진행중</option></select></td>
+        <td><select class="table-input" data-field="status" aria-label="이수상태"><option ${program.status === "확인 필요" ? "selected" : ""}>확인 필요</option><option ${program.status === "이수" ? "selected" : ""}>이수</option><option ${program.status === "진행중" ? "selected" : ""}>진행중</option></select></td>
       </tr>`).join("");
   }
 
