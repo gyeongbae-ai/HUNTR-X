@@ -36,6 +36,21 @@ function getStoredProfileFor(studentNumber) {
   }
 }
 
+function syncNormalizedProfile(profile, session, previousValue = "") {
+  const normalized = ensureEvidenceData(profile);
+  const nextValue = JSON.stringify(normalized);
+  if (nextValue === previousValue) return normalized;
+  localStorage.setItem(STORAGE_KEYS.profile, nextValue);
+  const owner = normalized.studentNumber || session?.studentNumber;
+  if (owner) localStorage.setItem(getProfileStorageKey(owner), nextValue);
+  if (session?.cloud) {
+    setCloudValue("profile", normalized).catch((error) => {
+      console.warn("Failed to sync normalized profile migration.", error);
+    });
+  }
+  return normalized;
+}
+
 export function getProfile() {
   try {
     const session = getSession();
@@ -43,9 +58,7 @@ export function getProfile() {
     if (session?.studentNumber && profile?.studentNumber !== session.studentNumber) {
       const accountProfile = getStoredProfileFor(session.studentNumber);
       if (accountProfile) {
-        const normalized = ensureEvidenceData(accountProfile);
-        localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(normalized));
-        return normalized;
+        return syncNormalizedProfile(accountProfile, session, JSON.stringify(accountProfile));
       }
       return null;
     }
@@ -55,7 +68,7 @@ export function getProfile() {
       localStorage.setItem(getProfileStorageKey(migrated.studentNumber), JSON.stringify(migrated));
       return migrated;
     }
-    return ensureEvidenceData(profile);
+    return syncNormalizedProfile(profile, session, JSON.stringify(profile));
   } catch {
     return null;
   }

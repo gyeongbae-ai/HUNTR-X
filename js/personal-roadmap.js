@@ -268,7 +268,8 @@ function renderTimelineSimulator() {
   const selectedTerm = futureTerms.find((term) => term.id === timelineWorkspace.selectedTerm);
   const unassignedTasks = timelineWorkspace.tasks.filter((task) => !task.assignedTerm);
   const progress = getTimelineProgress();
-  const secondary = profile.secondaryProgram || profile.secondaryMajor?.label || "";
+  const secondaryValue = profile.secondaryProgram || profile.secondaryMajor?.label || "";
+  const secondary = /^(없음|해당 없음|-)$/.test(String(secondaryValue).trim()) ? "" : secondaryValue;
   const programLabel = [profile.department, secondary].filter(Boolean).join(" + ");
   const allPlaced = unassignedTasks.length === 0;
 
